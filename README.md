@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Discord](https://img.shields.io/discord/your-server-id)](https://discord.gg/your-invite-link)
 
-<img src="https://github.com/yourusername/gamedin/blob/main/design/gamedin-logo.png?raw=true" width="200" align="right">
+<img src="[https://github.com/yourusername/gamedin/blob/main/design/gamedin-logo.png?raw=true](https://i.ibb.co/yBFtPhVp/image-fx-1.png)" width="200" align="right">
 
 ## 🌟 Overview  
 GameDin revolutionizes professional networking for the gaming universe:
