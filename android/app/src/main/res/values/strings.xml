@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GameDin</string>
+    <string name="title_activity_main">GameDin</string>
+    <string name="package_name">com.gamedin.app</string>
+    <string name="custom_url_scheme">com.gamedin.app</string>
+</resources>
