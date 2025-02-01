@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { INotification, INotificationState, INotificationActions } from '../types/notifications';
+import { websocketService } from '../services/websocket';
+import { WebSocketMessage } from '../types/social';
 
 interface NotificationsContextValue extends INotificationState, INotificationActions {}
 
@@ -45,7 +47,7 @@ const notificationsReducer = (
         notifications: state.notifications.map((n) =>
           n.id === action.payload ? { ...n, read: true } : n
         ),
-        unreadCount: state.unreadCount - 1,
+        unreadCount: Math.max(0, state.unreadCount - 1),
       };
     case 'MARK_ALL_AS_READ':
       return {
@@ -87,73 +89,125 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(notificationsReducer, initialState);
 
-  // Mock WebSocket connection for real-time updates
+  // Initialize WebSocket connection
   useEffect(() => {
-    // TODO: Replace with actual WebSocket connection
-    const mockWebSocket = {
-      onmessage: (callback: (data: INotification) => void) => {
-        // Simulate receiving notifications
-        const interval = setInterval(() => {
-          const mockNotification: INotification = {
-            id: Math.random().toString(36).substr(2, 9),
-            type: 'LIKE',
-            title: 'New Like',
-            message: 'Someone liked your post',
-            createdAt: new Date().toISOString(),
-            read: false,
-            sender: {
-              id: '1',
-              username: 'user1',
-              avatarUrl: 'https://mui.com/static/images/avatar/1.jpg',
-            },
-          };
-          callback(mockNotification);
-        }, 30000); // Every 30 seconds
+    websocketService.connect();
 
-        return () => clearInterval(interval);
-      },
+    // Subscribe to different notification types
+    const unsubscribeCallbacks = [
+      websocketService.subscribe('NOTIFICATION_LIKE', handleNotification),
+      websocketService.subscribe('NOTIFICATION_COMMENT', handleNotification),
+      websocketService.subscribe('NOTIFICATION_FOLLOW', handleNotification),
+      websocketService.subscribe('NOTIFICATION_MENTION', handleNotification),
+      websocketService.subscribe('NOTIFICATION_TOURNAMENT', handleNotification),
+      websocketService.subscribe('NOTIFICATION_TEAM', handleNotification),
+      websocketService.subscribe('NOTIFICATION_ACHIEVEMENT', handleNotification),
+      websocketService.subscribe('NOTIFICATION_SYSTEM', handleNotification),
+    ];
+
+    // Cleanup subscriptions
+    return () => {
+      unsubscribeCallbacks.forEach(unsubscribe => unsubscribe());
+      websocketService.disconnect();
     };
+  }, []);
 
-    const unsubscribe = mockWebSocket.onmessage((notification) => {
+  const handleNotification = useCallback((message: WebSocketMessage) => {
+    if (message.type.startsWith('NOTIFICATION_')) {
+      const notification: INotification = {
+        id: message.id,
+        type: message.type.replace('NOTIFICATION_', '') as any,
+        title: message.data.title,
+        message: message.data.message,
+        createdAt: new Date().toISOString(),
+        read: false,
+        data: message.data,
+        sender: message.data.sender,
+      };
       dispatch({ type: 'ADD_NOTIFICATION', payload: notification });
-    });
 
-    return () => unsubscribe();
+      // Show browser notification if supported
+      if (Notification.permission === 'granted') {
+        new Notification(notification.title, {
+          body: notification.message,
+          icon: notification.sender?.avatarUrl,
+        });
+      }
+    }
+  }, []);
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, []);
 
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
-      // TODO: Implement API call
+      dispatch({ type: 'SET_LOADING', payload: true });
+      // Send WebSocket message to mark as read
+      websocketService.send({
+        type: 'MARK_NOTIFICATION_READ',
+        id: notificationId,
+        data: { notificationId },
+      });
       dispatch({ type: 'MARK_AS_READ', payload: notificationId });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to mark notification as read' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, []);
 
   const markAllAsRead = useCallback(async () => {
     try {
-      // TODO: Implement API call
+      dispatch({ type: 'SET_LOADING', payload: true });
+      // Send WebSocket message to mark all as read
+      websocketService.send({
+        type: 'MARK_ALL_NOTIFICATIONS_READ',
+        id: Date.now().toString(),
+        data: {},
+      });
       dispatch({ type: 'MARK_ALL_AS_READ' });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to mark all notifications as read' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, []);
 
   const deleteNotification = useCallback(async (notificationId: string) => {
     try {
-      // TODO: Implement API call
+      dispatch({ type: 'SET_LOADING', payload: true });
+      // Send WebSocket message to delete notification
+      websocketService.send({
+        type: 'DELETE_NOTIFICATION',
+        id: notificationId,
+        data: { notificationId },
+      });
       dispatch({ type: 'DELETE_NOTIFICATION', payload: notificationId });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to delete notification' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, []);
 
   const clearAll = useCallback(async () => {
     try {
-      // TODO: Implement API call
+      dispatch({ type: 'SET_LOADING', payload: true });
+      // Send WebSocket message to clear all notifications
+      websocketService.send({
+        type: 'CLEAR_ALL_NOTIFICATIONS',
+        id: Date.now().toString(),
+        data: {},
+      });
       dispatch({ type: 'CLEAR_ALL' });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to clear notifications' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, []);
 

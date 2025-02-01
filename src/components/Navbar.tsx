@@ -301,6 +301,16 @@ const Navbar: React.FC = () => {
             <ListItemText primary="Messages" />
           </MenuItem>
 
+          <MenuItem onClick={() => {
+            navigate('/settings/notifications');
+            handleClose();
+          }}>
+            <ListItemIcon>
+              <NotificationsIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Notification Settings" />
+          </MenuItem>
+
           <MenuItem onClick={handleClose}>
             <ListItemIcon>
               <SettingsIcon fontSize="small" />

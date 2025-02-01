@@ -285,13 +285,13 @@ const Profile: React.FC = () => {
         currentGame: response.data.currentGame || '',
       });
       setError(null);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
       setError('Failed to load profile');
     } finally {
       setLoading(false);
-    }
-  };
+      }
+    };
 
   useEffect(() => {
     if (username) {
@@ -624,7 +624,7 @@ const Profile: React.FC = () => {
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
                       Unlocked {new Date(achievement.earnedAt).toLocaleDateString()}
-                    </Typography>
+            </Typography>
                   </Box>
                 </AchievementCard>
               ))}
@@ -652,7 +652,7 @@ const Profile: React.FC = () => {
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
                         {team.members} Members
-                      </Typography>
+            </Typography>
                     </Box>
                   </Box>
                 </TeamCard>
@@ -675,7 +675,7 @@ const Profile: React.FC = () => {
                         </Typography>
                         <Typography variant="caption">
                           {highlight.views} views
-                        </Typography>
+            </Typography>
                       </Box>
                     </HighlightOverlay>
                   </HighlightCard>
@@ -760,7 +760,7 @@ const Profile: React.FC = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Box>
+      </Box>
   );
 };
 

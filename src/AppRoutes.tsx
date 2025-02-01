@@ -10,6 +10,7 @@ import Token from './pages/Token';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import NotificationSettings from './pages/NotificationSettings';
 
 // Components
 import Feed from './components/Feed';
@@ -111,6 +112,16 @@ const AppRoutes: React.FC = () => {
           element={
             <PrivateRoute>
               <Profile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings/notifications"
+          element={
+            <PrivateRoute>
+              <Box sx={{ mt: 8 }}>
+                <NotificationSettings />
+              </Box>
             </PrivateRoute>
           }
         />
