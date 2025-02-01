@@ -20,8 +20,9 @@ import StarIcon from '@mui/icons-material/Star';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import { useAuth } from '../context/AuthContext';
+import { IUserProfile } from '../types/user';
 
-interface Achievement {
+interface IAchievement {
   id: string;
   title: string;
   description: string;
@@ -37,7 +38,7 @@ interface Achievement {
   category: 'gaming' | 'social' | 'community' | 'special';
 }
 
-interface Badge {
+interface IBadge {
   id: string;
   name: string;
   icon: string;
@@ -72,15 +73,64 @@ const RarityBadge = styled(Badge)<{ rarity: string }>(({ theme, rarity }) => {
 
 const Achievements: React.FC = () => {
   const { user } = useAuth();
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [badges, setBadges] = useState<Badge[]>([]);
+  const [profile, setProfile] = useState<IUserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [achievements, setAchievements] = useState<IAchievement[]>([]);
+  const [badges, setBadges] = useState<IBadge[]>([]);
   const [level, setLevel] = useState(1);
   const [xp, setXp] = useState(0);
   const [nextLevelXp, setNextLevelXp] = useState(1000);
 
   useEffect(() => {
+    // Fetch user profile with achievements
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        // TODO: Replace with actual API call
+        const mockProfile: IUserProfile = {
+          id: user?.id || '',
+          username: user?.username || '',
+          email: user?.email || '',
+          avatarUrl: user?.avatarUrl || '',
+          bio: '',
+          coverUrl: '',
+          status: user?.status || 'offline',
+          reputation: 0,
+          achievements: {
+            total: 0,
+            recent: []
+          },
+          stats: {
+            gamesPlayed: 0,
+            winRate: 0,
+            totalMatches: 0,
+            favoriteGame: '',
+            playtime: 0,
+            rank: ''
+          },
+          topGames: [],
+          recentAchievements: [],
+          teams: [],
+          highlights: [],
+          schedule: [],
+          activity: []
+        };
+        setProfile(mockProfile);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
+
+  useEffect(() => {
     // Mock achievements data
-    const mockAchievements: Achievement[] = [
+    const mockAchievements: IAchievement[] = [
       {
         id: '1',
         title: 'First Blood',
@@ -121,7 +171,7 @@ const Achievements: React.FC = () => {
     setAchievements(mockAchievements);
 
     // Mock badges data
-    const mockBadges: Badge[] = [
+    const mockBadges: IBadge[] = [
       {
         id: '1',
         name: 'Early Adopter',
@@ -148,143 +198,152 @@ const Achievements: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 3 }}>
-      {/* User Level Progress */}
-      <Paper sx={{ p: 3, mb: 4, backgroundColor: 'rgba(8, 95, 128, 0.1)', borderRadius: '15px' }}>
-        <Grid container spacing={3} alignItems="center">
-          <Grid item>
-            <Avatar
-              sx={{ width: 80, height: 80 }}
-              src={user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
-            />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="h5" gutterBottom>
-              Level {level}
-            </Typography>
-            <Box sx={{ width: '100%', mr: 1 }}>
-              <LinearProgress
-                variant="determinate"
-                value={calculateLevelProgress(xp, nextLevelXp)}
-                sx={{
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  '& .MuiLinearProgress-bar': {
-                    backgroundColor: 'primary.main',
-                  },
-                }}
-              />
-            </Box>
-            <Typography variant="body2" color="textSecondary">
-              {xp} / {nextLevelXp} XP to next level
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Box textAlign="center">
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Achievements
+        </Typography>
+        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+          Your gaming accomplishments and progress
+        </Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2 }}>
               <Typography variant="h6" gutterBottom>
-                Reputation
+                Total Score
               </Typography>
-              <Typography variant="h4" color="primary">
-                {user?.reputation || 0}
+              <Typography variant="h3">
+                {profile?.reputation || 0}
               </Typography>
-            </Box>
+            </Paper>
+          </Grid>
+          {/* User Level Progress */}
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Level {level}
+              </Typography>
+              <Box sx={{ width: '100%', mr: 1 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={calculateLevelProgress(xp, nextLevelXp)}
+                  sx={{
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: 'primary.main',
+                    },
+                  }}
+                />
+              </Box>
+              <Typography variant="body2" color="textSecondary">
+                {xp} / {nextLevelXp} XP to next level
+              </Typography>
+            </Paper>
+          </Grid>
+          {/* Badges Section */}
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                <WorkspacePremiumIcon sx={{ mr: 1, verticalAlign: 'bottom' }} />
+                Earned Badges
+              </Typography>
+              <Grid container spacing={2}>
+                {badges.map((badge) => (
+                  <Grid item xs={12} sm={6} md={4} key={badge.id}>
+                    <RarityBadge
+                      rarity={badge.rarity}
+                      badgeContent={badge.rarity.charAt(0).toUpperCase()}
+                      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                      <StyledCard>
+                        <CardContent>
+                          <Box display="flex" alignItems="center" gap={1} mb={1}>
+                            <Typography variant="h5" component="span">
+                              {badge.icon}
+                            </Typography>
+                            <Typography variant="h6">
+                              {badge.name}
+                            </Typography>
+                          </Box>
+                          <Typography variant="body2" color="textSecondary">
+                            {badge.description}
+                          </Typography>
+                          <Typography variant="caption" color="textSecondary" display="block" sx={{ mt: 1 }}>
+                            Earned on {new Date(badge.earnedDate).toLocaleDateString()}
+                          </Typography>
+                        </CardContent>
+                      </StyledCard>
+                    </RarityBadge>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
+          </Grid>
+          {/* Achievements Section */}
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                <EmojiEventsIcon sx={{ mr: 1, verticalAlign: 'bottom' }} />
+                Achievements
+              </Typography>
+              <Grid container spacing={2}>
+                {achievements.map((achievement) => (
+                  <Grid item xs={12} sm={6} md={4} key={achievement.id}>
+                    <RarityBadge
+                      rarity={achievement.rarity}
+                      badgeContent={achievement.rarity.charAt(0).toUpperCase()}
+                      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                      <StyledCard>
+                        <CardContent>
+                          <Box display="flex" alignItems="center" gap={1} mb={1}>
+                            <Typography variant="h5" component="span">
+                              {achievement.icon}
+                            </Typography>
+                            <Typography variant="h6">
+                              {achievement.title}
+                            </Typography>
+                          </Box>
+                          <Typography variant="body2" color="textSecondary" gutterBottom>
+                            {achievement.description}
+                          </Typography>
+                          <Box sx={{ mt: 2 }}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                              <Typography variant="body2">
+                                Progress: {achievement.progress}/{achievement.maxProgress}
+                              </Typography>
+                              <Chip
+                                size="small"
+                                icon={achievement.reward.type === 'xp' ? <StarIcon /> : <MilitaryTechIcon />}
+                                label={`${achievement.reward.type.toUpperCase()}: ${achievement.reward.value}`}
+                                color="primary"
+                              />
+                            </Box>
+                            <LinearProgress
+                              variant="determinate"
+                              value={(achievement.progress / achievement.maxProgress) * 100}
+                              sx={{
+                                height: 6,
+                                borderRadius: 3,
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                '& .MuiLinearProgress-bar': {
+                                  backgroundColor: achievement.completed ? 'success.main' : 'primary.main',
+                                },
+                              }}
+                            />
+                          </Box>
+                        </CardContent>
+                      </StyledCard>
+                    </RarityBadge>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
           </Grid>
         </Grid>
-      </Paper>
-
-      {/* Badges Section */}
-      <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-        <WorkspacePremiumIcon sx={{ mr: 1, verticalAlign: 'bottom' }} />
-        Earned Badges
-      </Typography>
-      <Grid container spacing={2} sx={{ mb: 4 }}>
-        {badges.map((badge) => (
-          <Grid item xs={12} sm={6} md={3} key={badge.id}>
-            <RarityBadge
-              rarity={badge.rarity}
-              badgeContent={badge.rarity.charAt(0).toUpperCase()}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-              <StyledCard>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <Typography variant="h5" component="span">
-                      {badge.icon}
-                    </Typography>
-                    <Typography variant="h6">
-                      {badge.name}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" color="textSecondary">
-                    {badge.description}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary" display="block" sx={{ mt: 1 }}>
-                    Earned on {new Date(badge.earnedDate).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-              </StyledCard>
-            </RarityBadge>
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Achievements Section */}
-      <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-        <EmojiEventsIcon sx={{ mr: 1, verticalAlign: 'bottom' }} />
-        Achievements
-      </Typography>
-      <Grid container spacing={2}>
-        {achievements.map((achievement) => (
-          <Grid item xs={12} sm={6} md={4} key={achievement.id}>
-            <RarityBadge
-              rarity={achievement.rarity}
-              badgeContent={achievement.rarity.charAt(0).toUpperCase()}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-              <StyledCard>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <Typography variant="h5" component="span">
-                      {achievement.icon}
-                    </Typography>
-                    <Typography variant="h6">
-                      {achievement.title}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" color="textSecondary" gutterBottom>
-                    {achievement.description}
-                  </Typography>
-                  <Box sx={{ mt: 2 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                      <Typography variant="body2">
-                        Progress: {achievement.progress}/{achievement.maxProgress}
-                      </Typography>
-                      <Chip
-                        size="small"
-                        icon={achievement.reward.type === 'xp' ? <StarIcon /> : <MilitaryTechIcon />}
-                        label={`${achievement.reward.type.toUpperCase()}: ${achievement.reward.value}`}
-                        color="primary"
-                      />
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={(achievement.progress / achievement.maxProgress) * 100}
-                      sx={{
-                        height: 6,
-                        borderRadius: 3,
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        '& .MuiLinearProgress-bar': {
-                          backgroundColor: achievement.completed ? 'success.main' : 'primary.main',
-                        },
-                      }}
-                    />
-                  </Box>
-                </CardContent>
-              </StyledCard>
-            </RarityBadge>
-          </Grid>
-        ))}
-      </Grid>
+      </Box>
     </Container>
   );
 };

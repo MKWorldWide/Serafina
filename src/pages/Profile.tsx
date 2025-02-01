@@ -11,15 +11,22 @@ import {
   Chip,
   LinearProgress,
   Button,
-  Divider,
   IconButton,
   Tooltip,
   Badge,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { authApi, messagesApi } from '../services/api';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import GroupIcon from '@mui/icons-material/Group';
@@ -32,21 +39,37 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import TimelineIcon from '@mui/icons-material/Timeline';
 
-interface UserProfile {
+interface IUserProfile {
+  id: string;
   username: string;
+  email: string;
   bio: string;
   avatarUrl: string;
   coverUrl: string;
   status: 'online' | 'offline' | 'in-game';
   currentGame?: string;
+  reputation: number;
+  rank?: string;
+  level?: number;
+  achievements: {
+    total: number;
+    recent: Array<{
+      id: string;
+      name: string;
+      description: string;
+      icon: string;
+      rarity: string;
+      game: string;
+      earnedAt: string;
+    }>;
+  };
   stats: {
-    followers: number;
-    following: number;
-    totalGames: number;
-    achievements: number;
+    gamesPlayed: number;
     winRate: number;
     totalMatches: number;
-    reputation: number;
+    favoriteGame: string;
+    playtime: number;
+    rank: string;
   };
   topGames: Array<{
     name: string;
@@ -91,6 +114,12 @@ interface UserProfile {
     title: string;
     date: string;
     participants: number;
+  }>;
+  activity: Array<{
+    id: string;
+    type: string;
+    description: string;
+    timestamp: string;
   }>;
 }
 
@@ -202,174 +231,78 @@ const TeamCard = styled(Paper)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
+interface ITabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+const TabPanel: React.FC<ITabPanelProps> = ({ children, value, index }) => {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`profile-tabpanel-${index}`}
+      aria-labelledby={`profile-tab-${index}`}
+    >
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    </div>
+  );
+};
+
 const Profile: React.FC = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<IUserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    bio: '',
+    currentGame: '',
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error',
+  });
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!username) {
-        setError('Username is required');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        // TODO: Replace with actual API call
-        const mockProfile: UserProfile = {
-          username: username,
-          bio: '🎮 Professional Gamer | 🏆 Tournament Winner | 🎯 FPS Enthusiast',
-          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
-          coverUrl: 'https://picsum.photos/1920/1080',
-          status: 'online',
-          currentGame: 'Valorant',
-          stats: {
-            followers: 1234,
-            following: 567,
-            totalGames: 89,
-            achievements: 342,
-            winRate: 68,
-            totalMatches: 1500,
-            reputation: 4.8,
-          },
-          topGames: [
-            {
-              name: 'Valorant',
-              hoursPlayed: 432,
-              level: 78,
-              platform: 'PC',
-              rank: 'Immortal',
-              winRate: 65,
-              favoriteCharacter: 'Jett',
-            },
-            {
-              name: 'Elden Ring',
-              hoursPlayed: 156,
-              level: 120,
-              platform: 'PS5',
-              winRate: 70,
-            },
-            {
-              name: 'God of War Ragnarök',
-              hoursPlayed: 89,
-              level: 50,
-              platform: 'PS5',
-              winRate: 75,
-            },
-          ],
-          recentAchievements: [
-            {
-              id: '1',
-              name: 'Speed Demon',
-              game: 'Elden Ring',
-              icon: '🏃‍♂️',
-              rarity: 'Ultra Rare',
-              unlockedAt: new Date().toISOString(),
-              description: 'Complete the game under 2 hours',
-            },
-            {
-              id: '2',
-              name: 'Ace Master',
-              game: 'Valorant',
-              icon: '🎯',
-              rarity: 'Rare',
-              unlockedAt: new Date().toISOString(),
-              description: 'Get 5 kills in a single round',
-            },
-          ],
-          teams: [
-            {
-              id: '1',
-              name: 'Team Phantom',
-              game: 'Valorant',
-              role: 'Team Captain',
-              members: 5,
-              rank: 'Diamond',
-              logo: 'https://api.dicebear.com/7.x/identicon/svg?seed=phantom',
-            },
-            {
-              id: '2',
-              name: 'Elden Lords',
-              game: 'Elden Ring',
-              role: 'Member',
-              members: 8,
-              logo: 'https://api.dicebear.com/7.x/identicon/svg?seed=elden',
-            },
-          ],
-          highlights: [
-            {
-              id: '1',
-              title: 'Insane Ace Clutch!',
-              game: 'Valorant',
-              type: 'clip',
-              thumbnailUrl: 'https://picsum.photos/400/200',
-              views: 1200,
-              date: new Date().toISOString(),
-            },
-            {
-              id: '2',
-              title: 'World Record Speedrun',
-              game: 'Elden Ring',
-              type: 'record',
-              thumbnailUrl: 'https://picsum.photos/400/200',
-              views: 3400,
-              date: new Date().toISOString(),
-            },
-          ],
-          schedule: [
-            {
-              id: '1',
-              type: 'tournament',
-              game: 'Valorant',
-              title: 'Weekly Community Cup',
-              date: new Date(Date.now() + 86400000).toISOString(),
-              participants: 16,
-            },
-            {
-              id: '2',
-              type: 'streaming',
-              game: 'Elden Ring',
-              title: 'Speedrun Practice',
-              date: new Date(Date.now() + 172800000).toISOString(),
-              participants: 0,
-            },
-          ],
-        };
-        
-        setProfile(mockProfile);
-        setError(null);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        setError('Failed to load profile');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [username]);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
+  const fetchProfile = async (username: string) => {
+    if (!username) {
+      setError('Username is required');
+      setLoading(false);
+      return;
     }
-  }, [isAuthenticated, navigate]);
 
-  const isOwnProfile = user?.username === profile?.username;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online': return '#44b700';
-      case 'in-game': return '#ff9800';
-      default: return '#bdbdbd';
+    try {
+      setLoading(true);
+      const response = await authApi.getProfile(username);
+      setProfile(response.data);
+      setEditFormData({
+        bio: response.data.bio,
+        currentGame: response.data.currentGame || '',
+      });
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      setError('Failed to load profile');
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (username) {
+      fetchProfile(username);
+    }
+  }, [username]);
+
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
 
   if (loading) {
     return (
@@ -409,9 +342,86 @@ const Profile: React.FC = () => {
         sx={{ mt: -8 }} // Compensate for navbar
       >
         <Typography>Profile not found</Typography>
-      </Box>
+        </Box>
     );
   }
+
+  const isOwnProfile = user.username === profile.username;
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'online': return '#44b700';
+      case 'in-game': return '#ff9800';
+      default: return '#bdbdbd';
+    }
+  };
+
+  const handleEditProfile = async () => {
+    try {
+      await authApi.updateProfile(username!, editFormData);
+      setProfile(prev => prev ? { ...prev, ...editFormData } : null);
+      setEditDialogOpen(false);
+      setSnackbar({
+        open: true,
+        message: 'Profile updated successfully',
+        severity: 'success',
+      });
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to update profile',
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleAddFriend = async () => {
+    try {
+      // Implement friend request logic
+      setSnackbar({
+        open: true,
+        message: 'Friend request sent',
+        severity: 'success',
+      });
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to send friend request',
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleSendMessage = async () => {
+    try {
+      if (!profile) return;
+      const response = await messagesApi.createConversation(profile.id);
+      navigate(`/messages/${response.data.id}`);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to start conversation',
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleInviteToTeam = async () => {
+    try {
+      // Implement team invitation logic
+      setSnackbar({
+        open: true,
+        message: 'Team invitation sent',
+        severity: 'success',
+      });
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to send team invitation',
+        severity: 'error',
+      });
+    }
+  };
 
   return (
     <Box sx={{ pt: 8 }}> {/* Add padding top to account for navbar */}
@@ -452,11 +462,11 @@ const Profile: React.FC = () => {
               </Box>
               <Typography variant="body1" color="textSecondary" sx={{ mb: 2 }}>
                 {profile.bio}
-              </Typography>
+                </Typography>
               <Box display="flex" gap={1}>
                 <Chip
                   icon={<StarIcon />}
-                  label={`${profile.stats.reputation} Rating`}
+                  label={`${profile.reputation} Rating`}
                   color="primary"
                   size="small"
                 />
@@ -472,17 +482,17 @@ const Profile: React.FC = () => {
               {!isOwnProfile && (
                 <>
                   <Tooltip title="Add Friend">
-                    <IconButton color="primary">
+                    <IconButton color="primary" onClick={handleAddFriend}>
                       <PersonAddIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Send Message">
-                    <IconButton color="primary">
+                    <IconButton color="primary" onClick={handleSendMessage}>
                       <MessageIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Invite to Team">
-                    <IconButton color="primary">
+                    <IconButton color="primary" onClick={handleInviteToTeam}>
                       <GroupAddIcon />
                     </IconButton>
                   </Tooltip>
@@ -493,6 +503,7 @@ const Profile: React.FC = () => {
                   variant="contained"
                   startIcon={<EditIcon />}
                   sx={{ mt: 1 }}
+                  onClick={() => setEditDialogOpen(true)}
                 >
                   Edit Profile
                 </Button>
@@ -505,16 +516,7 @@ const Profile: React.FC = () => {
               <StatsCard>
                 <Box display="flex" alignItems="center" gap={1}>
                   <GroupIcon />
-                  <Typography variant="h6">{profile.stats.followers}</Typography>
-                </Box>
-                <Typography color="textSecondary">Followers</Typography>
-              </StatsCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <SportsEsportsIcon />
-                  <Typography variant="h6">{profile.stats.totalGames}</Typography>
+                  <Typography variant="h6">{profile.stats.gamesPlayed}</Typography>
                 </Box>
                 <Typography color="textSecondary">Games</Typography>
               </StatsCard>
@@ -522,8 +524,17 @@ const Profile: React.FC = () => {
             <Grid item xs={12} sm={6} md={3}>
               <StatsCard>
                 <Box display="flex" alignItems="center" gap={1}>
+                  <SportsEsportsIcon />
+                  <Typography variant="h6">{profile.stats.totalMatches}</Typography>
+                </Box>
+                <Typography color="textSecondary">Total Matches</Typography>
+              </StatsCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatsCard>
+                <Box display="flex" alignItems="center" gap={1}>
                   <EmojiEventsIcon />
-                  <Typography variant="h6">{profile.stats.achievements}</Typography>
+                  <Typography variant="h6">{profile.achievements.total}</Typography>
                 </Box>
                 <Typography color="textSecondary">Achievements</Typography>
               </StatsCard>
@@ -550,7 +561,7 @@ const Profile: React.FC = () => {
             <Tab label="Highlights" icon={<WhatshotIcon />} iconPosition="start" />
           </Tabs>
 
-          {activeTab === 0 && (
+          <TabPanel value={activeTab} index={0}>
             <Box>
               {profile.topGames.map((game, index) => (
                 <GameCard key={index}>
@@ -590,11 +601,11 @@ const Profile: React.FC = () => {
                 </GameCard>
               ))}
             </Box>
-          )}
+          </TabPanel>
 
-          {activeTab === 1 && (
+          <TabPanel value={activeTab} index={1}>
             <Box>
-              {profile.recentAchievements.map((achievement) => (
+              {profile.achievements.recent.map((achievement) => (
                 <AchievementCard key={achievement.id}>
                   <Typography variant="h4" component="span">
                     {achievement.icon}
@@ -609,21 +620,18 @@ const Profile: React.FC = () => {
                       />
                     </Box>
                     <Typography variant="body2" color="textSecondary">
-                      {achievement.game}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
                       {achievement.description}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
-                      Unlocked {new Date(achievement.unlockedAt).toLocaleDateString()}
+                      Unlocked {new Date(achievement.earnedAt).toLocaleDateString()}
                     </Typography>
                   </Box>
                 </AchievementCard>
               ))}
             </Box>
-          )}
+          </TabPanel>
 
-          {activeTab === 2 && (
+          <TabPanel value={activeTab} index={2}>
             <Box>
               {profile.teams.map((team) => (
                 <TeamCard key={team.id}>
@@ -650,9 +658,9 @@ const Profile: React.FC = () => {
                 </TeamCard>
               ))}
             </Box>
-          )}
+          </TabPanel>
 
-          {activeTab === 3 && (
+          <TabPanel value={activeTab} index={3}>
             <Grid container spacing={2}>
               {profile.highlights.map((highlight) => (
                 <Grid item xs={12} sm={6} md={4} key={highlight.id}>
@@ -674,7 +682,7 @@ const Profile: React.FC = () => {
                 </Grid>
               ))}
             </Grid>
-          )}
+          </TabPanel>
 
           {/* Upcoming Schedule Section */}
           <Box sx={{ mt: 4 }}>
@@ -711,6 +719,47 @@ const Profile: React.FC = () => {
           </Box>
         </Box>
       </Container>
+
+      {/* Add Edit Profile Dialog */}
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
+        <DialogTitle>Edit Profile</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Bio"
+            multiline
+            rows={4}
+            value={editFormData.bio}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, bio: e.target.value }))}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Current Game"
+            value={editFormData.currentGame}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, currentGame: e.target.value }))}
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleEditProfile} variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+          severity={snackbar.severity}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

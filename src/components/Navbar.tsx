@@ -4,36 +4,66 @@ import {
   Toolbar,
   Typography,
   Button,
-  Box,
-  Container,
   IconButton,
+  Box,
+  useTheme,
+  Avatar,
   Menu,
   MenuItem,
-  useTheme,
+  ListItemIcon,
+  Divider,
+  useScrollTrigger,
   Badge,
+  Switch,
+  ListItemText,
+  Tooltip,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChatIcon from '@mui/icons-material/Chat';
-import ForumIcon from '@mui/icons-material/Forum';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import WorkIcon from '@mui/icons-material/Work';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  Menu as MenuIcon,
+  Person as PersonIcon,
+  ExitToApp as LogoutIcon,
+  Settings as SettingsIcon,
+  Notifications as NotificationsIcon,
+  Mail as MailIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon,
+  Circle as StatusIcon,
+} from '@mui/icons-material';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationsContext';
+import NotificationsMenu from './notifications/NotificationsMenu';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, logout, user } = useAuth();
+  const { user, logout } = useAuth();
+  const {
+    notifications,
+    unreadCount,
+    loading: notificationsLoading,
+    error: notificationsError,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    clearAll,
+  } = useNotifications();
   const [isScrolled, setIsScrolled] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
+  const [messageCount, setMessageCount] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [userStatus, setUserStatus] = useState<'online' | 'away' | 'offline'>('online');
   const theme = useTheme();
-  const [unreadMessages] = useState(2); // Mock unread messages count
+
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+  });
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 0);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -48,240 +78,275 @@ const Navbar: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const navigateToProfile = () => {
-    if (user?.username) {
-      navigate(`/profile/${user.username}`);
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const handleProfile = () => {
+    navigate(`/profile/${user?.username}`);
+    handleClose();
+  };
+
+  const getStatusColor = (status: 'online' | 'away' | 'offline') => {
+    switch (status) {
+      case 'online':
+        return theme.palette.success.main;
+      case 'away':
+        return theme.palette.warning.main;
+      case 'offline':
+        return theme.palette.grey[500];
     }
   };
 
-  const isHomePage = location.pathname === '/';
-  const showTransparentNav = isHomePage && !isScrolled;
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode);
+    // TODO: Implement theme toggle logic
+  };
 
-  // Don't show navbar on home page when not authenticated
-  if (location.pathname === '/' && !isAuthenticated) {
-    return null;
+  const handleMessages = () => {
+    navigate('/messages');
+    handleClose();
+  };
+
+  const handleNotificationsClick = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationsClose = () => {
+    setNotificationAnchorEl(null);
+  };
+
+  if (!user) {
+    return (
+      <AppBar
+        position="fixed"
+        elevation={isScrolled ? 4 : 0}
+        sx={{
+          bgcolor: 'background.paper',
+          transition: 'all 0.3s',
+        }}
+      >
+        <Toolbar>
+          <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'text.primary' }}>
+            GameDin
+          </Typography>
+          <Button color="primary" component={Link} to="/login">
+            Login
+          </Button>
+          <Button color="primary" component={Link} to="/register" variant="contained">
+            Sign Up
+          </Button>
+        </Toolbar>
+      </AppBar>
+    );
   }
 
   return (
     <AppBar
       position="fixed"
-      elevation={showTransparentNav ? 0 : 4}
+      elevation={isScrolled ? 4 : 0}
       sx={{
-        backgroundColor: showTransparentNav
-          ? 'transparent'
-          : 'rgba(22, 22, 22, 0.95)',
-        backdropFilter: showTransparentNav ? 'none' : 'blur(10px)',
-        transition: 'all 0.3s ease',
+        bgcolor: 'background.paper',
+        transition: 'all 0.3s',
       }}
     >
-      <Container maxWidth="lg">
-        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 0, sm: 2 } }}>
-          <Typography
-            variant="h6"
-            component="div"
-            onClick={() => navigate('/')}
-            sx={{
-              fontFamily: "'Fredoka One', cursive",
-              fontSize: '1.5rem',
-              cursor: 'pointer',
-              color: '#fff',
-            }}
+      <Toolbar>
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          sx={{ mr: 2, display: { sm: 'none' } }}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'text.primary' }}>
+          GameDin
+        </Typography>
+
+        <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2, alignItems: 'center' }}>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/"
+            sx={{ color: location.pathname === '/' ? 'primary.main' : 'text.primary' }}
           >
-            GameDin
-          </Typography>
+            Feed
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/forums"
+            sx={{ color: location.pathname === '/forums' ? 'primary.main' : 'text.primary' }}
+          >
+            Forums
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/tournaments"
+            sx={{ color: location.pathname === '/tournaments' ? 'primary.main' : 'text.primary' }}
+          >
+            Tournaments
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/jobs"
+            sx={{ color: location.pathname === '/jobs' ? 'primary.main' : 'text.primary' }}
+          >
+            Jobs
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/analytics"
+            sx={{ color: location.pathname === '/analytics' ? 'primary.main' : 'text.primary' }}
+          >
+            Analytics
+          </Button>
+        </Box>
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center' }}>
-            <Button
-              color="inherit"
-              onClick={() => navigate('/about')}
-              sx={{ color: '#fff' }}
-            >
-              About
-            </Button>
-            <Button
-              color="inherit"
-              onClick={() => navigate('/token')}
-              sx={{ color: '#fff' }}
-            >
-              Token
-            </Button>
-            {isAuthenticated ? (
-              <>
-                <Button
-                  color="inherit"
-                  onClick={() => navigate('/feed')}
-                  sx={{ color: '#fff' }}
-                >
-                  Feed
-                </Button>
-                <IconButton
-                  color="inherit"
-                  onClick={() => navigate('/messages')}
-                  sx={{ color: '#fff' }}
-                >
-                  <Badge badgeContent={unreadMessages} color="error">
-                    <ChatIcon />
-                  </Badge>
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  onClick={() => navigate('/forums')}
-                  sx={{ color: '#fff' }}
-                >
-                  <ForumIcon />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  onClick={() => navigate('/achievements')}
-                  sx={{ color: '#fff' }}
-                >
-                  <EmojiEventsIcon />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  onClick={() => navigate('/tournaments')}
-                  sx={{ color: '#fff' }}
-                >
-                  <SportsEsportsIcon />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  onClick={() => navigate('/jobs')}
-                  sx={{ color: '#fff' }}
-                >
-                  <WorkIcon />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  onClick={() => navigate('/analytics')}
-                  sx={{ color: '#fff' }}
-                >
-                  <AssessmentIcon />
-                </IconButton>
-                <Button
-                  color="inherit"
-                  onClick={navigateToProfile}
-                  sx={{ color: '#fff' }}
-                >
-                  Profile
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={logout}
-                  sx={{
-                    bgcolor: theme.palette.primary.main,
-                    '&:hover': {
-                      bgcolor: theme.palette.primary.dark,
-                    },
-                  }}
-                >
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/login')}
-                  sx={{
-                    borderColor: '#fff',
-                    color: '#fff',
-                    '&:hover': {
-                      borderColor: '#fff',
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    },
-                  }}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => navigate('/register')}
-                  sx={{
-                    bgcolor: theme.palette.primary.main,
-                    '&:hover': {
-                      bgcolor: theme.palette.primary.dark,
-                    },
-                  }}
-                >
-                  Get Started
-                </Button>
-              </>
-            )}
-          </Box>
-
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              edge="end"
-              color="inherit"
-              aria-label="menu"
-              onClick={handleMenu}
-            >
-              <MenuIcon />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Tooltip title="Messages">
+            <IconButton color="inherit" onClick={handleMessages}>
+              <Badge badgeContent={messageCount} color="error">
+                <MailIcon />
+              </Badge>
             </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              sx={{
-                '& .MuiPaper-root': {
-                  backgroundColor: 'rgba(22, 22, 22, 0.95)',
-                  backdropFilter: 'blur(10px)',
-                  marginTop: '8px',
-                },
-              }}
-            >
-              <MenuItem onClick={() => { navigate('/about'); handleClose(); }}>
-                About
-              </MenuItem>
-              <MenuItem onClick={() => { navigate('/token'); handleClose(); }}>
-                Token
-              </MenuItem>
-              {isAuthenticated ? (
-                [
-                  <MenuItem key="feed" onClick={() => { navigate('/feed'); handleClose(); }}>
-                    Feed
-                  </MenuItem>,
-                  <MenuItem key="messages" onClick={() => { navigate('/messages'); handleClose(); }}>
-                    Messages {unreadMessages > 0 && `(${unreadMessages})`}
-                  </MenuItem>,
-                  <MenuItem key="forums" onClick={() => { navigate('/forums'); handleClose(); }}>
-                    Forums
-                  </MenuItem>,
-                  <MenuItem key="achievements" onClick={() => { navigate('/achievements'); handleClose(); }}>
-                    Achievements
-                  </MenuItem>,
-                  <MenuItem key="tournaments" onClick={() => { navigate('/tournaments'); handleClose(); }}>
-                    Tournaments
-                  </MenuItem>,
-                  <MenuItem key="jobs" onClick={() => { navigate('/jobs'); handleClose(); }}>
-                    Jobs
-                  </MenuItem>,
-                  <MenuItem key="analytics" onClick={() => { navigate('/analytics'); handleClose(); }}>
-                    Game Analytics
-                  </MenuItem>,
-                  <MenuItem key="profile" onClick={() => { navigateToProfile(); handleClose(); }}>
-                    Profile
-                  </MenuItem>,
-                  <MenuItem key="logout" onClick={() => { logout(); handleClose(); }}>
-                    Logout
-                  </MenuItem>,
-                ]
-              ) : (
-                [
-                  <MenuItem key="login" onClick={() => { navigate('/login'); handleClose(); }}>
-                    Sign In
-                  </MenuItem>,
-                  <MenuItem key="register" onClick={() => { navigate('/register'); handleClose(); }}>
-                    Get Started
-                  </MenuItem>,
-                ]
-              )}
-            </Menu>
+          </Tooltip>
+          
+          <Tooltip title="Notifications">
+            <IconButton color="inherit" onClick={handleNotificationsClick}>
+              <Badge badgeContent={unreadCount} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
+          <Box sx={{ position: 'relative' }}>
+            <IconButton onClick={handleMenu}>
+              <Avatar
+                src={user.avatarUrl}
+                alt={user.username}
+                sx={{ width: 32, height: 32 }}
+              />
+              <StatusIcon
+                sx={{
+                  position: 'absolute',
+                  bottom: -2,
+                  right: -2,
+                  color: getStatusColor(userStatus),
+                  fontSize: 12,
+                  bgcolor: 'background.paper',
+                  borderRadius: '50%',
+                }}
+              />
+            </IconButton>
           </Box>
-        </Toolbar>
-      </Container>
+        </Box>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          onClick={handleClose}
+          PaperProps={{
+            elevation: 0,
+            sx: {
+              overflow: 'visible',
+              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+              mt: 1.5,
+              minWidth: 220,
+              '& .MuiMenuItem-root': {
+                px: 2,
+                py: 1,
+                borderRadius: 1,
+                mx: 1,
+                my: 0.5,
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
+              },
+            },
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <Box sx={{ px: 2, py: 1 }}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Signed in as
+            </Typography>
+            <Typography variant="body1" fontWeight="medium">
+              {user.username}
+            </Typography>
+          </Box>
+          
+          <Divider sx={{ my: 1 }} />
+          
+          <MenuItem onClick={handleProfile}>
+            <ListItemIcon>
+              <PersonIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Profile" secondary={user.email} />
+          </MenuItem>
+
+          <MenuItem onClick={handleMessages}>
+            <ListItemIcon>
+              <Badge badgeContent={messageCount} color="error">
+                <MailIcon fontSize="small" />
+              </Badge>
+            </ListItemIcon>
+            <ListItemText primary="Messages" />
+          </MenuItem>
+
+          <MenuItem onClick={handleClose}>
+            <ListItemIcon>
+              <SettingsIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </MenuItem>
+
+          <MenuItem onClick={handleThemeToggle}>
+            <ListItemIcon>
+              {isDarkMode ? (
+                <LightModeIcon fontSize="small" />
+              ) : (
+                <DarkModeIcon fontSize="small" />
+              )}
+            </ListItemIcon>
+            <ListItemText primary="Theme" />
+            <Switch
+              edge="end"
+              checked={isDarkMode}
+              onChange={handleThemeToggle}
+              size="small"
+            />
+          </MenuItem>
+
+          <Divider sx={{ my: 1 }} />
+
+          <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+            <ListItemIcon>
+              <LogoutIcon fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </MenuItem>
+        </Menu>
+
+        <NotificationsMenu
+          anchorEl={notificationAnchorEl}
+          onClose={handleNotificationsClose}
+          notifications={notifications}
+          loading={notificationsLoading}
+          error={notificationsError}
+          onMarkAsRead={markAsRead}
+          onMarkAllAsRead={markAllAsRead}
+          onDelete={deleteNotification}
+          onClearAll={clearAll}
+        />
+      </Toolbar>
     </AppBar>
   );
 };

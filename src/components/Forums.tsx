@@ -27,6 +27,11 @@ import {
   Badge,
   Tooltip,
   Divider,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  Card,
+  CardContent,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
@@ -39,40 +44,56 @@ import ForumIcon from '@mui/icons-material/Forum';
 import PeopleIcon from '@mui/icons-material/People';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams, Routes, Route } from 'react-router-dom';
+import { forumsApi } from '../services/api';
+import PushPinIcon from '@mui/icons-material/PushPin';
+import LockIcon from '@mui/icons-material/Lock';
 
-interface ForumCategory {
+interface IForumCategory {
   id: string;
   name: string;
-  icon: string;
   description: string;
-  totalThreads: number;
-  totalPosts: number;
-  games: string[];
+  icon: string;
+  threadsCount: number;
+  postsCount: number;
+  lastPost?: {
+    id: string;
+    title: string;
+    author: {
+      username: string;
+      avatar: string;
+    };
+    createdAt: string;
+  };
 }
 
-interface ForumThread {
+interface IForumThread {
   id: string;
   title: string;
   content: string;
   author: {
+    id: string;
     username: string;
     avatarUrl: string;
     verified: boolean;
     reputation: number;
   };
-  category: string;
-  game?: string;
-  createdAt: string;
-  lastReply?: {
-    author: string;
-    timestamp: string;
+  category: {
+    id: string;
+    name: string;
   };
+  game?: {
+    name: string;
+    icon: string;
+  };
+  createdAt: string;
   views: number;
   replies: number;
   likes: number;
-  pinned: boolean;
+  isPinned: boolean;
+  isLocked: boolean;
   tags: string[];
+  updatedAt: string;
 }
 
 const CategoryCard = styled(Paper)(({ theme }) => ({
@@ -99,362 +120,463 @@ const GameChip = styled(Chip)(({ theme }) => ({
   margin: theme.spacing(0.5),
 }));
 
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: 'rgba(8, 95, 128, 0.1)',
+  borderRadius: '15px',
+  transition: 'transform 0.2s ease-in-out',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+  },
+}));
+
 const Forums: React.FC = () => {
   const { user } = useAuth();
-  const [categories, setCategories] = useState<ForumCategory[]>([]);
-  const [threads, setThreads] = useState<ForumThread[]>([]);
+  const navigate = useNavigate();
+  const { categoryId } = useParams<{ categoryId: string }>();
+  const [categories, setCategories] = useState<IForumCategory[]>([]);
+  const [threads, setThreads] = useState<IForumThread[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [createThreadOpen, setCreateThreadOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState(0);
   const [selectedGame, setSelectedGame] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
+  const [createThreadDialog, setCreateThreadDialog] = useState(false);
+  const [newThread, setNewThread] = useState({
+    title: '',
+    content: '',
+    category: '',
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error',
+  });
 
   useEffect(() => {
-    // Mock categories data
-    const mockCategories: ForumCategory[] = [
-      {
-        id: '1',
-        name: 'FPS Games',
-        icon: '🎯',
-        description: 'Discuss FPS games, strategies, and tournaments',
-        totalThreads: 150,
-        totalPosts: 1200,
-        games: ['Valorant', 'CS:GO', 'Apex Legends'],
-      },
-      {
-        id: '2',
-        name: 'RPG & MMO',
-        icon: '⚔️',
-        description: 'Everything about RPGs and MMORPGs',
-        totalThreads: 200,
-        totalPosts: 1800,
-        games: ['Elden Ring', 'World of Warcraft', 'Final Fantasy XIV'],
-      },
-      {
-        id: '3',
-        name: 'Esports',
-        icon: '🏆',
-        description: 'Professional gaming, tournaments, and teams',
-        totalThreads: 120,
-        totalPosts: 980,
-        games: ['League of Legends', 'Dota 2', 'Overwatch'],
-      },
-      {
-        id: '4',
-        name: 'Game Development',
-        icon: '🔧',
-        description: 'Game development discussions and resources',
-        totalThreads: 80,
-        totalPosts: 450,
-        games: ['Unity', 'Unreal Engine', 'Godot'],
-      },
-    ];
-    setCategories(mockCategories);
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        // Mock categories data
+        const mockCategories: IForumCategory[] = [
+          {
+            id: '1',
+            name: 'General Discussion',
+            description: 'General gaming discussions and topics',
+            icon: 'chat',
+            threadsCount: 150,
+            postsCount: 1200,
+            lastPost: {
+              id: '1',
+              title: 'Latest Gaming News',
+              author: {
+                username: 'GameMaster',
+                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=GameMaster',
+              },
+              createdAt: new Date().toISOString(),
+            },
+          },
+          {
+            id: '2',
+            name: 'Game Strategies',
+            description: 'Share and discuss gaming strategies',
+            icon: 'strategy',
+            threadsCount: 80,
+            postsCount: 450,
+            lastPost: {
+              id: '2',
+              title: 'Advanced Valorant Tips',
+              author: {
+                username: 'ProPlayer',
+                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ProPlayer',
+              },
+              createdAt: new Date().toISOString(),
+            },
+          },
+        ];
+        setCategories(mockCategories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        setSnackbar({
+          open: true,
+          message: 'Failed to load forum categories',
+          severity: 'error',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Mock threads data
-    const mockThreads: ForumThread[] = [
-      {
-        id: '1',
-        title: 'Tips for improving aim in Valorant',
-        content: 'Share your best tips for improving aim...',
-        author: {
-          username: 'AimMaster',
-          avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AimMaster',
-          verified: true,
-          reputation: 4.8,
-        },
-        category: 'FPS Games',
-        game: 'Valorant',
-        createdAt: new Date().toISOString(),
-        lastReply: {
-          author: 'ProPlayer',
-          timestamp: new Date().toISOString(),
-        },
-        views: 1200,
-        replies: 45,
-        likes: 89,
-        pinned: true,
-        tags: ['guide', 'tips', 'aim'],
-      },
-      {
-        id: '2',
-        title: 'Upcoming Valorant Tournament - $5000 Prize Pool',
-        content: 'Join our upcoming tournament...',
-        author: {
-          username: 'TournamentOrg',
-          avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=TournamentOrg',
-          verified: true,
-          reputation: 4.9,
-        },
-        category: 'Esports',
-        game: 'Valorant',
-        createdAt: new Date().toISOString(),
-        views: 2500,
-        replies: 120,
-        likes: 234,
-        pinned: true,
-        tags: ['tournament', 'esports', 'competitive'],
-      },
-    ];
-    setThreads(mockThreads);
+    fetchCategories();
   }, []);
 
-  const handleCreateThread = () => {
-    setCreateThreadOpen(true);
+  useEffect(() => {
+    const fetchThreads = async () => {
+      if (!categoryId) return;
+      
+      try {
+        setLoading(true);
+        // Mock threads data
+        const mockThreads: IForumThread[] = [
+          {
+            id: '1',
+            title: 'New Valorant Update Discussion',
+            content: 'What do you think about the latest patch changes?',
+            author: {
+              id: '1',
+              username: 'ValorantPro',
+              avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ValorantPro',
+              verified: true,
+              reputation: 1500,
+            },
+            category: {
+              id: categoryId,
+              name: 'Game Strategies',
+            },
+            game: {
+              name: 'Valorant',
+              icon: '🎮',
+            },
+            createdAt: new Date().toISOString(),
+            views: 1200,
+            replies: 45,
+            likes: 89,
+            isPinned: true,
+            isLocked: false,
+            tags: ['Update', 'Discussion', 'Patch Notes'],
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: '2',
+            title: 'Looking for Team Members',
+            content: 'Competitive team looking for dedicated players',
+            author: {
+              id: '2',
+              username: 'TeamCaptain',
+              avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=TeamCaptain',
+              verified: false,
+              reputation: 800,
+            },
+            category: {
+              id: categoryId,
+              name: 'Game Strategies',
+            },
+            game: {
+              name: 'League of Legends',
+              icon: '🎮',
+            },
+            createdAt: new Date().toISOString(),
+            views: 500,
+            replies: 20,
+            likes: 35,
+            isPinned: false,
+            isLocked: false,
+            tags: ['Recruitment', 'Competitive', 'Team'],
+            updatedAt: new Date().toISOString(),
+          },
+        ];
+        setThreads(mockThreads);
+      } catch (error) {
+        console.error('Error fetching threads:', error);
+        setSnackbar({
+          open: true,
+          message: 'Failed to load threads',
+          severity: 'error',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (categoryId) {
+      fetchThreads();
+    }
+  }, [categoryId]);
+
+  const handleCreateThread = async () => {
+    try {
+      if (!categoryId) return;
+      
+      const response = await forumsApi.createThread(categoryId, newThread);
+      setThreads(prev => [response.data, ...prev]);
+      setCreateThreadDialog(false);
+      setNewThread({ title: '', content: '', category: '' });
+      setSnackbar({
+        open: true,
+        message: 'Thread created successfully',
+        severity: 'success',
+      });
+    } catch (error) {
+      console.error('Error creating thread:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to create thread',
+        severity: 'error',
+      });
+    }
   };
 
   const filteredThreads = threads.filter(thread => {
     const matchesSearch = thread.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       thread.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesGame = selectedGame === 'all' || thread.game === selectedGame;
-    const matchesCategory = !selectedCategory || thread.category === selectedCategory;
+    const matchesGame = selectedGame === 'all' || (thread.game && thread.game.name === selectedGame);
+    const matchesCategory = !selectedCategory || thread.category.id === selectedCategory;
     return matchesSearch && matchesGame && matchesCategory;
   });
 
-  return (
-    <Container maxWidth="lg" sx={{ mt: 3 }}>
-      {/* Header */}
+  const renderCategories = () => (
+    <Container maxWidth="lg">
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" gutterBottom>
-          Gaming Forums
+          Forums & Discussions
         </Typography>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search discussions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Game</InputLabel>
-              <Select
-                value={selectedGame}
-                label="Game"
-                onChange={(e) => setSelectedGame(e.target.value)}
-              >
-                <MenuItem value="all">All Games</MenuItem>
-                <MenuItem value="Valorant">Valorant</MenuItem>
-                <MenuItem value="CS:GO">CS:GO</MenuItem>
-                <MenuItem value="League of Legends">League of Legends</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleCreateThread}
-            >
-              New Discussion
-            </Button>
-          </Grid>
-        </Grid>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search forums..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+          }}
+          sx={{ mb: 3 }}
+        />
       </Box>
 
-      {/* Categories Grid */}
-      {!selectedCategory && (
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          {categories.map((category) => (
-            <Grid item xs={12} sm={6} md={3} key={category.id}>
-              <CategoryCard onClick={() => setSelectedCategory(category.id)}>
-                <Box display="flex" alignItems="center" gap={1} mb={1}>
-                  <Typography variant="h5" component="span">
-                    {category.icon}
-                  </Typography>
-                  <Typography variant="h6">
-                    {category.name}
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                  {category.description}
-                </Typography>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography variant="caption" color="textSecondary">
-                    {category.totalThreads} threads
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    {category.totalPosts} posts
-                  </Typography>
-                </Box>
-                <Box sx={{ mt: 1 }}>
-                  {category.games.map((game) => (
-                    <GameChip
-                      key={game}
-                      label={game}
-                      size="small"
-                      icon={<SportsEsportsIcon sx={{ fontSize: 16 }} />}
-                    />
-                  ))}
-                </Box>
-              </CategoryCard>
-            </Grid>
-          ))}
+      {loading ? (
+        <Box display="flex" justifyContent="center" my={4}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+          {categories
+            .filter(category =>
+              category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              category.description.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((category) => (
+              <Grid item xs={12} key={category.id}>
+                <StyledPaper
+                  onClick={() => navigate(`/forums/category/${category.id}`)}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item>
+                      <Avatar sx={{ width: 56, height: 56, bgcolor: 'primary.main' }}>
+                        <ForumIcon />
+                      </Avatar>
+                    </Grid>
+                    <Grid item xs>
+                      <Typography variant="h6">{category.name}</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {category.description}
+                      </Typography>
+                      <Box display="flex" gap={2} mt={1}>
+                        <Typography variant="caption" color="textSecondary">
+                          {category.threadsCount} threads
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          {category.postsCount} posts
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    {category.lastPost && (
+                      <Grid item xs={12} sm="auto">
+                        <Box textAlign="right">
+                          <Typography variant="caption" color="textSecondary">
+                            Latest post by {category.lastPost.author.username}
+                          </Typography>
+                          <Typography variant="caption" display="block" color="textSecondary">
+                            {new Date(category.lastPost.createdAt).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    )}
+                  </Grid>
+                </StyledPaper>
+              </Grid>
+            ))}
         </Grid>
       )}
+    </Container>
+  );
 
-      {/* Threads List */}
-      <Box>
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
+  const renderThreads = () => (
+    <Container maxWidth="lg">
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h4">
+            {categories.find(c => c.id === categoryId)?.name || 'Threads'}
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateThreadDialog(true)}
+          >
+            New Thread
+          </Button>
+        </Box>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search threads..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+          }}
           sx={{ mb: 3 }}
-        >
-          <Tab icon={<WhatshotIcon />} label="Hot" />
-          <Tab icon={<TrendingUpIcon />} label="Trending" />
-          <Tab icon={<NewReleasesIcon />} label="New" />
-        </Tabs>
+        />
+      </Box>
 
-        {filteredThreads.map((thread) => (
-          <ThreadCard key={thread.id}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Avatar
-                    src={thread.author.avatarUrl}
-                    component={Link}
-                    to={`/profile/${thread.author.username}`}
-                    sx={{ cursor: 'pointer' }}
-                  />
+      {loading ? (
+        <Box display="flex" justifyContent="center" my={4}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <List>
+          {filteredThreads.map((thread) => (
+            <Card key={thread.id}>
+              <CardContent>
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                   <Box>
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <Typography
-                        variant="subtitle2"
-                        component={Link}
-                        to={`/profile/${thread.author.username}`}
-                        sx={{
-                          color: 'text.primary',
-                          textDecoration: 'none',
-                          '&:hover': { textDecoration: 'underline' },
-                        }}
-                      >
-                        {thread.author.username}
-                      </Typography>
-                      {thread.author.verified && (
-                        <Tooltip title="Verified User">
-                          <VerifiedIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-                        </Tooltip>
+                    <Typography variant="h6">{thread.title}</Typography>
+                    <Box display="flex" gap={1} mb={1}>
+                      {thread.game && (
+                        <Chip
+                          label={thread.game.name}
+                          size="small"
+                          color="primary"
+                        />
                       )}
+                      <Chip
+                        label={thread.category.name}
+                        size="small"
+                        variant="outlined"
+                      />
                     </Box>
-                    <Typography variant="caption" color="textSecondary">
-                      {new Date(thread.createdAt).toLocaleDateString()}
-                    </Typography>
+                  </Box>
+                  <Box display="flex" alignItems="center">
+                    <Avatar src={thread.author.avatarUrl} />
+                    <Box ml={1}>
+                      <Typography variant="subtitle2">
+                        {thread.author.username}
+                        {thread.author.verified && (
+                          <Tooltip title="Verified User">
+                            <VerifiedIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
+                          </Tooltip>
+                        )}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        Posted on {new Date(thread.createdAt).toLocaleDateString()}
+                      </Typography>
+                    </Box>
                   </Box>
                 </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom>
-                  {thread.pinned && (
+
+                <Typography variant="body2" color="textSecondary" paragraph>
+                  {thread.content}
+                </Typography>
+
+                <Box display="flex" gap={1} mt={2}>
+                  {thread.isPinned && (
                     <Chip
+                      icon={<PushPinIcon />}
                       label="Pinned"
                       size="small"
                       color="primary"
-                      sx={{ mr: 1 }}
                     />
                   )}
-                  {thread.title}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" noWrap>
-                  {thread.content}
-                </Typography>
-                <Box sx={{ mt: 1 }}>
-                  {thread.tags.map((tag) => (
+                  {thread.isLocked && (
                     <Chip
-                      key={tag}
-                      label={tag}
+                      icon={<LockIcon />}
+                      label="Locked"
                       size="small"
-                      sx={{ mr: 0.5 }}
+                      color="error"
                     />
+                  )}
+                  {thread.tags.map((tag) => (
+                    <Chip key={tag} label={tag} size="small" />
                   ))}
                 </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Box display="flex" gap={2}>
-                    <Typography variant="caption" color="textSecondary">
-                      <ForumIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                      {thread.replies} replies
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      <PeopleIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                      {thread.views} views
-                    </Typography>
-                  </Box>
-                  {thread.lastReply && (
-                    <Typography variant="caption" color="textSecondary">
-                      Last reply by {thread.lastReply.author} •{' '}
-                      {new Date(thread.lastReply.timestamp).toLocaleDateString()}
-                    </Typography>
-                  )}
-                </Box>
-              </Grid>
-            </Grid>
-          </ThreadCard>
-        ))}
-      </Box>
 
-      {/* Create Thread Dialog */}
+                <Box display="flex" gap={2} mt={2}>
+                  <Typography variant="body2" color="textSecondary">
+                    {thread.views} views
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {thread.replies} replies
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {thread.likes} likes
+                  </Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </List>
+      )}
+
       <Dialog
-        open={createThreadOpen}
-        onClose={() => setCreateThreadOpen(false)}
+        open={createThreadDialog}
+        onClose={() => setCreateThreadDialog(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Create New Discussion</DialogTitle>
+        <DialogTitle>Create New Thread</DialogTitle>
         <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            <TextField
-              fullWidth
-              label="Title"
-              margin="normal"
-            />
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Category</InputLabel>
-              <Select label="Category">
-                {categories.map((category) => (
-                  <MenuItem key={category.id} value={category.id}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Game</InputLabel>
-              <Select label="Game">
-                <MenuItem value="Valorant">Valorant</MenuItem>
-                <MenuItem value="CS:GO">CS:GO</MenuItem>
-                <MenuItem value="League of Legends">League of Legends</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              fullWidth
-              label="Content"
-              multiline
-              rows={6}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Tags (comma separated)"
-              margin="normal"
-              placeholder="e.g., guide, tips, competitive"
-            />
-          </Box>
+          <TextField
+            fullWidth
+            label="Title"
+            value={newThread.title}
+            onChange={(e) => setNewThread(prev => ({ ...prev, title: e.target.value }))}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Content"
+            multiline
+            rows={6}
+            value={newThread.content}
+            onChange={(e) => setNewThread(prev => ({ ...prev, content: e.target.value }))}
+            margin="normal"
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateThreadOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={() => setCreateThreadOpen(false)}>
-            Create Discussion
+          <Button onClick={() => setCreateThreadDialog(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={handleCreateThread}
+            disabled={!newThread.title || !newThread.content}
+          >
+            Create Thread
           </Button>
         </DialogActions>
       </Dialog>
     </Container>
+  );
+
+  return (
+    <Box>
+      <Routes>
+        <Route path="/" element={renderCategories()} />
+        <Route path="/category/:categoryId" element={renderThreads()} />
+      </Routes>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+          severity={snackbar.severity}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 

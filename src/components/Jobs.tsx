@@ -32,18 +32,15 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useAuth } from '../context/AuthContext';
 
-interface Job {
+interface IJob {
   id: string;
   title: string;
   company: {
     name: string;
     logo: string;
-    verified: boolean;
+    location: string;
   };
-  location: string;
   type: 'full-time' | 'part-time' | 'contract' | 'freelance';
-  category: 'gaming' | 'esports' | 'content' | 'development' | 'management';
-  experience: string;
   salary: {
     min: number;
     max: number;
@@ -51,9 +48,11 @@ interface Job {
   };
   description: string;
   requirements: string[];
+  benefits: string[];
   skills: string[];
-  postedDate: string;
+  postedAt: string;
   deadline: string;
+  applicants: number;
 }
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -81,7 +80,7 @@ const CategoryChip = styled(Chip)<{ category: string }>(({ theme, category }) =>
 
 const Jobs: React.FC = () => {
   const { user } = useAuth();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<IJob[]>([]);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -89,19 +88,16 @@ const Jobs: React.FC = () => {
 
   useEffect(() => {
     // Mock jobs data
-    const mockJobs: Job[] = [
+    const mockJobs: IJob[] = [
       {
         id: '1',
         title: 'Esports Tournament Manager',
         company: {
           name: 'GameDin Esports',
           logo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=GameDinEsports',
-          verified: true,
+          location: 'Remote',
         },
-        location: 'Remote',
         type: 'full-time',
-        category: 'esports',
-        experience: '3-5 years',
         salary: {
           min: 50000,
           max: 80000,
@@ -113,9 +109,11 @@ const Jobs: React.FC = () => {
           'Strong understanding of competitive gaming scenes',
           'Excellent organizational and communication skills',
         ],
+        benefits: [],
         skills: ['Tournament Management', 'Event Planning', 'Team Leadership'],
-        postedDate: '2024-03-15',
+        postedAt: '2024-03-15',
         deadline: '2024-04-15',
+        applicants: 0,
       },
       {
         id: '2',
@@ -123,12 +121,9 @@ const Jobs: React.FC = () => {
         company: {
           name: 'StreamHub',
           logo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=StreamHub',
-          verified: true,
+          location: 'Los Angeles, CA',
         },
-        location: 'Los Angeles, CA',
         type: 'contract',
-        category: 'content',
-        experience: '1-3 years',
         salary: {
           min: 3000,
           max: 8000,
@@ -140,9 +135,11 @@ const Jobs: React.FC = () => {
           'Strong presence on social media platforms',
           'Video editing skills',
         ],
+        benefits: [],
         skills: ['Content Creation', 'Video Editing', 'Social Media Management'],
-        postedDate: '2024-03-20',
+        postedAt: '2024-03-20',
         deadline: '2024-04-20',
+        applicants: 0,
       },
     ];
     setJobs(mockJobs);
@@ -155,7 +152,7 @@ const Jobs: React.FC = () => {
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || job.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'all' || job.skills.includes(selectedCategory);
     const matchesType = selectedType === 'all' || job.type === selectedType;
     return matchesSearch && matchesCategory && matchesType;
   });
@@ -248,9 +245,9 @@ const Jobs: React.FC = () => {
                       </Box>
                       <Box display="flex" gap={1}>
                         <CategoryChip
-                          label={job.category}
+                          label={job.skills[0]}
                           size="small"
-                          category={job.category}
+                          category={job.skills[0]}
                         />
                         <Chip
                           label={job.type}
@@ -265,7 +262,7 @@ const Jobs: React.FC = () => {
                         <Box display="flex" alignItems="center" gap={1}>
                           <LocationOnIcon color="action" />
                           <Typography variant="body2">
-                            {job.location}
+                            {job.company.location}
                           </Typography>
                         </Box>
                       </Grid>
@@ -281,7 +278,7 @@ const Jobs: React.FC = () => {
                         <Box display="flex" alignItems="center" gap={1}>
                           <WorkIcon color="action" />
                           <Typography variant="body2">
-                            {job.experience}
+                            {job.skills.join(', ')}
                           </Typography>
                         </Box>
                       </Grid>
@@ -289,7 +286,7 @@ const Jobs: React.FC = () => {
                         <Box display="flex" alignItems="center" gap={1}>
                           <AccessTimeIcon color="action" />
                           <Typography variant="body2">
-                            Posted {new Date(job.postedDate).toLocaleDateString()}
+                            Posted {new Date(job.postedAt).toLocaleDateString()}
                           </Typography>
                         </Box>
                       </Grid>

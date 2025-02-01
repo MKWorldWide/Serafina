@@ -36,7 +36,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useAuth } from '../context/AuthContext';
 
-interface PlayerStats {
+interface IPlayerStats {
   username: string;
   avatarUrl: string;
   games: {
@@ -63,7 +63,7 @@ interface PlayerStats {
   };
 }
 
-interface TeamSuggestion {
+interface ITeamSuggestion {
   id: string;
   players: {
     username: string;
@@ -105,14 +105,14 @@ const GameAnalytics: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
   const [selectedGame, setSelectedGame] = useState('valorant');
-  const [playerStats, setPlayerStats] = useState<PlayerStats | null>(null);
-  const [teamSuggestions, setTeamSuggestions] = useState<TeamSuggestion[]>([]);
+  const [playerStats, setPlayerStats] = useState<IPlayerStats | null>(null);
+  const [teamSuggestions, setTeamSuggestions] = useState<ITeamSuggestion[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [findTeamDialogOpen, setFindTeamDialogOpen] = useState(false);
 
   useEffect(() => {
     // Mock player stats data
-    const mockPlayerStats: PlayerStats = {
+    const mockPlayerStats: IPlayerStats = {
       username: 'ProGamer123',
       avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ProGamer123',
       games: [
@@ -152,7 +152,7 @@ const GameAnalytics: React.FC = () => {
     setPlayerStats(mockPlayerStats);
 
     // Mock team suggestions
-    const mockTeamSuggestions: TeamSuggestion[] = [
+    const mockTeamSuggestions: ITeamSuggestion[] = [
       {
         id: '1',
         players: [
