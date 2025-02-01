@@ -8,6 +8,7 @@ import Token from './pages/Token';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Feed from './components/Feed';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 interface PrivateRouteProps {
@@ -31,6 +32,14 @@ const App: React.FC = () => {
             <Route path="/token" element={<Token />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route
+              path="/feed"
+              element={
+                <PrivateRoute>
+                  <Feed />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="/profile/:username"
               element={
