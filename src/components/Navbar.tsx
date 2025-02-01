@@ -18,7 +18,7 @@ import { useAuth } from '../context/AuthContext';
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
@@ -38,6 +38,12 @@ const Navbar: React.FC = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const navigateToProfile = () => {
+    if (user?.username) {
+      navigate(`/profile/${user.username}`);
+    }
   };
 
   const isHomePage = location.pathname === '/';
@@ -102,7 +108,7 @@ const Navbar: React.FC = () => {
                 </Button>
                 <Button
                   color="inherit"
-                  onClick={() => navigate('/profile')}
+                  onClick={navigateToProfile}
                   sx={{ color: '#fff' }}
                 >
                   Profile
@@ -185,7 +191,7 @@ const Navbar: React.FC = () => {
                   <MenuItem key="feed" onClick={() => { navigate('/feed'); handleClose(); }}>
                     Feed
                   </MenuItem>,
-                  <MenuItem key="profile" onClick={() => { navigate('/profile'); handleClose(); }}>
+                  <MenuItem key="profile" onClick={() => { navigateToProfile(); handleClose(); }}>
                     Profile
                   </MenuItem>,
                   <MenuItem key="logout" onClick={() => { logout(); handleClose(); }}>
