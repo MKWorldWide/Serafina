@@ -10,8 +10,15 @@ import {
   Menu,
   MenuItem,
   useTheme,
+  Badge,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import ChatIcon from '@mui/icons-material/Chat';
+import ForumIcon from '@mui/icons-material/Forum';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import WorkIcon from '@mui/icons-material/Work';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -22,6 +29,7 @@ const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const theme = useTheme();
+  const [unreadMessages] = useState(2); // Mock unread messages count
 
   useEffect(() => {
     const handleScroll = () => {
@@ -106,6 +114,50 @@ const Navbar: React.FC = () => {
                 >
                   Feed
                 </Button>
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate('/messages')}
+                  sx={{ color: '#fff' }}
+                >
+                  <Badge badgeContent={unreadMessages} color="error">
+                    <ChatIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate('/forums')}
+                  sx={{ color: '#fff' }}
+                >
+                  <ForumIcon />
+                </IconButton>
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate('/achievements')}
+                  sx={{ color: '#fff' }}
+                >
+                  <EmojiEventsIcon />
+                </IconButton>
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate('/tournaments')}
+                  sx={{ color: '#fff' }}
+                >
+                  <SportsEsportsIcon />
+                </IconButton>
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate('/jobs')}
+                  sx={{ color: '#fff' }}
+                >
+                  <WorkIcon />
+                </IconButton>
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate('/analytics')}
+                  sx={{ color: '#fff' }}
+                >
+                  <AssessmentIcon />
+                </IconButton>
                 <Button
                   color="inherit"
                   onClick={navigateToProfile}
@@ -190,6 +242,24 @@ const Navbar: React.FC = () => {
                 [
                   <MenuItem key="feed" onClick={() => { navigate('/feed'); handleClose(); }}>
                     Feed
+                  </MenuItem>,
+                  <MenuItem key="messages" onClick={() => { navigate('/messages'); handleClose(); }}>
+                    Messages {unreadMessages > 0 && `(${unreadMessages})`}
+                  </MenuItem>,
+                  <MenuItem key="forums" onClick={() => { navigate('/forums'); handleClose(); }}>
+                    Forums
+                  </MenuItem>,
+                  <MenuItem key="achievements" onClick={() => { navigate('/achievements'); handleClose(); }}>
+                    Achievements
+                  </MenuItem>,
+                  <MenuItem key="tournaments" onClick={() => { navigate('/tournaments'); handleClose(); }}>
+                    Tournaments
+                  </MenuItem>,
+                  <MenuItem key="jobs" onClick={() => { navigate('/jobs'); handleClose(); }}>
+                    Jobs
+                  </MenuItem>,
+                  <MenuItem key="analytics" onClick={() => { navigate('/analytics'); handleClose(); }}>
+                    Game Analytics
                   </MenuItem>,
                   <MenuItem key="profile" onClick={() => { navigateToProfile(); handleClose(); }}>
                     Profile

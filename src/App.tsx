@@ -9,6 +9,12 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Feed from './components/Feed';
+import Messaging from './components/Messaging';
+import Forums from './components/Forums';
+import Achievements from './components/Achievements';
+import Tournaments from './components/Tournaments';
+import Jobs from './components/Jobs';
+import GameAnalytics from './components/GameAnalytics';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 interface PrivateRouteProps {
@@ -37,6 +43,66 @@ const App: React.FC = () => {
               element={
                 <PrivateRoute>
                   <Feed />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <PrivateRoute>
+                  <Box sx={{ p: 3, mt: 8 }}>
+                    <Messaging />
+                  </Box>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/forums/*"
+              element={
+                <PrivateRoute>
+                  <Box sx={{ mt: 8 }}>
+                    <Forums />
+                  </Box>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/achievements"
+              element={
+                <PrivateRoute>
+                  <Box sx={{ mt: 8 }}>
+                    <Achievements />
+                  </Box>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/tournaments"
+              element={
+                <PrivateRoute>
+                  <Box sx={{ mt: 8 }}>
+                    <Tournaments />
+                  </Box>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/jobs"
+              element={
+                <PrivateRoute>
+                  <Box sx={{ mt: 8 }}>
+                    <Jobs />
+                  </Box>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <PrivateRoute>
+                  <Box sx={{ mt: 8 }}>
+                    <GameAnalytics />
+                  </Box>
                 </PrivateRoute>
               }
             />
