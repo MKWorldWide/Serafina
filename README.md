@@ -52,3 +52,73 @@ Think LinkedIn meets Twitch meets Discord - but with salary negotiations and mom
 - **Salary Benchmark Tool** (Compare esports salaries by region/role)  
 
 ---
+
+# GameDin - Gaming Social Network
+
+A modern social platform for gamers to find teammates and connect with fellow players.
+
+## Features
+
+- User profiles with gaming statistics
+- Match finding system with filters
+- Real-time messaging
+- Game-specific matchmaking
+- Modern, responsive UI with DaisyUI components
+
+## Tech Stack
+
+- Vite + React
+- TailwindCSS + DaisyUI
+- Zustand for state management
+- React Router for navigation
+- JSON Server for development API
+
+## Getting Started
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start the development server:
+```bash
+# Terminal 1: Start the Vite dev server
+npm run dev
+
+# Terminal 2: Start the JSON Server
+npm run server
+```
+
+3. Open http://localhost:3000 in your browser
+
+## Development
+
+- `npm run dev` - Start the development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run server` - Start the JSON Server API
+
+## Project Structure
+
+```
+src/
+  ├── components/      # Reusable UI components
+  ├── store/          # Zustand store and state management
+  ├── pages/          # Route components
+  ├── App.jsx         # Main application component
+  └── main.jsx        # Application entry point
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
