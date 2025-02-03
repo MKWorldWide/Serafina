@@ -17,9 +17,17 @@ export default defineConfig({
           ui: ['@mui/material', '@emotion/react', '@emotion/styled'],
         }
       }
-    }
+    },
+    target: 'es2015',
+    minify: 'esbuild'
   },
   optimizeDeps: {
-    include: ['@emotion/react', '@emotion/styled', '@mui/material']
+    include: ['@emotion/react', '@emotion/styled', '@mui/material'],
+    esbuildOptions: {
+      target: 'es2015'
+    }
+  },
+  esbuild: {
+    target: 'es2015'
   }
 }) 
