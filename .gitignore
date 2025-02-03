@@ -1,5 +1,30 @@
+# Node modules
 node_modules/
-build/
-.env
-.idea/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript v1 declaration files
+typings/
+
+# Windows Installer files
+*.cab
+*.msi
+
+# macOS system files
+.DS_Store
+
+# Linux system files
+.directory
+
+# IDE and editor folders
 .vscode/
+.idea/
+*.swp
