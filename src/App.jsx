@@ -11,7 +11,7 @@ import MatchFinder from './components/MatchFinder';
 import Messages from './components/Messages';
 import ActivityFeed from './components/ActivityFeed/ActivityFeed';
 import FriendsList from './components/Friends/FriendsList';
-import NotificationCenter from './components/Notifications/NotificationCenter';
+import NotificationCenter from './components/notifications/NotificationCenter';
 import Settings from './components/Settings/Settings';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';

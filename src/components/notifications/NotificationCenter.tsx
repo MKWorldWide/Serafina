@@ -55,4 +55,4 @@ const NotificationCenter: React.FC = () => {
   );
 };
 
-export default NotificationCenter; 
+export default NotificationCenter;
