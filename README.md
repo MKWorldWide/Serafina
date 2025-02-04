@@ -122,3 +122,51 @@ src/
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
+
+# GameDin React
+
+A social gaming platform built with React, TypeScript, and Material-UI.
+
+## Prerequisites
+
+- Node.js >= 20.0.0
+- npm >= 9.0.0
+
+## Development
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start the development server:
+```bash
+npm run dev
+```
+
+3. Build for production:
+```bash
+npm run build
+```
+
+## Deployment
+
+This project is configured for automatic deployment with AWS Amplify. Simply push to the main branch of your GitHub repository, and Amplify will automatically build and deploy your changes.
+
+### Environment Variables
+
+The following environment variables are required:
+
+- `VITE_API_URL`: API endpoint URL
+- `VITE_WS_URL`: WebSocket endpoint URL
+
+## Tech Stack
+
+- React 18
+- TypeScript
+- Material-UI
+- Vite
+- TailwindCSS
+- React Router
+- React Dropzone
+- React Quill
