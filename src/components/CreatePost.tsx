@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, TextField, Button, IconButton, Stack, Typography } from '@mui/material';
 import {
   Image as ImageIcon,
   VideoLibrary as VideoIcon,
@@ -44,7 +37,7 @@ const CreatePost: React.FC<ICreatePostProps> = ({ onSubmit }) => {
         rows={3}
         placeholder="What's on your mind?"
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={e => setContent(e.target.value)}
         variant="outlined"
         sx={{
           mb: 2,
@@ -53,7 +46,7 @@ const CreatePost: React.FC<ICreatePostProps> = ({ onSubmit }) => {
           },
         }}
       />
-      
+
       <Stack direction="row" spacing={2} alignItems="center">
         <Box>
           <IconButton size="small" color="primary" disabled>
@@ -71,11 +64,7 @@ const CreatePost: React.FC<ICreatePostProps> = ({ onSubmit }) => {
           Attachment support coming soon
         </Typography>
 
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!content.trim() || isSubmitting}
-        >
+        <Button variant="contained" type="submit" disabled={!content.trim() || isSubmitting}>
           {isSubmitting ? 'Posting...' : 'Post'}
         </Button>
       </Stack>

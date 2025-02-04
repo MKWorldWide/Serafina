@@ -8,26 +8,29 @@ export const useActivityFeed = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
 
-  const fetchActivities = useCallback(async (reset = false) => {
-    if (loading || (!hasMore && !reset)) return;
-    
-    try {
-      setLoading(true);
-      setError(null);
-      const currentPage = reset ? 1 : page;
-      const { data } = await api.get(`/activities?page=${currentPage}&limit=10`);
-      
-      setActivities(prev => reset ? data.activities : [...prev, ...data.activities]);
-      setHasMore(data.hasMore);
-      setPage(prev => reset ? 2 : prev + 1);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [loading, hasMore, page]);
+  const fetchActivities = useCallback(
+    async (reset = false) => {
+      if (loading || (!hasMore && !reset)) return;
 
-  const createActivity = useCallback(async (content) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const currentPage = reset ? 1 : page;
+        const { data } = await api.get(`/activities?page=${currentPage}&limit=10`);
+
+        setActivities(prev => (reset ? data.activities : [...prev, ...data.activities]));
+        setHasMore(data.hasMore);
+        setPage(prev => (reset ? 2 : prev + 1));
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loading, hasMore, page]
+  );
+
+  const createActivity = useCallback(async content => {
     try {
       const { data } = await api.post('/activities', { content });
       setActivities(prev => [data, ...prev]);
@@ -37,7 +40,7 @@ export const useActivityFeed = () => {
     }
   }, []);
 
-  const likeActivity = useCallback(async (activityId) => {
+  const likeActivity = useCallback(async activityId => {
     try {
       await api.post(`/activities/${activityId}/like`);
       setActivities(prev =>
@@ -76,6 +79,6 @@ export const useActivityFeed = () => {
     fetchActivities,
     createActivity,
     likeActivity,
-    commentOnActivity
+    commentOnActivity,
   };
-}; 
+};

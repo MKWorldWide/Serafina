@@ -98,7 +98,7 @@ const Achievements: React.FC = () => {
           reputation: 0,
           achievements: {
             total: 0,
-            recent: []
+            recent: [],
           },
           stats: {
             gamesPlayed: 0,
@@ -106,14 +106,14 @@ const Achievements: React.FC = () => {
             totalMatches: 0,
             favoriteGame: '',
             playtime: 0,
-            rank: ''
+            rank: '',
           },
           topGames: [],
           recentAchievements: [],
           teams: [],
           highlights: [],
           schedule: [],
-          activity: []
+          activity: [],
         };
         setProfile(mockProfile);
       } catch (error) {
@@ -176,7 +176,7 @@ const Achievements: React.FC = () => {
         id: '1',
         name: 'Early Adopter',
         icon: '🌟',
-        description: 'Joined during the platform\'s beta phase',
+        description: "Joined during the platform's beta phase",
         rarity: 'rare',
         earnedDate: '2024-01-15',
       },
@@ -212,9 +212,7 @@ const Achievements: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Total Score
               </Typography>
-              <Typography variant="h3">
-                {profile?.reputation || 0}
-              </Typography>
+              <Typography variant="h3">{profile?.reputation || 0}</Typography>
             </Paper>
           </Grid>
           {/* User Level Progress */}
@@ -250,7 +248,7 @@ const Achievements: React.FC = () => {
                 Earned Badges
               </Typography>
               <Grid container spacing={2}>
-                {badges.map((badge) => (
+                {badges.map(badge => (
                   <Grid item xs={12} sm={6} md={4} key={badge.id}>
                     <RarityBadge
                       rarity={badge.rarity}
@@ -263,14 +261,17 @@ const Achievements: React.FC = () => {
                             <Typography variant="h5" component="span">
                               {badge.icon}
                             </Typography>
-                            <Typography variant="h6">
-                              {badge.name}
-                            </Typography>
+                            <Typography variant="h6">{badge.name}</Typography>
                           </Box>
                           <Typography variant="body2" color="textSecondary">
                             {badge.description}
                           </Typography>
-                          <Typography variant="caption" color="textSecondary" display="block" sx={{ mt: 1 }}>
+                          <Typography
+                            variant="caption"
+                            color="textSecondary"
+                            display="block"
+                            sx={{ mt: 1 }}
+                          >
                             Earned on {new Date(badge.earnedDate).toLocaleDateString()}
                           </Typography>
                         </CardContent>
@@ -289,7 +290,7 @@ const Achievements: React.FC = () => {
                 Achievements
               </Typography>
               <Grid container spacing={2}>
-                {achievements.map((achievement) => (
+                {achievements.map(achievement => (
                   <Grid item xs={12} sm={6} md={4} key={achievement.id}>
                     <RarityBadge
                       rarity={achievement.rarity}
@@ -302,21 +303,30 @@ const Achievements: React.FC = () => {
                             <Typography variant="h5" component="span">
                               {achievement.icon}
                             </Typography>
-                            <Typography variant="h6">
-                              {achievement.title}
-                            </Typography>
+                            <Typography variant="h6">{achievement.title}</Typography>
                           </Box>
                           <Typography variant="body2" color="textSecondary" gutterBottom>
                             {achievement.description}
                           </Typography>
                           <Box sx={{ mt: 2 }}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                            <Box
+                              display="flex"
+                              justifyContent="space-between"
+                              alignItems="center"
+                              mb={1}
+                            >
                               <Typography variant="body2">
                                 Progress: {achievement.progress}/{achievement.maxProgress}
                               </Typography>
                               <Chip
                                 size="small"
-                                icon={achievement.reward.type === 'xp' ? <StarIcon /> : <MilitaryTechIcon />}
+                                icon={
+                                  achievement.reward.type === 'xp' ? (
+                                    <StarIcon />
+                                  ) : (
+                                    <MilitaryTechIcon />
+                                  )
+                                }
                                 label={`${achievement.reward.type.toUpperCase()}: ${achievement.reward.value}`}
                                 color="primary"
                               />
@@ -329,7 +339,9 @@ const Achievements: React.FC = () => {
                                 borderRadius: 3,
                                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
                                 '& .MuiLinearProgress-bar': {
-                                  backgroundColor: achievement.completed ? 'success.main' : 'primary.main',
+                                  backgroundColor: achievement.completed
+                                    ? 'success.main'
+                                    : 'primary.main',
                                 },
                               }}
                             />
@@ -348,4 +360,4 @@ const Achievements: React.FC = () => {
   );
 };
 
-export default Achievements; 
+export default Achievements;

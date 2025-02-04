@@ -195,7 +195,8 @@ const Tournaments: React.FC = () => {
   };
 
   const filteredTournaments = tournaments.filter(tournament => {
-    const matchesSearch = tournament.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch =
+      tournament.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tournament.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGame = selectedGame === 'all' || tournament.game.name === selectedGame;
     return matchesSearch && matchesGame;
@@ -224,11 +225,7 @@ const Tournaments: React.FC = () => {
           <Grid item>
             <FormControl size="small" sx={{ minWidth: 150 }}>
               <InputLabel>Game</InputLabel>
-              <Select
-                value={selectedGame}
-                label="Game"
-                onChange={handleFilterChange}
-              >
+              <Select value={selectedGame} label="Game" onChange={handleFilterChange}>
                 <MenuItem value="all">All Games</MenuItem>
                 <MenuItem value="Valorant">Valorant</MenuItem>
                 <MenuItem value="League of Legends">League of Legends</MenuItem>
@@ -254,118 +251,111 @@ const Tournaments: React.FC = () => {
           <Box display="flex" justifyContent="center" width="100%" mt={4}>
             <CircularProgress />
           </Box>
-        ) : filteredTournaments.map((tournament) => (
-          <Grid item xs={12} md={6} key={tournament.id}>
-            <StyledCard>
-              <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                  <Box>
-                    <Typography variant="h5" gutterBottom>
-                      {tournament.title}
-                    </Typography>
-                    <Box display="flex" gap={1} mb={2}>
-                      <Chip
-                        label={tournament.game.name}
-                        size="small"
-                        color="primary"
-                      />
-                      <StatusChip
-                        label={tournament.status}
-                        size="small"
-                        status={tournament.status}
-                      />
+        ) : (
+          filteredTournaments.map(tournament => (
+            <Grid item xs={12} md={6} key={tournament.id}>
+              <StyledCard>
+                <CardContent>
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                    <Box>
+                      <Typography variant="h5" gutterBottom>
+                        {tournament.title}
+                      </Typography>
+                      <Box display="flex" gap={1} mb={2}>
+                        <Chip label={tournament.game.name} size="small" color="primary" />
+                        <StatusChip
+                          label={tournament.status}
+                          size="small"
+                          status={tournament.status}
+                        />
+                      </Box>
+                    </Box>
+                    <Box display="flex" alignItems="center">
+                      <Tooltip title={tournament.organizer.name}>
+                        <Avatar src={tournament.organizer.logo} sx={{ width: 40, height: 40 }} />
+                      </Tooltip>
                     </Box>
                   </Box>
-                  <Box display="flex" alignItems="center">
-                    <Tooltip title={tournament.organizer.name}>
-                      <Avatar
-                        src={tournament.organizer.logo}
-                        sx={{ width: 40, height: 40 }}
-                      />
-                    </Tooltip>
+
+                  <Typography variant="body2" color="textSecondary" paragraph>
+                    {tournament.description}
+                  </Typography>
+
+                  <Grid container spacing={2} sx={{ mb: 2 }}>
+                    <Grid item xs={6}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <CalendarMonthIcon color="action" />
+                        <Box>
+                          <Typography variant="caption" color="textSecondary" display="block">
+                            Start Date
+                          </Typography>
+                          <Typography variant="body2">
+                            {new Date(tournament.startDate).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <MonetizationOnIcon color="action" />
+                        <Box>
+                          <Typography variant="caption" color="textSecondary" display="block">
+                            Prize Pool
+                          </Typography>
+                          <Typography variant="body2">
+                            ${tournament.prizePool.amount} {tournament.prizePool.currency}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <GroupsIcon color="action" />
+                        <Box>
+                          <Typography variant="caption" color="textSecondary" display="block">
+                            Teams
+                          </Typography>
+                          <Typography variant="body2">
+                            {tournament.registeredTeams}/{tournament.maxTeams}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <EmojiEventsIcon color="action" />
+                        <Box>
+                          <Typography variant="caption" color="textSecondary" display="block">
+                            Format
+                          </Typography>
+                          <Typography variant="body2">{tournament.format}</Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  </Grid>
+
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <GroupsIcon />
+                      <Typography variant="body2">
+                        {tournament.registeredTeams}/{tournament.maxTeams} Teams
+                      </Typography>
+                    </Box>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleRegister(tournament.id)}
+                      disabled={tournament.registeredTeams >= tournament.maxTeams}
+                    >
+                      Register
+                    </Button>
                   </Box>
-                </Box>
-
-                <Typography variant="body2" color="textSecondary" paragraph>
-                  {tournament.description}
-                </Typography>
-
-                <Grid container spacing={2} sx={{ mb: 2 }}>
-                  <Grid item xs={6}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <CalendarMonthIcon color="action" />
-                      <Box>
-                        <Typography variant="caption" color="textSecondary" display="block">
-                          Start Date
-                        </Typography>
-                        <Typography variant="body2">
-                          {new Date(tournament.startDate).toLocaleDateString()}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <MonetizationOnIcon color="action" />
-                      <Box>
-                        <Typography variant="caption" color="textSecondary" display="block">
-                          Prize Pool
-                        </Typography>
-                        <Typography variant="body2">
-                          ${tournament.prizePool.amount} {tournament.prizePool.currency}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <GroupsIcon color="action" />
-                      <Box>
-                        <Typography variant="caption" color="textSecondary" display="block">
-                          Teams
-                        </Typography>
-                        <Typography variant="body2">
-                          {tournament.registeredTeams}/{tournament.maxTeams}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <EmojiEventsIcon color="action" />
-                      <Box>
-                        <Typography variant="caption" color="textSecondary" display="block">
-                          Format
-                        </Typography>
-                        <Typography variant="body2">
-                          {tournament.format}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                </Grid>
-
-                <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <GroupsIcon />
-                    <Typography variant="body2">
-                      {tournament.registeredTeams}/{tournament.maxTeams} Teams
-                    </Typography>
-                  </Box>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={() => handleRegister(tournament.id)}
-                    disabled={tournament.registeredTeams >= tournament.maxTeams}
-                  >
-                    Register
-                  </Button>
-                </Box>
-              </CardContent>
-            </StyledCard>
-          </Grid>
-        ))}
+                </CardContent>
+              </StyledCard>
+            </Grid>
+          ))
+        )}
       </Grid>
 
       {/* Create Tournament Dialog */}
@@ -382,7 +372,7 @@ const Tournaments: React.FC = () => {
               fullWidth
               label="Tournament Title"
               value={createFormData.title}
-              onChange={(e) => setCreateFormData(prev => ({ ...prev, title: e.target.value }))}
+              onChange={e => setCreateFormData(prev => ({ ...prev, title: e.target.value }))}
               margin="normal"
             />
             <FormControl fullWidth margin="normal">
@@ -390,7 +380,7 @@ const Tournaments: React.FC = () => {
               <Select
                 value={createFormData.game}
                 label="Game"
-                onChange={(e) => setCreateFormData(prev => ({ ...prev, game: e.target.value }))}
+                onChange={e => setCreateFormData(prev => ({ ...prev, game: e.target.value }))}
               >
                 <MenuItem value="Valorant">Valorant</MenuItem>
                 <MenuItem value="League of Legends">League of Legends</MenuItem>
@@ -403,7 +393,7 @@ const Tournaments: React.FC = () => {
               multiline
               rows={4}
               value={createFormData.description}
-              onChange={(e) => setCreateFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={e => setCreateFormData(prev => ({ ...prev, description: e.target.value }))}
               margin="normal"
             />
             <Grid container spacing={2}>
@@ -413,7 +403,9 @@ const Tournaments: React.FC = () => {
                   label="Start Date"
                   type="datetime-local"
                   value={createFormData.startDate}
-                  onChange={(e) => setCreateFormData(prev => ({ ...prev, startDate: e.target.value }))}
+                  onChange={e =>
+                    setCreateFormData(prev => ({ ...prev, startDate: e.target.value }))
+                  }
                   margin="normal"
                   InputLabelProps={{
                     shrink: true,
@@ -426,7 +418,7 @@ const Tournaments: React.FC = () => {
                   label="End Date"
                   type="datetime-local"
                   value={createFormData.endDate}
-                  onChange={(e) => setCreateFormData(prev => ({ ...prev, endDate: e.target.value }))}
+                  onChange={e => setCreateFormData(prev => ({ ...prev, endDate: e.target.value }))}
                   margin="normal"
                   InputLabelProps={{
                     shrink: true,
@@ -439,7 +431,7 @@ const Tournaments: React.FC = () => {
               label="Prize Pool"
               type="number"
               value={createFormData.prizePool}
-              onChange={(e) => setCreateFormData(prev => ({ ...prev, prizePool: e.target.value }))}
+              onChange={e => setCreateFormData(prev => ({ ...prev, prizePool: e.target.value }))}
               margin="normal"
             />
             <TextField
@@ -447,7 +439,7 @@ const Tournaments: React.FC = () => {
               label="Maximum Teams"
               type="number"
               value={createFormData.maxTeams}
-              onChange={(e) => setCreateFormData(prev => ({ ...prev, maxTeams: e.target.value }))}
+              onChange={e => setCreateFormData(prev => ({ ...prev, maxTeams: e.target.value }))}
               margin="normal"
             />
             <FormControl fullWidth margin="normal">
@@ -455,7 +447,7 @@ const Tournaments: React.FC = () => {
               <Select
                 value={createFormData.format}
                 label="Tournament Format"
-                onChange={(e) => setCreateFormData(prev => ({ ...prev, format: e.target.value }))}
+                onChange={e => setCreateFormData(prev => ({ ...prev, format: e.target.value }))}
               >
                 <MenuItem value="Single Elimination">Single Elimination</MenuItem>
                 <MenuItem value="Double Elimination">Double Elimination</MenuItem>
@@ -490,4 +482,4 @@ const Tournaments: React.FC = () => {
   );
 };
 
-export default Tournaments; 
+export default Tournaments;

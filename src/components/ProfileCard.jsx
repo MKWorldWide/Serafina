@@ -1,7 +1,7 @@
-import useStore from '../store/useStore'
+import useStore from '../store/useStore';
 
 const ProfileCard = () => {
-  const user = useStore((state) => state.user)
+  const user = useStore(state => state.user);
 
   if (!user) {
     return (
@@ -10,7 +10,7 @@ const ProfileCard = () => {
           <h2 className="card-title">Please log in</h2>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -36,7 +36,7 @@ const ProfileCard = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProfileCard 
+export default ProfileCard;

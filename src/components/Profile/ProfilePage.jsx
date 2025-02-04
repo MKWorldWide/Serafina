@@ -14,11 +14,15 @@ const ProfilePage = () => {
   const { userId } = useParams();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const currentUser = useStore((state) => state.user);
+  const currentUser = useStore(state => state.user);
   const isOwnProfile = currentUser?.id === userId;
 
   // Fetch profile data with React Query
-  const { data: profile, isLoading, error } = useQuery({
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['profile', userId],
     queryFn: async () => {
       const { data } = await api.get(`/users/${userId}`);
@@ -37,7 +41,7 @@ const ProfilePage = () => {
     enabled: !!profile,
   });
 
-  const handleProfileUpdate = async (updates) => {
+  const handleProfileUpdate = async updates => {
     try {
       const formData = new FormData();
       Object.entries(updates).forEach(([key, value]) => {
@@ -115,7 +119,7 @@ const ProfilePage = () => {
               </div>
               <h2 className="card-title mt-4">{profile.username}</h2>
               <p className="text-sm opacity-70">{profile.bio}</p>
-              
+
               <div className="stats stats-vertical shadow mt-4">
                 <div className="stat">
                   <div className="stat-title">Games</div>
@@ -156,11 +160,8 @@ const ProfilePage = () => {
             <div className="card-body">
               <h3 className="card-title">Achievements</h3>
               <div className="space-y-4 mt-4">
-                {achievements?.map((achievement) => (
-                  <AchievementCard
-                    key={achievement.id}
-                    achievement={achievement}
-                  />
+                {achievements?.map(achievement => (
+                  <AchievementCard key={achievement.id} achievement={achievement} />
                 ))}
               </div>
             </div>
@@ -182,4 +183,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage; 
+export default ProfilePage;

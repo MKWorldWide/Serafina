@@ -1,29 +1,29 @@
-import { useState } from 'react'
-import useStore from '../store/useStore'
+import { useState } from 'react';
+import useStore from '../store/useStore';
 
 const MatchFinder = () => {
   const [filters, setFilters] = useState({
     game: '',
     skill: 'any',
-    region: 'any'
-  })
-  
-  const setMatches = useStore((state) => state.setMatches)
+    region: 'any',
+  });
+
+  const setMatches = useStore(state => state.setMatches);
 
   const handleSearch = () => {
     // Simulated match finding - replace with actual API call
     const mockMatches = [
       { id: 1, username: 'Player1', game: 'Fortnite', skill: 'Pro', region: 'NA' },
       { id: 2, username: 'Player2', game: 'Valorant', skill: 'Intermediate', region: 'EU' },
-    ]
-    setMatches(mockMatches)
-  }
+    ];
+    setMatches(mockMatches);
+  };
 
   return (
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title">Find Gaming Partners</h2>
-        
+
         <div className="form-control">
           <label className="label">
             <span className="label-text">Game</span>
@@ -33,7 +33,7 @@ const MatchFinder = () => {
             placeholder="Enter game name"
             className="input input-bordered"
             value={filters.game}
-            onChange={(e) => setFilters({ ...filters, game: e.target.value })}
+            onChange={e => setFilters({ ...filters, game: e.target.value })}
           />
         </div>
 
@@ -44,7 +44,7 @@ const MatchFinder = () => {
           <select
             className="select select-bordered"
             value={filters.skill}
-            onChange={(e) => setFilters({ ...filters, skill: e.target.value })}
+            onChange={e => setFilters({ ...filters, skill: e.target.value })}
           >
             <option value="any">Any Skill Level</option>
             <option value="beginner">Beginner</option>
@@ -60,7 +60,7 @@ const MatchFinder = () => {
           <select
             className="select select-bordered"
             value={filters.region}
-            onChange={(e) => setFilters({ ...filters, region: e.target.value })}
+            onChange={e => setFilters({ ...filters, region: e.target.value })}
           >
             <option value="any">Any Region</option>
             <option value="na">North America</option>
@@ -76,7 +76,7 @@ const MatchFinder = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MatchFinder 
+export default MatchFinder;

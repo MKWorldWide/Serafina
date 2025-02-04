@@ -1,98 +1,78 @@
 import React from 'react';
-import {
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Avatar,
-  Typography,
-  Badge,
-  Box,
-  Divider,
-} from '@mui/material';
-import { formatDistanceToNow } from 'date-fns';
-import { IConversation } from '../../types/social';
-import { useAuth } from '../../context/AuthContext';
+import { IConversation, IConversationParticipant } from '../../types/social';
+import useStore from '../../store/useStore';
 
 interface ConversationsListProps {
   conversations: IConversation[];
-  selectedConversationId?: string;
+  activeConversationId?: string;
   onSelectConversation: (conversation: IConversation) => void;
 }
 
 const ConversationsList: React.FC<ConversationsListProps> = ({
   conversations,
-  selectedConversationId,
+  activeConversationId,
   onSelectConversation,
 }) => {
-  const { user } = useAuth();
+  const user = useStore(state => state.user);
 
-  const getOtherParticipant = (conversation: IConversation) => {
-    return conversation.participants.find((p) => p.id !== user?.id);
+  const getOtherParticipant = (conversation: IConversation): IConversationParticipant | undefined => {
+    return conversation.participants.find(p => p.user.id !== user?.id);
   };
 
   return (
-    <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      {conversations.map((conversation, index) => {
-        const otherParticipant = getOtherParticipant(conversation);
-        
-        return (
-          <React.Fragment key={conversation.id}>
-            <ListItem
-              button
-              selected={conversation.id === selectedConversationId}
+    <div className="bg-base-100 rounded-lg shadow-lg overflow-hidden">
+      <div className="p-4 border-b border-base-300">
+        <h2 className="text-lg font-semibold">Conversations</h2>
+      </div>
+
+      <div className="divide-y divide-base-300">
+        {conversations.map(conversation => {
+          const otherParticipant = getOtherParticipant(conversation);
+          const isActive = conversation.id === activeConversationId;
+
+          return (
+            <div
+              key={conversation.id}
+              className={`p-4 cursor-pointer hover:bg-base-200 transition-colors ${
+                isActive ? 'bg-base-200' : ''
+              }`}
               onClick={() => onSelectConversation(conversation)}
-              sx={{
-                '&.Mui-selected': {
-                  bgcolor: 'action.selected',
-                },
-              }}
             >
-              <ListItemAvatar>
-                <Badge
-                  color="primary"
-                  variant="dot"
-                  invisible={conversation.unreadCount === 0}
-                >
-                  <Avatar src={otherParticipant?.avatarUrl} alt={otherParticipant?.username} />
-                </Badge>
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="subtitle2">
-                      {otherParticipant?.username}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {conversation.lastMessage &&
-                        formatDistanceToNow(new Date(conversation.lastMessage.createdAt), {
-                          addSuffix: true,
-                        })}
-                    </Typography>
-                  </Box>
-                }
-                secondary={
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      fontWeight: conversation.unreadCount > 0 ? 'bold' : 'normal',
-                    }}
-                  >
-                    {conversation.lastMessage?.content || 'No messages yet'}
-                  </Typography>
-                }
-              />
-            </ListItem>
-            {index < conversations.length - 1 && <Divider variant="inset" component="li" />}
-          </React.Fragment>
-        );
-      })}
-    </List>
+              <div className="flex items-center space-x-3">
+                <div className="avatar">
+                  <div className="w-12 h-12 rounded-full">
+                    <img src={otherParticipant?.user.avatar} alt={otherParticipant?.user.username} />
+                  </div>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold truncate">{otherParticipant?.user.username}</h3>
+                  {conversation.lastMessage && (
+                    <div className="flex items-center space-x-1">
+                      <p className="text-sm text-base-content/60 truncate">
+                        {conversation.lastMessage.content}
+                      </p>
+                      <span className="text-xs text-base-content/40">
+                        • {new Date(conversation.lastMessage.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {conversation.unreadCount > 0 && (
+                  <div className="badge badge-primary badge-sm">{conversation.unreadCount}</div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {conversations.length === 0 && (
+        <div className="p-4 text-center text-base-content/60">No conversations yet</div>
+      )}
+    </div>
   );
 };
 
-export default ConversationsList; 
+export default ConversationsList;

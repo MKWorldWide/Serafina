@@ -74,7 +74,7 @@ const Post: React.FC<PostProps> = ({ post, onDelete }) => {
     try {
       // Replace with actual API call
       setLiked(!liked);
-      setLikesCount(prev => liked ? prev - 1 : prev + 1);
+      setLikesCount(prev => (liked ? prev - 1 : prev + 1));
     } catch (error) {
       console.error('Error toggling like:', error);
     }
@@ -96,10 +96,7 @@ const Post: React.FC<PostProps> = ({ post, onDelete }) => {
     <StyledCard elevation={0}>
       <CardHeader
         avatar={
-          <Avatar
-            src={post.author.avatar}
-            sx={{ bgcolor: 'primary.main' }}
-          >
+          <Avatar src={post.author.avatar} sx={{ bgcolor: 'primary.main' }}>
             {post.author.username[0].toUpperCase()}
           </Avatar>
         }

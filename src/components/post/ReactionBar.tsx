@@ -132,32 +132,25 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
     0
   );
 
-  const userReaction = Object.entries(reactions).find(
-    ([_, reaction]) => reaction.reacted
-  )?.[0] as ReactionType | undefined;
+  const userReaction = Object.entries(reactions).find(([_, reaction]) => reaction.reacted)?.[0] as
+    | ReactionType
+    | undefined;
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <Box>
         <AnimatedIconButton
           className={animatingButton === userReaction ? 'pop' : ''}
-          onClick={(e) => setAnchorEl(e.currentTarget)}
+          onClick={e => setAnchorEl(e.currentTarget)}
           color={userReaction ? 'primary' : undefined}
           sx={{
             color: userReaction ? reactionConfig[userReaction].color : undefined,
           }}
         >
-          {userReaction
-            ? reactionConfig[userReaction].icon
-            : reactionConfig.like.icon}
+          {userReaction ? reactionConfig[userReaction].icon : reactionConfig.like.icon}
         </AnimatedIconButton>
         {totalReactions > 0 && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            component="span"
-            sx={{ ml: 0.5 }}
-          >
+          <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
             {totalReactions}
           </Typography>
         )}
@@ -175,12 +168,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
       )}
 
       {showShareButton && (
-        <Button
-          size="small"
-          startIcon={<ShareIcon />}
-          onClick={onShare}
-          sx={{ minWidth: 'auto' }}
-        >
+        <Button size="small" startIcon={<ShareIcon />} onClick={onShare} sx={{ minWidth: 'auto' }}>
           {shareCount > 0 && shareCount}
         </Button>
       )}
@@ -243,4 +231,4 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
   );
 };
 
-export default ReactionBar; 
+export default ReactionBar;

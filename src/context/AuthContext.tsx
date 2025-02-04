@@ -28,7 +28,7 @@ const MOCK_USER: IUser = {
   avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_user',
   status: 'online',
   rank: 'Gold',
-  level: 42
+  level: 42,
 };
 
 const AuthContext = createContext<IAuthContextType | undefined>(undefined);
@@ -42,12 +42,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       setError(null);
-      
+
       // Mock login - accept any credentials for demo
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
       localStorage.setItem('auth_token', 'mock_token');
       setUser(MOCK_USER);
-      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
       throw err;
@@ -60,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       setError(null);
-      
+
       // Mock registration - always succeed for demo
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
       localStorage.setItem('auth_token', 'mock_token');
@@ -68,9 +67,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ...MOCK_USER,
         username: data.username,
         email: data.email,
-        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`
+        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`,
       });
-      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
       throw err;

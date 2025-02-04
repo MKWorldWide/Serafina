@@ -285,13 +285,13 @@ const Profile: React.FC = () => {
         currentGame: response.data.currentGame || '',
       });
       setError(null);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
       setError('Failed to load profile');
     } finally {
       setLoading(false);
-      }
-    };
+    }
+  };
 
   useEffect(() => {
     if (username) {
@@ -306,10 +306,10 @@ const Profile: React.FC = () => {
 
   if (loading) {
     return (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
         minHeight="100vh"
         sx={{ mt: -8 }} // Compensate for navbar
       >
@@ -320,10 +320,10 @@ const Profile: React.FC = () => {
 
   if (error) {
     return (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
         minHeight="100vh"
         sx={{ mt: -8 }} // Compensate for navbar
       >
@@ -334,15 +334,15 @@ const Profile: React.FC = () => {
 
   if (!profile) {
     return (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
         minHeight="100vh"
         sx={{ mt: -8 }} // Compensate for navbar
       >
         <Typography>Profile not found</Typography>
-        </Box>
+      </Box>
     );
   }
 
@@ -350,16 +350,19 @@ const Profile: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'online': return '#44b700';
-      case 'in-game': return '#ff9800';
-      default: return '#bdbdbd';
+      case 'online':
+        return '#44b700';
+      case 'in-game':
+        return '#ff9800';
+      default:
+        return '#bdbdbd';
     }
   };
 
   const handleEditProfile = async () => {
     try {
       await authApi.updateProfile(username!, editFormData);
-      setProfile(prev => prev ? { ...prev, ...editFormData } : null);
+      setProfile(prev => (prev ? { ...prev, ...editFormData } : null));
       setEditDialogOpen(false);
       setSnackbar({
         open: true,
@@ -424,7 +427,9 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <Box sx={{ pt: 8 }}> {/* Add padding top to account for navbar */}
+    <Box sx={{ pt: 8 }}>
+      {' '}
+      {/* Add padding top to account for navbar */}
       <CoverImage sx={{ backgroundImage: `url(${profile.coverUrl})` }}>
         <StatusBadge
           overlap="circular"
@@ -442,7 +447,6 @@ const Profile: React.FC = () => {
           <ProfileAvatar src={profile.avatarUrl} alt={profile.username} />
         </StatusBadge>
       </CoverImage>
-
       <Container maxWidth="lg">
         <Box sx={{ mt: 10, mb: 4 }}>
           <Box display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -462,7 +466,7 @@ const Profile: React.FC = () => {
               </Box>
               <Typography variant="body1" color="textSecondary" sx={{ mb: 2 }}>
                 {profile.bio}
-                </Typography>
+              </Typography>
               <Box display="flex" gap={1}>
                 <Chip
                   icon={<StarIcon />}
@@ -550,11 +554,7 @@ const Profile: React.FC = () => {
             </Grid>
           </Grid>
 
-          <Tabs
-            value={activeTab}
-            onChange={(_, newValue) => setActiveTab(newValue)}
-            sx={{ mb: 3 }}
-          >
+          <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
             <Tab label="Games" icon={<VideogameAssetIcon />} iconPosition="start" />
             <Tab label="Achievements" icon={<EmojiEventsIcon />} iconPosition="start" />
             <Tab label="Teams" icon={<GroupIcon />} iconPosition="start" />
@@ -571,9 +571,7 @@ const Profile: React.FC = () => {
                       <Typography variant="h6">{game.name}</Typography>
                       <Box display="flex" gap={1}>
                         <Chip label={game.platform} size="small" />
-                        {game.rank && (
-                          <Chip label={game.rank} color="primary" size="small" />
-                        )}
+                        {game.rank && <Chip label={game.rank} color="primary" size="small" />}
                       </Box>
                     </Box>
                     <Box display="flex" alignItems="center" gap={2} mt={1}>
@@ -592,11 +590,7 @@ const Profile: React.FC = () => {
                         </Typography>
                       )}
                     </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={(game.level % 100)}
-                      sx={{ mt: 1 }}
-                    />
+                    <LinearProgress variant="determinate" value={game.level % 100} sx={{ mt: 1 }} />
                   </Box>
                 </GameCard>
               ))}
@@ -605,7 +599,7 @@ const Profile: React.FC = () => {
 
           <TabPanel value={activeTab} index={1}>
             <Box>
-              {profile.achievements.recent.map((achievement) => (
+              {profile.achievements.recent.map(achievement => (
                 <AchievementCard key={achievement.id}>
                   <Typography variant="h4" component="span">
                     {achievement.icon}
@@ -613,18 +607,14 @@ const Profile: React.FC = () => {
                   <Box flex={1}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                       <Typography variant="h6">{achievement.name}</Typography>
-                      <Chip
-                        label={achievement.rarity}
-                        size="small"
-                        color="warning"
-                      />
+                      <Chip label={achievement.rarity} size="small" color="warning" />
                     </Box>
                     <Typography variant="body2" color="textSecondary">
                       {achievement.description}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
                       Unlocked {new Date(achievement.earnedAt).toLocaleDateString()}
-            </Typography>
+                    </Typography>
                   </Box>
                 </AchievementCard>
               ))}
@@ -633,7 +623,7 @@ const Profile: React.FC = () => {
 
           <TabPanel value={activeTab} index={2}>
             <Box>
-              {profile.teams.map((team) => (
+              {profile.teams.map(team => (
                 <TeamCard key={team.id}>
                   <Avatar src={team.logo} alt={team.name} sx={{ width: 60, height: 60 }} />
                   <Box flex={1}>
@@ -641,9 +631,7 @@ const Profile: React.FC = () => {
                       <Typography variant="h6">{team.name}</Typography>
                       <Box display="flex" gap={1}>
                         <Chip label={team.game} size="small" />
-                        {team.rank && (
-                          <Chip label={team.rank} color="primary" size="small" />
-                        )}
+                        {team.rank && <Chip label={team.rank} color="primary" size="small" />}
                       </Box>
                     </Box>
                     <Box display="flex" alignItems="center" gap={2} mt={1}>
@@ -652,7 +640,7 @@ const Profile: React.FC = () => {
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
                         {team.members} Members
-            </Typography>
+                      </Typography>
                     </Box>
                   </Box>
                 </TeamCard>
@@ -662,20 +650,14 @@ const Profile: React.FC = () => {
 
           <TabPanel value={activeTab} index={3}>
             <Grid container spacing={2}>
-              {profile.highlights.map((highlight) => (
+              {profile.highlights.map(highlight => (
                 <Grid item xs={12} sm={6} md={4} key={highlight.id}>
-                  <HighlightCard
-                    sx={{ backgroundImage: `url(${highlight.thumbnailUrl})` }}
-                  >
+                  <HighlightCard sx={{ backgroundImage: `url(${highlight.thumbnailUrl})` }}>
                     <HighlightOverlay>
                       <Typography variant="h6">{highlight.title}</Typography>
                       <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="caption">
-                          {highlight.game}
-                        </Typography>
-                        <Typography variant="caption">
-                          {highlight.views} views
-            </Typography>
+                        <Typography variant="caption">{highlight.game}</Typography>
+                        <Typography variant="caption">{highlight.views} views</Typography>
                       </Box>
                     </HighlightOverlay>
                   </HighlightCard>
@@ -690,7 +672,7 @@ const Profile: React.FC = () => {
               Upcoming Schedule
             </Typography>
             <Grid container spacing={2}>
-              {profile.schedule.map((event) => (
+              {profile.schedule.map(event => (
                 <Grid item xs={12} sm={6} md={4} key={event.id}>
                   <Paper sx={{ p: 2, backgroundColor: 'rgba(8, 95, 128, 0.1)' }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -719,7 +701,6 @@ const Profile: React.FC = () => {
           </Box>
         </Box>
       </Container>
-
       {/* Add Edit Profile Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
         <DialogTitle>Edit Profile</DialogTitle>
@@ -730,23 +711,24 @@ const Profile: React.FC = () => {
             multiline
             rows={4}
             value={editFormData.bio}
-            onChange={(e) => setEditFormData(prev => ({ ...prev, bio: e.target.value }))}
+            onChange={e => setEditFormData(prev => ({ ...prev, bio: e.target.value }))}
             margin="normal"
           />
           <TextField
             fullWidth
             label="Current Game"
             value={editFormData.currentGame}
-            onChange={(e) => setEditFormData(prev => ({ ...prev, currentGame: e.target.value }))}
+            onChange={e => setEditFormData(prev => ({ ...prev, currentGame: e.target.value }))}
             margin="normal"
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleEditProfile} variant="contained">Save</Button>
+          <Button onClick={handleEditProfile} variant="contained">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
-
       {/* Add Snackbar for notifications */}
       <Snackbar
         open={snackbar.open}
@@ -760,7 +742,7 @@ const Profile: React.FC = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-      </Box>
+    </Box>
   );
 };
 

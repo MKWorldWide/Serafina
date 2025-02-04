@@ -116,9 +116,7 @@ const Comment: React.FC<CommentProps> = ({
         />
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="subtitle2">
-              {comment.author.username}
-            </Typography>
+            <Typography variant="subtitle2">{comment.author.username}</Typography>
             <Typography variant="caption" color="text.secondary">
               {formatDistanceToNow(new Date(comment.createdAt), {
                 addSuffix: true,
@@ -135,8 +133,8 @@ const Comment: React.FC<CommentProps> = ({
                 multiline
                 size="small"
                 value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setEditContent(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleEdit();
@@ -144,10 +142,7 @@ const Comment: React.FC<CommentProps> = ({
                 }}
               />
               <Box sx={{ mt: 1, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                <Button
-                  size="small"
-                  onClick={() => setIsEditing(false)}
-                >
+                <Button size="small" onClick={() => setIsEditing(false)}>
                   Cancel
                 </Button>
                 <Button
@@ -183,10 +178,7 @@ const Comment: React.FC<CommentProps> = ({
             )}
             {user?.id === comment.author.id && (
               <>
-                <IconButton
-                  size="small"
-                  onClick={(e) => setAnchorEl(e.currentTarget)}
-                >
+                <IconButton size="small" onClick={e => setAnchorEl(e.currentTarget)}>
                   <MoreIcon fontSize="small" />
                 </IconButton>
                 <Menu
@@ -230,8 +222,8 @@ const Comment: React.FC<CommentProps> = ({
                 size="small"
                 placeholder="Write a reply..."
                 value={replyContent}
-                onChange={(e) => setReplyContent(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setReplyContent(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleReply();
@@ -274,7 +266,7 @@ const Comment: React.FC<CommentProps> = ({
             {comment.replies.length === 1 ? 'reply' : 'replies'}
           </Button>
           <Collapse in={showReplies}>
-            {comment.replies.map((reply) => (
+            {comment.replies.map(reply => (
               <Comment
                 key={reply.id}
                 comment={reply}
@@ -323,8 +315,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           multiline
           placeholder="Write a comment..."
           value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          onKeyDown={(e) => {
+          onChange={e => setNewComment(e.target.value)}
+          onKeyDown={e => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
               handleAddComment();
@@ -332,11 +324,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           }}
         />
         <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            variant="contained"
-            onClick={handleAddComment}
-            disabled={!newComment.trim()}
-          >
+          <Button variant="contained" onClick={handleAddComment} disabled={!newComment.trim()}>
             Comment
           </Button>
         </Box>
@@ -344,13 +332,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
       <Stack spacing={2}>
         {comments
-          .filter((comment) => !comment.parentId)
-          .map((comment) => (
+          .filter(comment => !comment.parentId)
+          .map(comment => (
             <Comment
               key={comment.id}
               comment={comment}
-              onReply={(content) => onAddComment(content, comment.id)}
-              onEdit={(content) => onEditComment(comment.id, content)}
+              onReply={content => onAddComment(content, comment.id)}
+              onEdit={content => onEditComment(comment.id, content)}
               onDelete={() => onDeleteComment(comment.id)}
               onLike={() => onLikeComment(comment.id)}
             />
@@ -360,4 +348,4 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   );
 };
 
-export default CommentSection; 
+export default CommentSection;

@@ -1,4 +1,4 @@
-export type NotificationType = 
+export type NotificationType =
   | 'LIKE'
   | 'COMMENT'
   | 'FOLLOW'
@@ -66,4 +66,4 @@ export interface INotificationSound {
   url: string;
 }
 
-export type NotificationFilter = 'all' | 'unread' | NotificationType; 
+export type NotificationFilter = 'all' | 'unread' | NotificationType;

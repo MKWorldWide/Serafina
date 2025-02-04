@@ -1,445 +1,292 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Divider,
-  IconButton,
-  Avatar,
-  useTheme,
-  useMediaQuery,
-  Drawer,
-  AppBar,
-  Toolbar,
-  Button,
-  Fab,
-  Badge,
-} from '@mui/material';
-import {
-  ArrowBack as ArrowBackIcon,
-  Menu as MenuIcon,
-  Add as AddIcon,
-} from '@mui/icons-material';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useWebSocket } from '../hooks/useWebSocket';
+import useStore from '../store/useStore';
+import { IConversation, IMessage, IUser } from '../types/social';
 import ConversationsList from '../components/messaging/ConversationsList';
 import MessageList from '../components/messaging/MessageList';
 import MessageInput from '../components/messaging/MessageInput';
 import GroupChatDialog from '../components/messaging/GroupChatDialog';
-import { IConversation, IMessage, IMessageInput, User } from '../types/social';
-import { useAuth } from '../context/AuthContext';
-import { useWebSocket } from '../hooks/useWebSocket';
 
-const DRAWER_WIDTH = 320;
+interface ExtendedConversation extends IConversation {
+  name: string;
+}
 
 const Messaging: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [selectedConversation, setSelectedConversation] = useState<IConversation | null>(null);
-  const [conversations, setConversations] = useState<IConversation[]>([]);
+  const { conversationId } = useParams<{ conversationId: string }>();
+  const [conversations, setConversations] = useState<ExtendedConversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<ExtendedConversation | null>(null);
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [groupChatDialogOpen, setGroupChatDialogOpen] = useState(false);
-  const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
-  const { user } = useAuth();
-  const {
-    subscribe,
-    sendMessage,
-    sendTypingIndicator,
-    updatePresence,
-  } = useWebSocket();
+  const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const user = useStore(state => state.user);
+  const { subscribe, send } = useWebSocket();
 
-  // Load initial conversations
   useEffect(() => {
-    // Mock data - Replace with actual API calls
-    const mockUser: User = {
-      id: '2',
-      username: 'Jane Doe',
-      email: 'jane@example.com',
-      avatarUrl: 'https://mui.com/static/images/avatar/2.jpg',
+    const fetchConversations = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/conversations');
+        const data = await response.json();
+        setConversations(data.conversations);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load conversations');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const mockConversations: IConversation[] = [
-      {
-        id: '1',
-        type: 'direct',
-        participants: [
-          {
-            user: mockUser,
-            role: 'member',
-            joinedAt: new Date().toISOString(),
-            isOnline: true,
-            typing: false,
-            status: 'active',
-          },
-          {
-            user: user!,
-            role: 'member',
-            joinedAt: new Date().toISOString(),
-            isOnline: true,
-            typing: false,
-            status: 'active',
-          },
-        ],
-        lastMessage: {
-          id: '1',
-          content: 'Hey, how are you?',
-          sender: mockUser,
-          recipient: user!,
-          createdAt: new Date().toISOString(),
-          type: 'text',
-        },
-        unreadCount: 1,
-        updatedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-      },
-    ];
-    setConversations(mockConversations);
-  }, [user]);
+    fetchConversations();
+  }, []);
 
-  // Subscribe to WebSocket events
   useEffect(() => {
-    const unsubscribeMessage = subscribe('message', (payload) => {
-      if (payload.conversationId === selectedConversation?.id) {
-        setMessages((prev) => [...prev, payload.message]);
-      }
-      // Update conversation's last message and unread count
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv.id === payload.conversationId
-            ? {
-                ...conv,
-                lastMessage: payload.message,
-                unreadCount:
-                  conv.id === selectedConversation?.id
-                    ? 0
-                    : conv.unreadCount + 1,
-                updatedAt: new Date().toISOString(),
-              }
-            : conv
-        )
-      );
-    });
+    if (!conversationId) return;
 
-    const unsubscribeTyping = subscribe('typing', (payload) => {
-      if (payload.conversationId === selectedConversation?.id) {
-        if (payload.isTyping) {
-          setTypingUsers((prev) => new Map(prev).set(payload.userId, payload.username));
-        } else {
-          setTypingUsers((prev) => {
-            const next = new Map(prev);
-            next.delete(payload.userId);
-            return next;
-          });
-        }
+    const fetchMessages = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/conversations/${conversationId}/messages`);
+        const data = await response.json();
+        setMessages(data.messages);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load messages');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const conversation = conversations.find(c => c.id === conversationId);
+    if (conversation) {
+      setSelectedConversation(conversation);
+      fetchMessages();
+    }
+  }, [conversationId, conversations]);
+
+  useEffect(() => {
+    const unsubscribeMessage = subscribe('MESSAGE_CREATE', message => {
+      if (message.data.message && message.data.message.conversation.id === selectedConversation?.id) {
+        setMessages(prev => [...prev, message.data.message!]);
       }
     });
 
-    const unsubscribePresence = subscribe('presence', (payload) => {
-      setConversations((prev) =>
-        prev.map((conv) => ({
-          ...conv,
-          participants: conv.participants.map((p) =>
-            p.user.id === payload.userId
-              ? { ...p, isOnline: payload.status === 'online' }
-              : p
-          ),
-        }))
-      );
+    const unsubscribeMessageUpdate = subscribe('MESSAGE_UPDATE', message => {
+      if (message.data.message && message.data.message.conversation.id === selectedConversation?.id) {
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === message.data.message!.id ? { ...m, ...message.data.message } : m
+          )
+        );
+      }
+    });
+
+    const unsubscribeMessageDelete = subscribe('MESSAGE_DELETE', message => {
+      if (message.data.messageId && selectedConversation?.id) {
+        setMessages(prev => prev.filter(m => m.id !== message.data.messageId));
+      }
     });
 
     return () => {
       unsubscribeMessage();
-      unsubscribeTyping();
-      unsubscribePresence();
+      unsubscribeMessageUpdate();
+      unsubscribeMessageDelete();
     };
-  }, [subscribe, selectedConversation]);
+  }, [selectedConversation?.id, subscribe]);
 
-  // Update presence when component mounts/unmounts
-  useEffect(() => {
-    updatePresence('online');
-    return () => {
-      updatePresence('offline');
-    };
-  }, [updatePresence]);
+  const handleSendMessage = async (content: string) => {
+    if (!selectedConversation || !user || !content.trim()) return;
 
-  // Load messages when conversation is selected
-  useEffect(() => {
-    if (selectedConversation) {
-      const mockUser: User = {
-        id: '2',
-        username: 'Jane Doe',
-        email: 'jane@example.com',
-        avatarUrl: 'https://mui.com/static/images/avatar/2.jpg',
+    try {
+      const message: IMessage = {
+        id: crypto.randomUUID(),
+        content: content.trim(),
+        sender: user,
+        conversation: selectedConversation,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
-      // Mock data - Replace with actual API call
-      const mockMessages: IMessage[] = [
-        {
-          id: '1',
-          content: 'Hey, how are you?',
-          sender: mockUser,
-          recipient: user!,
-          createdAt: new Date(Date.now() - 3600000).toISOString(),
-          type: 'text',
-        },
-        {
-          id: '2',
-          content: "I'm good, thanks! How about you?",
-          sender: user!,
-          recipient: mockUser,
-          createdAt: new Date(Date.now() - 3000000).toISOString(),
-          type: 'text',
-          metadata: {
-            readAt: new Date(Date.now() - 2000000).toISOString(),
-            isEdited: false,
-            isDeleted: false,
-          },
-        },
-      ];
-      setMessages(mockMessages);
-    }
-  }, [selectedConversation, user]);
+      // Optimistic update
+      setMessages(prev => [...prev, message]);
 
-  const handleSelectConversation = (conversation: IConversation) => {
-    setSelectedConversation(conversation);
-    if (isMobile) {
-      setMobileOpen(false);
+      send('MESSAGE_CREATE', { message });
+    } catch (error) {
+      console.error('Failed to send message:', error);
     }
   };
 
-  const handleSendMessage = async (message: IMessageInput) => {
+  const handleCreateGroup = async (name: string, participants: IUser[], admins: IUser[]) => {
+    try {
+      const response = await fetch('/api/conversations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          participants: participants.map(p => p.id),
+          admins: admins.map(a => a.id),
+        }),
+      });
+
+      const newConversation = await response.json();
+      setConversations(prev => [...prev, newConversation]);
+      setSelectedConversation(newConversation);
+      setIsGroupDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to create group:', error);
+    }
+  };
+
+  const handleUpdateGroup = async (
+    name: string,
+    addedUsers: IUser[],
+    removedUsers: IUser[],
+    addedAdmins: IUser[],
+    removedAdmins: IUser[]
+  ) => {
     if (!selectedConversation) return;
 
-    sendMessage(
-      selectedConversation.participants.find((p) => p.user.id !== user?.id)?.user.id || '',
-      message.content,
-      message.attachments
-    );
-  };
+    try {
+      const response = await fetch(`/api/conversations/${selectedConversation.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          addedUsers: addedUsers.map(u => u.id),
+          removedUsers: removedUsers.map(u => u.id),
+          addedAdmins: addedAdmins.map(u => u.id),
+          removedAdmins: removedAdmins.map(u => u.id),
+        }),
+      });
 
-  const handleTyping = (isTyping: boolean) => {
-    if (selectedConversation) {
-      sendTypingIndicator(
-        selectedConversation.participants.find((p) => p.user.id !== user?.id)?.user.id || '',
-        isTyping
+      const updatedConversation = await response.json();
+      setConversations(prev =>
+        prev.map(c => (c.id === updatedConversation.id ? updatedConversation : c))
       );
+      setSelectedConversation(updatedConversation);
+      setIsGroupDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to update group:', error);
     }
   };
 
-  const handleCreateGroup = async (data: any) => {
-    // Mock group creation - Replace with actual API call
-    const newGroup: IConversation = {
-      id: Date.now().toString(),
-      type: 'group',
-      name: data.name,
-      avatar: data.avatar ? URL.createObjectURL(data.avatar) : undefined,
-      participants: data.participants.map((userId: string) => ({
-        user: availableUsers.find((u) => u.id === userId)!,
-        role: userId === user?.id ? 'owner' : 'member',
-        joinedAt: new Date().toISOString(),
-        isOnline: true,
-      })),
-      unreadCount: 0,
-      updatedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-    };
+  const handleEditMessage = async (messageId: string, content: string) => {
+    try {
+      const response = await fetch(`/api/messages/${messageId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
+      });
 
-    setConversations((prev) => [...prev, newGroup]);
-    setGroupChatDialogOpen(false);
+      const updatedMessage = await response.json();
+      setMessages(prev =>
+        prev.map(m => (m.id === messageId ? updatedMessage : m))
+      );
+    } catch (error) {
+      console.error('Failed to edit message:', error);
+    }
   };
 
-  const renderConversationHeader = () => {
-    if (!selectedConversation) return null;
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      await fetch(`/api/messages/${messageId}`, {
+        method: 'DELETE',
+      });
 
-    const otherParticipant = selectedConversation.participants.find(
-      (p) => p.user.id !== user?.id
-    );
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+    }
+  };
 
+  const handleReplyMessage = (message: IMessage) => {
+    // Implement reply functionality
+    console.log('Reply to message:', message);
+  };
+
+  if (error) {
     return (
-      <AppBar
-        position="static"
-        color="default"
-        elevation={0}
-        sx={{
-          borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-        }}
-      >
-        <Toolbar>
-          {isMobile && (
-            <IconButton
-              edge="start"
-              onClick={() => setMobileOpen(true)}
-              sx={{ mr: 2 }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-          )}
-          <Avatar
-            src={
-              selectedConversation.type === 'group'
-                ? selectedConversation.avatar
-                : otherParticipant?.user.avatarUrl
-            }
-            alt={
-              selectedConversation.type === 'group'
-                ? selectedConversation.name
-                : otherParticipant?.user.username
-            }
-          />
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="h6">
-              {selectedConversation.type === 'group'
-                ? selectedConversation.name
-                : otherParticipant?.user.username}
-            </Typography>
-            {typingUsers.size > 0 && (
-              <Typography variant="caption" color="text.secondary">
-                {Array.from(typingUsers.values()).join(', ')} is typing...
-              </Typography>
-            )}
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <div className="alert alert-error">
+        <span>{error}</span>
+      </div>
     );
-  };
-
-  const drawer = (
-    <Box>
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography variant="h6" sx={{ flex: 1 }}>
-          Messages
-        </Typography>
-        <Fab
-          size="small"
-          color="primary"
-          onClick={() => setGroupChatDialogOpen(true)}
-        >
-          <AddIcon />
-        </Fab>
-      </Box>
-      <Divider />
-      <ConversationsList
-        conversations={conversations}
-        selectedConversationId={selectedConversation?.id}
-        onSelectConversation={handleSelectConversation}
-      />
-    </Box>
-  );
-
-  // Mock available users for group chat
-  const availableUsers: User[] = [
-    user!,
-    {
-      id: '2',
-      username: 'Jane Doe',
-      email: 'jane@example.com',
-      avatarUrl: 'https://mui.com/static/images/avatar/2.jpg',
-    },
-    {
-      id: '3',
-      username: 'John Smith',
-      email: 'john@example.com',
-      avatarUrl: 'https://mui.com/static/images/avatar/3.jpg',
-    },
-  ];
+  }
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
-      {isMobile ? (
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile
-          }}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: DRAWER_WIDTH,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      ) : (
-        <Box
-          component="nav"
-          sx={{
-            width: DRAWER_WIDTH,
-            flexShrink: 0,
-            borderRight: (theme) => `1px solid ${theme.palette.divider}`,
-          }}
-        >
-          {drawer}
-        </Box>
-      )}
+    <div className="flex h-screen">
+      <div className="w-80 border-r border-base-300">
+        <div className="p-4 border-b border-base-300">
+          <button
+            className="btn btn-primary w-full"
+            onClick={() => setIsGroupDialogOpen(true)}
+          >
+            New Group Chat
+          </button>
+        </div>
+        <ConversationsList
+          conversations={conversations}
+          activeConversationId={selectedConversation?.id}
+          onSelectConversation={setSelectedConversation}
+        />
+      </div>
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          bgcolor: 'background.default',
-        }}
-      >
+      <div className="flex-1 flex flex-col">
         {selectedConversation ? (
           <>
-            {renderConversationHeader()}
-            <Box sx={{ flex: 1, overflow: 'hidden' }}>
-              <MessageList
-                messages={messages}
-                onEditMessage={async (messageId, content) => {
-                  // Implement edit message
-                }}
-                onDeleteMessage={async (messageId) => {
-                  // Implement delete message
-                }}
-                onReplyMessage={(messageId) => {
-                  // Implement reply to message
-                }}
-                onReactToMessage={async (messageId, reactionType) => {
-                  // Implement message reaction
-                }}
-                onReportMessage={async (messageId, reason) => {
-                  // Implement message reporting
-                }}
-              />
-            </Box>
-            <Box sx={{ p: 2 }}>
-              <MessageInput
-                onSendMessage={handleSendMessage}
-                onTyping={handleTyping}
-              />
-            </Box>
+            <div className="p-4 border-b border-base-300">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="avatar">
+                    <div className="w-12 h-12 rounded-full">
+                      <img
+                        src={selectedConversation.participants[0].user.avatar}
+                        alt={selectedConversation.participants[0].user.username}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold">
+                      {selectedConversation.name || selectedConversation.participants[0].user.username}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <MessageList
+              messages={messages}
+              onEdit={handleEditMessage}
+              onDelete={handleDeleteMessage}
+              onReply={handleReplyMessage}
+            />
+
+            <div className="p-4 border-t border-base-300">
+              <MessageInput onSubmit={handleSendMessage} />
+            </div>
           </>
         ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-            }}
-          >
-            <Typography variant="h6" color="text.secondary">
-              Select a conversation to start messaging
-            </Typography>
-          </Box>
+          <div className="flex-1 flex items-center justify-center text-base-content/60">
+            Select a conversation to start messaging
+          </div>
         )}
-      </Box>
+      </div>
 
       <GroupChatDialog
-        open={groupChatDialogOpen}
-        onClose={() => setGroupChatDialogOpen(false)}
-        onCreateGroup={handleCreateGroup}
-        availableUsers={availableUsers}
-        currentUser={user!}
+        isOpen={isGroupDialogOpen}
+        onClose={() => setIsGroupDialogOpen(false)}
+        onSubmit={handleCreateGroup}
+        existingGroup={selectedConversation}
+        onUpdateGroup={handleUpdateGroup}
       />
-    </Box>
+    </div>
   );
 };
 
-export default Messaging; 
+export default Messaging;

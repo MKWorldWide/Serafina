@@ -214,7 +214,7 @@ const Forums: React.FC = () => {
   useEffect(() => {
     const fetchThreads = async () => {
       if (!categoryId) return;
-      
+
       try {
         setLoading(true);
         // Mock threads data
@@ -297,7 +297,7 @@ const Forums: React.FC = () => {
   const handleCreateThread = async () => {
     try {
       if (!categoryId) return;
-      
+
       const response = await forumsApi.createThread(categoryId, newThread);
       setThreads(prev => [response.data, ...prev]);
       setCreateThreadDialog(false);
@@ -318,9 +318,11 @@ const Forums: React.FC = () => {
   };
 
   const filteredThreads = threads.filter(thread => {
-    const matchesSearch = thread.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch =
+      thread.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       thread.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesGame = selectedGame === 'all' || (thread.game && thread.game.name === selectedGame);
+    const matchesGame =
+      selectedGame === 'all' || (thread.game && thread.game.name === selectedGame);
     const matchesCategory = !selectedCategory || thread.category.id === selectedCategory;
     return matchesSearch && matchesGame && matchesCategory;
   });
@@ -336,7 +338,7 @@ const Forums: React.FC = () => {
           size="small"
           placeholder="Search forums..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           InputProps={{
             startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
           }}
@@ -351,11 +353,12 @@ const Forums: React.FC = () => {
       ) : (
         <Grid container spacing={2}>
           {categories
-            .filter(category =>
-              category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              category.description.toLowerCase().includes(searchQuery.toLowerCase())
+            .filter(
+              category =>
+                category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                category.description.toLowerCase().includes(searchQuery.toLowerCase())
             )
-            .map((category) => (
+            .map(category => (
               <Grid item xs={12} key={category.id}>
                 <StyledPaper
                   onClick={() => navigate(`/forums/category/${category.id}`)}
@@ -422,7 +425,7 @@ const Forums: React.FC = () => {
           size="small"
           placeholder="Search threads..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           InputProps={{
             startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
           }}
@@ -436,7 +439,7 @@ const Forums: React.FC = () => {
         </Box>
       ) : (
         <List>
-          {filteredThreads.map((thread) => (
+          {filteredThreads.map(thread => (
             <Card key={thread.id}>
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -444,17 +447,9 @@ const Forums: React.FC = () => {
                     <Typography variant="h6">{thread.title}</Typography>
                     <Box display="flex" gap={1} mb={1}>
                       {thread.game && (
-                        <Chip
-                          label={thread.game.name}
-                          size="small"
-                          color="primary"
-                        />
+                        <Chip label={thread.game.name} size="small" color="primary" />
                       )}
-                      <Chip
-                        label={thread.category.name}
-                        size="small"
-                        variant="outlined"
-                      />
+                      <Chip label={thread.category.name} size="small" variant="outlined" />
                     </Box>
                   </Box>
                   <Box display="flex" alignItems="center">
@@ -481,22 +476,12 @@ const Forums: React.FC = () => {
 
                 <Box display="flex" gap={1} mt={2}>
                   {thread.isPinned && (
-                    <Chip
-                      icon={<PushPinIcon />}
-                      label="Pinned"
-                      size="small"
-                      color="primary"
-                    />
+                    <Chip icon={<PushPinIcon />} label="Pinned" size="small" color="primary" />
                   )}
                   {thread.isLocked && (
-                    <Chip
-                      icon={<LockIcon />}
-                      label="Locked"
-                      size="small"
-                      color="error"
-                    />
+                    <Chip icon={<LockIcon />} label="Locked" size="small" color="error" />
                   )}
-                  {thread.tags.map((tag) => (
+                  {thread.tags.map(tag => (
                     <Chip key={tag} label={tag} size="small" />
                   ))}
                 </Box>
@@ -530,7 +515,7 @@ const Forums: React.FC = () => {
             fullWidth
             label="Title"
             value={newThread.title}
-            onChange={(e) => setNewThread(prev => ({ ...prev, title: e.target.value }))}
+            onChange={e => setNewThread(prev => ({ ...prev, title: e.target.value }))}
             margin="normal"
           />
           <TextField
@@ -539,7 +524,7 @@ const Forums: React.FC = () => {
             multiline
             rows={6}
             value={newThread.content}
-            onChange={(e) => setNewThread(prev => ({ ...prev, content: e.target.value }))}
+            onChange={e => setNewThread(prev => ({ ...prev, content: e.target.value }))}
             margin="normal"
           />
         </DialogContent>
@@ -580,4 +565,4 @@ const Forums: React.FC = () => {
   );
 };
 
-export default Forums; 
+export default Forums;

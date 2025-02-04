@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Link,
-} from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Paper, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -72,7 +64,7 @@ const Register: React.FC = () => {
               autoComplete="username"
               autoFocus
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -93,7 +85,7 @@ const Register: React.FC = () => {
               name="email"
               autoComplete="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -115,7 +107,7 @@ const Register: React.FC = () => {
               id="password"
               autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -137,7 +129,7 @@ const Register: React.FC = () => {
               id="confirmPassword"
               autoComplete="new-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {

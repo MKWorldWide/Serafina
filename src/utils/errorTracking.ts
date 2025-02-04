@@ -5,7 +5,7 @@ export enum ErrorSeverity {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 // Error categories
@@ -13,7 +13,7 @@ export enum ErrorCategory {
   TYPE_ERROR = 'type_error',
   VALIDATION_ERROR = 'validation_error',
   API_ERROR = 'api_error',
-  RUNTIME_ERROR = 'runtime_error'
+  RUNTIME_ERROR = 'runtime_error',
 }
 
 interface ErrorContext {
@@ -57,16 +57,16 @@ class ErrorTracker {
       timestamp: Date.now(),
       category,
       severity,
-      context
+      context,
     };
 
     const categoryErrors = this.errors.get(category) || [];
-    
+
     // Implement circular buffer to prevent memory leaks
     if (categoryErrors.length >= this.MAX_ERRORS_PER_CATEGORY) {
       categoryErrors.shift();
     }
-    
+
     categoryErrors.push(errorMetrics);
     this.errors.set(category, categoryErrors);
 
@@ -75,7 +75,7 @@ class ErrorTracker {
       console.error('Error tracked:', {
         message: error.message,
         ...errorMetrics,
-        stack: error.stack
+        stack: error.stack,
       });
     }
 
@@ -85,28 +85,12 @@ class ErrorTracker {
     }
   }
 
-  public trackTypeError(
-    error: Error,
-    context: ErrorContext
-  ): void {
-    this.trackError(
-      error,
-      ErrorCategory.TYPE_ERROR,
-      ErrorSeverity.HIGH,
-      context
-    );
+  public trackTypeError(error: Error, context: ErrorContext): void {
+    this.trackError(error, ErrorCategory.TYPE_ERROR, ErrorSeverity.HIGH, context);
   }
 
-  public trackValidationError(
-    error: Error,
-    context: ErrorContext
-  ): void {
-    this.trackError(
-      error,
-      ErrorCategory.VALIDATION_ERROR,
-      ErrorSeverity.MEDIUM,
-      context
-    );
+  public trackValidationError(error: Error, context: ErrorContext): void {
+    this.trackError(error, ErrorCategory.VALIDATION_ERROR, ErrorSeverity.MEDIUM, context);
   }
 
   public getErrorsByCategory(category: ErrorCategory): ErrorMetrics[] {
@@ -118,7 +102,7 @@ class ErrorTracker {
       [ErrorCategory.TYPE_ERROR]: 0,
       [ErrorCategory.VALIDATION_ERROR]: 0,
       [ErrorCategory.API_ERROR]: 0,
-      [ErrorCategory.RUNTIME_ERROR]: 0
+      [ErrorCategory.RUNTIME_ERROR]: 0,
     };
 
     this.errors.forEach((categoryErrors, category) => {
@@ -141,9 +125,9 @@ class ErrorTracker {
         stack: error.stack,
         code: (error as IApplicationError).code,
         statusCode: (error as IApplicationError).statusCode,
-        details: (error as IApplicationError).details
+        details: (error as IApplicationError).details,
       },
-      metrics
+      metrics,
     });
   }
 
@@ -161,51 +145,32 @@ export const trackTypeValidationError = (
   expectedType: string,
   receivedValue: unknown
 ): void => {
-  errorTracker.trackTypeError(
-    new TypeError(`Type validation failed in ${component}`),
-    {
-      component,
-      additionalData: {
-        expectedType,
-        receivedValue,
-        valueType: typeof receivedValue
-      }
-    }
-  );
+  errorTracker.trackTypeError(new TypeError(`Type validation failed in ${component}`), {
+    component,
+    additionalData: {
+      expectedType,
+      receivedValue,
+      valueType: typeof receivedValue,
+    },
+  });
 };
 
-export const trackPromiseError = (
-  error: Error,
-  context: string
-): void => {
-  errorTracker.trackError(
-    error,
-    ErrorCategory.RUNTIME_ERROR,
-    ErrorSeverity.HIGH,
-    {
-      component: context,
-      additionalData: {
-        isPromiseError: true,
-        asyncStackTrace: error.stack
-      }
-    }
-  );
+export const trackPromiseError = (error: Error, context: string): void => {
+  errorTracker.trackError(error, ErrorCategory.RUNTIME_ERROR, ErrorSeverity.HIGH, {
+    component: context,
+    additionalData: {
+      isPromiseError: true,
+      asyncStackTrace: error.stack,
+    },
+  });
 };
 
-export const trackApiError = (
-  error: Error | IApplicationError,
-  endpoint: string
-): void => {
-  errorTracker.trackError(
-    error,
-    ErrorCategory.API_ERROR,
-    ErrorSeverity.HIGH,
-    {
-      additionalData: {
-        endpoint,
-        statusCode: (error as IApplicationError).statusCode,
-        errorCode: (error as IApplicationError).code
-      }
-    }
-  );
-}; 
+export const trackApiError = (error: Error | IApplicationError, endpoint: string): void => {
+  errorTracker.trackError(error, ErrorCategory.API_ERROR, ErrorSeverity.HIGH, {
+    additionalData: {
+      endpoint,
+      statusCode: (error as IApplicationError).statusCode,
+      errorCode: (error as IApplicationError).code,
+    },
+  });
+};

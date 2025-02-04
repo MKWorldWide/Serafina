@@ -6,9 +6,9 @@ const CreatePost = ({ onPost }) => {
   const [media, setMedia] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef();
-  const user = useStore((state) => state.user);
+  const user = useStore(state => state.user);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!content.trim() && !media) return;
 
@@ -30,7 +30,7 @@ const CreatePost = ({ onPost }) => {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = e => {
     const file = e.target.files[0];
     if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
       setMedia(file);
@@ -57,10 +57,10 @@ const CreatePost = ({ onPost }) => {
                 className="textarea textarea-bordered w-full"
                 placeholder="What's on your mind?"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={e => setContent(e.target.value)}
                 rows="3"
               />
-              
+
               {media && (
                 <div className="mt-2 relative">
                   {media.type.startsWith('image/') ? (
@@ -88,7 +88,7 @@ const CreatePost = ({ onPost }) => {
                   </button>
                 </div>
               )}
-              
+
               <div className="flex justify-between items-center mt-4">
                 <div className="flex space-x-2">
                   <input
@@ -103,8 +103,19 @@ const CreatePost = ({ onPost }) => {
                     className="btn btn-ghost btn-sm"
                     onClick={() => fileInputRef.current.click()}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                     Add Media
                   </button>
@@ -125,4 +136,4 @@ const CreatePost = ({ onPost }) => {
   );
 };
 
-export default CreatePost; 
+export default CreatePost;

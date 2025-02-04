@@ -52,7 +52,7 @@ const shareOptions: ShareOption[] = [
     name: 'Facebook',
     icon: <FacebookIcon />,
     color: '#1877f2',
-    onClick: (url) => {
+    onClick: url => {
       window.open(
         `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
         '_blank'
@@ -78,9 +78,7 @@ const shareOptions: ShareOption[] = [
     color: '#0a66c2',
     onClick: (url, title) => {
       window.open(
-        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-          url
-        )}`,
+        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
         '_blank'
       );
     },
@@ -103,12 +101,7 @@ const shareOptions: ShareOption[] = [
     icon: <WhatsAppIcon />,
     color: '#25d366',
     onClick: (url, title) => {
-      window.open(
-        `https://wa.me/?text=${encodeURIComponent(
-          `${title} ${url}`
-        )}`,
-        '_blank'
-      );
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`, '_blank');
     },
   },
   {
@@ -117,9 +110,7 @@ const shareOptions: ShareOption[] = [
     color: '#0088cc',
     onClick: (url, title) => {
       window.open(
-        `https://t.me/share/url?url=${encodeURIComponent(
-          url
-        )}&text=${encodeURIComponent(title)}`,
+        `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
         '_blank'
       );
     },
@@ -222,7 +213,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
                 rows={4}
                 placeholder="Add your thoughts..."
                 value={repostContent}
-                onChange={(e) => setRepostContent(e.target.value)}
+                onChange={e => setRepostContent(e.target.value)}
                 sx={{ mb: 2 }}
               />
               <Typography variant="body2" color="text.secondary">
@@ -232,15 +223,13 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
           ) : (
             <>
               <List>
-                {shareOptions.map((option) => (
+                {shareOptions.map(option => (
                   <ListItem
                     key={option.name}
                     button
                     onClick={() => option.onClick(postUrl, postTitle)}
                   >
-                    <ListItemIcon sx={{ color: option.color }}>
-                      {option.icon}
-                    </ListItemIcon>
+                    <ListItemIcon sx={{ color: option.color }}>{option.icon}</ListItemIcon>
                     <ListItemText primary={option.name} />
                   </ListItem>
                 ))}
@@ -290,11 +279,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
         {showRepost && (
           <DialogActions>
             <Button onClick={() => setShowRepost(false)}>Cancel</Button>
-            <Button
-              variant="contained"
-              onClick={handleRepost}
-              disabled={!repostContent.trim()}
-            >
+            <Button variant="contained" onClick={handleRepost} disabled={!repostContent.trim()}>
               Share
             </Button>
           </DialogActions>
@@ -304,11 +289,11 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
-        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert
-          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
           severity={snackbar.severity}
           sx={{ width: '100%' }}
         >
@@ -319,4 +304,4 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
   );
 };
 
-export default ShareDialog; 
+export default ShareDialog;

@@ -200,11 +200,7 @@ const GameAnalytics: React.FC = () => {
         <Typography variant="h4" gutterBottom>
           Game Analytics & Matchmaking
         </Typography>
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
-          sx={{ mb: 3 }}
-        >
+        <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
           <Tab icon={<AssessmentIcon />} label="Performance Analysis" />
           <Tab icon={<GroupsIcon />} label="Team Finder" />
           <Tab icon={<TimelineIcon />} label="Progress Tracking" />
@@ -220,7 +216,7 @@ const GameAnalytics: React.FC = () => {
               <Select
                 value={selectedGame}
                 label="Select Game"
-                onChange={(e) => setSelectedGame(e.target.value)}
+                onChange={e => setSelectedGame(e.target.value)}
               >
                 <MenuItem value="valorant">Valorant</MenuItem>
                 <MenuItem value="lol">League of Legends</MenuItem>
@@ -317,7 +313,7 @@ const GameAnalytics: React.FC = () => {
                 <Typography variant="h6" gutterBottom>
                   Role Proficiency
                 </Typography>
-                {playerStats.roles.map((role) => (
+                {playerStats.roles.map(role => (
                   <Box key={role.name} sx={{ mb: 2 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                       <Typography variant="body2">{role.name}</Typography>
@@ -325,10 +321,7 @@ const GameAnalytics: React.FC = () => {
                         {role.proficiency}%
                       </Typography>
                     </Box>
-                    <ProgressBar
-                      variant="determinate"
-                      value={role.proficiency}
-                    />
+                    <ProgressBar variant="determinate" value={role.proficiency} />
                   </Box>
                 ))}
               </CardContent>
@@ -344,9 +337,7 @@ const GameAnalytics: React.FC = () => {
             <StyledCard>
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                  <Typography variant="h6">
-                    AI Team Matchmaking
-                  </Typography>
+                  <Typography variant="h6">AI Team Matchmaking</Typography>
                   <Button
                     variant="contained"
                     startIcon={<PersonSearchIcon />}
@@ -364,7 +355,7 @@ const GameAnalytics: React.FC = () => {
                   </Button>
                 </Box>
 
-                {teamSuggestions.map((team) => (
+                {teamSuggestions.map(team => (
                   <Box key={team.id} sx={{ mb: 3 }}>
                     <Typography variant="subtitle1" gutterBottom>
                       Suggested Team Composition
@@ -395,7 +386,7 @@ const GameAnalytics: React.FC = () => {
                             Team Members
                           </Typography>
                           <Box display="flex" flexWrap="wrap" gap={2}>
-                            {team.players.map((player) => (
+                            {team.players.map(player => (
                               <Box key={player.username} textAlign="center">
                                 <Tooltip title={`${player.username} - ${player.role}`}>
                                   <Avatar
@@ -424,24 +415,14 @@ const GameAnalytics: React.FC = () => {
                           </Typography>
                           <Box display="flex" gap={1} flexWrap="wrap" mb={1}>
                             <Typography variant="body2">Strengths:</Typography>
-                            {team.strengths.map((strength) => (
-                              <Chip
-                                key={strength}
-                                label={strength}
-                                size="small"
-                                color="success"
-                              />
+                            {team.strengths.map(strength => (
+                              <Chip key={strength} label={strength} size="small" color="success" />
                             ))}
                           </Box>
                           <Box display="flex" gap={1} flexWrap="wrap">
                             <Typography variant="body2">Areas for Improvement:</Typography>
-                            {team.weaknesses.map((weakness) => (
-                              <Chip
-                                key={weakness}
-                                label={weakness}
-                                size="small"
-                                color="warning"
-                              />
+                            {team.weaknesses.map(weakness => (
+                              <Chip key={weakness} label={weakness} size="small" color="warning" />
                             ))}
                           </Box>
                         </StatBox>
@@ -497,18 +478,8 @@ const GameAnalytics: React.FC = () => {
                 <MenuItem value="igl">In-Game Leader</MenuItem>
               </Select>
             </FormControl>
-            <TextField
-              fullWidth
-              label="Rank Range"
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Schedule Availability"
-              margin="normal"
-              multiline
-              rows={2}
-            />
+            <TextField fullWidth label="Rank Range" margin="normal" />
+            <TextField fullWidth label="Schedule Availability" margin="normal" multiline rows={2} />
           </Box>
         </DialogContent>
         <DialogActions>
@@ -522,4 +493,4 @@ const GameAnalytics: React.FC = () => {
   );
 };
 
-export default GameAnalytics; 
+export default GameAnalytics;

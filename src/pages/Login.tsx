@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Link,
-} from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Paper, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -66,7 +58,7 @@ const Login: React.FC = () => {
               autoComplete="email"
               autoFocus
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -88,7 +80,7 @@ const Login: React.FC = () => {
               id="password"
               autoComplete="current-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {

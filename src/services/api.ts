@@ -11,22 +11,22 @@ const api = axios.create({
 
 // Add a request interceptor
 api.interceptors.request.use(
-  (config) => {
+  config => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Add a response interceptor
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -56,18 +56,16 @@ api.interceptors.response.use(
 
 // Auth API
 export const authApi = {
-  login: (credentials: { email: string; password: string }) =>
-    api.post('/auth/login', credentials),
-  
+  login: (credentials: { email: string; password: string }) => api.post('/auth/login', credentials),
+
   register: (credentials: { username: string; email: string; password: string }) =>
     api.post('/auth/register', credentials),
-  
+
   logout: () => api.post('/auth/logout'),
-  
+
   getProfile: (username: string) => api.get(`/users/${username}`),
-  
-  updateProfile: (username: string, data: any) =>
-    api.put(`/users/${username}`, data),
+
+  updateProfile: (username: string, data: any) => api.put(`/users/${username}`, data),
 };
 
 // Posts API
@@ -105,23 +103,19 @@ export const teamsApi = {
 // Messages API
 export const messagesApi = {
   getConversations: () => api.get('/messages'),
-  getMessages: (conversationId: string) =>
-    api.get(`/messages/${conversationId}`),
+  getMessages: (conversationId: string) => api.get(`/messages/${conversationId}`),
   sendMessage: (conversationId: string, content: string) =>
     api.post(`/messages/${conversationId}`, { content }),
-  createConversation: (userId: string) =>
-    api.post('/messages', { userId }),
+  createConversation: (userId: string) => api.post('/messages', { userId }),
 };
 
 // Forums API
 export const forumsApi = {
   getCategories: () => api.get('/forums/categories'),
-  getThreads: (categoryId: string) =>
-    api.get(`/forums/categories/${categoryId}/threads`),
+  getThreads: (categoryId: string) => api.get(`/forums/categories/${categoryId}/threads`),
   createThread: (categoryId: string, data: any) =>
     api.post(`/forums/categories/${categoryId}/threads`, data),
-  getPosts: (threadId: string) =>
-    api.get(`/forums/threads/${threadId}/posts`),
+  getPosts: (threadId: string) => api.get(`/forums/threads/${threadId}/posts`),
   createPost: (threadId: string, content: string) =>
     api.post(`/forums/threads/${threadId}/posts`, { content }),
 };
@@ -129,20 +123,15 @@ export const forumsApi = {
 // Achievements API
 export const achievementsApi = {
   getAchievements: () => api.get('/achievements'),
-  getUserAchievements: (username: string) =>
-    api.get(`/users/${username}/achievements`),
-  claimAchievement: (achievementId: string) =>
-    api.post(`/achievements/${achievementId}/claim`),
+  getUserAchievements: (username: string) => api.get(`/users/${username}/achievements`),
+  claimAchievement: (achievementId: string) => api.post(`/achievements/${achievementId}/claim`),
 };
 
 // Analytics API
 export const analyticsApi = {
-  getUserStats: (username: string) =>
-    api.get(`/users/${username}/stats`),
-  getGameStats: (gameId: string) =>
-    api.get(`/games/${gameId}/stats`),
-  getTeamStats: (teamId: string) =>
-    api.get(`/teams/${teamId}/stats`),
+  getUserStats: (username: string) => api.get(`/users/${username}/stats`),
+  getGameStats: (gameId: string) => api.get(`/games/${gameId}/stats`),
+  getTeamStats: (teamId: string) => api.get(`/teams/${teamId}/stats`),
 };
 
-export default api; 
+export default api;

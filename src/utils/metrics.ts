@@ -40,18 +40,13 @@ class MetricsTracker {
   }
 
   // Type checking metrics
-  public trackTypeCheck(
-    type: string,
-    success: boolean,
-    duration: number,
-    context: string
-  ): void {
+  public trackTypeCheck(type: string, success: boolean, duration: number, context: string): void {
     const metric: TypeMetric = {
       timestamp: Date.now(),
       type,
       success,
       duration,
-      context
+      context,
     };
 
     this.typeMetrics.push(metric);
@@ -76,7 +71,7 @@ class MetricsTracker {
       validationType,
       success,
       errors,
-      context
+      context,
     };
 
     this.validationMetrics.push(metric);
@@ -101,7 +96,7 @@ class MetricsTracker {
       guardName,
       success,
       value,
-      context
+      context,
     };
 
     this.typeGuardMetrics.push(metric);
@@ -192,11 +187,7 @@ class MetricsTracker {
 export const metricsTracker = MetricsTracker.getInstance();
 
 // Utility functions for common metrics tracking scenarios
-export const trackValidationFailure = (
-  type: string,
-  errors: string[],
-  context: string
-): void => {
+export const trackValidationFailure = (type: string, errors: string[], context: string): void => {
   metricsTracker.trackValidation(type, false, context, errors);
 };
 
@@ -225,4 +216,4 @@ export const measureTypeCheck = async <T>(
     metricsTracker.trackTypeCheck(type, false, duration, context);
     throw error;
   }
-}; 
+};

@@ -9,22 +9,22 @@ const api = axios.create({
 
 // Request interceptor for API calls
 api.interceptors.request.use(
-  (config) => {
+  config => {
     const token = localStorage.getItem('gamedin_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Response interceptor for API calls
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -45,4 +45,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api; 
+export default api;

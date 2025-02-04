@@ -67,7 +67,7 @@ const Home: React.FC = () => {
           type="video/mp4"
         />
       </VideoBackground>
-      
+
       <ContentOverlay>
         <Container maxWidth="md" sx={{ textAlign: 'center', py: 15 }}>
           <Typography
@@ -81,7 +81,7 @@ const Home: React.FC = () => {
           >
             GameDin
           </Typography>
-          
+
           <Typography
             variant="h4"
             sx={{
@@ -92,7 +92,7 @@ const Home: React.FC = () => {
           >
             Revolutionizing Gaming Social Networks
           </Typography>
-          
+
           <Typography
             variant="body1"
             sx={{
@@ -102,9 +102,11 @@ const Home: React.FC = () => {
               mx: 'auto',
             }}
           >
-            GameDin is transforming how gamers connect, share, and earn. Our platform combines social networking with blockchain technology to create a unique ecosystem where gaming achievements translate to real value.
+            GameDin is transforming how gamers connect, share, and earn. Our platform combines
+            social networking with blockchain technology to create a unique ecosystem where gaming
+            achievements translate to real value.
           </Typography>
-          
+
           <Box sx={{ mt: 4 }}>
             <StyledButton
               variant="contained"
@@ -141,51 +143,56 @@ const Home: React.FC = () => {
           >
             Our Mission
           </Typography>
-          
+
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
               <FeatureCard elevation={0}>
-                <ConnectWithoutContactIcon sx={{ fontSize: 60, color: theme => theme.palette.primary.main, mb: 2 }} />
+                <ConnectWithoutContactIcon
+                  sx={{ fontSize: 60, color: theme => theme.palette.primary.main, mb: 2 }}
+                />
                 <Typography variant="h5" sx={{ mb: 2 }}>
                   Connect & Share
                 </Typography>
                 <Typography>
-                  Build meaningful connections with fellow gamers worldwide. Share your gaming moments, achievements, and stories.
+                  Build meaningful connections with fellow gamers worldwide. Share your gaming
+                  moments, achievements, and stories.
                 </Typography>
               </FeatureCard>
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <FeatureCard elevation={0}>
-                <TokenIcon sx={{ fontSize: 60, color: theme => theme.palette.primary.main, mb: 2 }} />
+                <TokenIcon
+                  sx={{ fontSize: 60, color: theme => theme.palette.primary.main, mb: 2 }}
+                />
                 <Typography variant="h5" sx={{ mb: 2 }}>
                   Earn & Trade
                 </Typography>
                 <Typography>
-                  Turn your gaming passion into value with our GameDin Token. Participate in the gaming economy of the future.
+                  Turn your gaming passion into value with our GameDin Token. Participate in the
+                  gaming economy of the future.
                 </Typography>
               </FeatureCard>
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <FeatureCard elevation={0}>
-                <GamesIcon sx={{ fontSize: 60, color: theme => theme.palette.primary.main, mb: 2 }} />
+                <GamesIcon
+                  sx={{ fontSize: 60, color: theme => theme.palette.primary.main, mb: 2 }}
+                />
                 <Typography variant="h5" sx={{ mb: 2 }}>
                   Play & Grow
                 </Typography>
                 <Typography>
-                  Discover new games, join communities, and level up your gaming experience with like-minded players.
+                  Discover new games, join communities, and level up your gaming experience with
+                  like-minded players.
                 </Typography>
               </FeatureCard>
             </Grid>
           </Grid>
-          
+
           <Box sx={{ textAlign: 'center', mt: 8 }}>
-            <StyledButton
-              variant="contained"
-              color="primary"
-              onClick={() => navigate('/about')}
-            >
+            <StyledButton variant="contained" color="primary" onClick={() => navigate('/about')}>
               Learn More About Us
             </StyledButton>
           </Box>

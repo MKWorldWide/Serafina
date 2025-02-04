@@ -98,4 +98,4 @@ export interface IAuthUser extends IUser {
   token: string;
   refreshToken: string;
   expiresAt: ISO8601Date;
-} 
+}

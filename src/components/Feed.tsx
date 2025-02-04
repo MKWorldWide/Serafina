@@ -1,259 +1,221 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { 
-  Box, 
-  Container, 
-  CircularProgress, 
-  Typography,
-  Divider,
-  Paper,
-  useTheme
-} from '@mui/material';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { FeedItem, WebSocketMessage } from '../types/social';
-import { websocketService } from '../services/websocket';
-import PostCard from './PostCard';
-import CreatePost from './CreatePost';
-import { useAuth } from '../context/AuthContext';
-
-const ITEMS_PER_PAGE = 10;
+import { websocketService, WebSocketMessage } from '../services/websocket';
+import useStore from '../store/useStore';
+import { IActivity } from '../types/social';
 
 const Feed: React.FC = () => {
-  const { user } = useAuth();
-  const [items, setItems] = useState<FeedItem[]>([]);
+  const [activities, setActivities] = useState<IActivity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const lastItemRef = useRef<string | null>(null);
+  const { ref, inView } = useInView();
+  const user = useStore(state => state.user);
 
-  const { ref, inView } = useInView({
-    threshold: 0.5,
-    triggerOnce: false,
-  });
-
-  const fetchFeedItems = useCallback(async () => {
-    if (loading || !hasMore) return;
+  const fetchActivities = useCallback(async (reset = false) => {
+    if (loading || (!hasMore && !reset)) return;
 
     try {
       setLoading(true);
-      setError(null);
-
-      const response = await fetch(
-        `/api/feed?page=${page}&limit=${ITEMS_PER_PAGE}&lastItem=${lastItemRef.current || ''}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch feed items');
-      }
-
+      const response = await fetch(`/api/activities?page=${reset ? 1 : page}&limit=10`);
       const data = await response.json();
-      const newItems = data.items;
 
-      setItems(prev => [...prev, ...newItems]);
-      setHasMore(newItems.length === ITEMS_PER_PAGE);
-      setPage(prev => prev + 1);
-      
-      if (newItems.length > 0) {
-        lastItemRef.current = newItems[newItems.length - 1].id;
-      }
+      setActivities(prev => (reset ? data.activities : [...prev, ...data.activities]));
+      setHasMore(data.hasMore);
+      setPage(prev => (reset ? 2 : prev + 1));
+      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError('Failed to load activities');
     } finally {
       setLoading(false);
     }
-  }, [page, loading, hasMore]);
+  }, [loading, hasMore, page]);
 
   useEffect(() => {
-    if (inView) {
-      fetchFeedItems();
+    if (inView && hasMore && !loading) {
+      fetchActivities();
     }
-  }, [inView, fetchFeedItems]);
+  }, [inView, hasMore, loading, fetchActivities]);
 
   useEffect(() => {
-    // Subscribe to real-time updates
-    const unsubscribe = websocketService.subscribe('post', (message: WebSocketMessage) => {
-      if (message.type === 'post') {
-        switch (message.action) {
-          case 'create':
-            setItems(prev => [message.payload, ...prev]);
-            break;
-          case 'update':
-            setItems(prev =>
-              prev.map(item =>
-                item.id === message.payload.id
-                  ? { ...item, ...message.payload }
-                  : item
-              )
-            );
-            break;
-          case 'delete':
-            setItems(prev =>
-              prev.filter(item => item.id !== message.payload.id)
-            );
-            break;
-        }
+    if (!user) return;
+
+    const handleActivityUpdate = (message: WebSocketMessage) => {
+      if (message.type === 'ACTIVITY_CREATE') {
+        setActivities(prev => [message.data.activity!, ...prev]);
+      } else if (message.type === 'ACTIVITY_UPDATE') {
+        setActivities(prev =>
+          prev.map(activity =>
+            activity.id === message.data.activity!.id
+              ? { ...activity, ...message.data.activity }
+              : activity
+          )
+        );
+      } else if (message.type === 'ACTIVITY_DELETE') {
+        setActivities(prev => prev.filter(activity => activity.id !== message.data.activityId));
       }
-    });
+    };
+
+    const unsubscribeHandlers = [
+      websocketService.subscribe('ACTIVITY_CREATE', handleActivityUpdate),
+      websocketService.subscribe('ACTIVITY_UPDATE', handleActivityUpdate),
+      websocketService.subscribe('ACTIVITY_DELETE', handleActivityUpdate),
+    ];
 
     return () => {
-      unsubscribe();
+      unsubscribeHandlers.forEach(unsubscribe => unsubscribe());
     };
-  }, []);
+  }, [user]);
 
-  const handlePostCreate = async (content: string) => {
+  const handleLike = async (activityId: string) => {
     if (!user) return;
 
     try {
-      // Optimistic update
-      const tempId = `temp-${Date.now()}`;
-      const tempPost: FeedItem = {
-        id: tempId,
-        type: 'post',
-        content: {
-          text: content,
-          richText: null,
-          attachments: [],
-        },
-        author: user,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        reactions: [],
-        comments: [],
-        score: 0,
-        position: 0,
-        seen: false,
-        promoted: false,
-      };
-
-      setItems(prev => [tempPost, ...prev]);
-
-      const response = await fetch('/api/posts', {
+      await fetch(`/api/activities/${activityId}/like`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create post');
-      }
-
-      const createdPost = await response.json();
-
-      // Update with real post data
-      setItems(prev =>
-        prev.map(item =>
-          item.id === tempId ? { ...item, ...createdPost } : item
+      setActivities(prev =>
+        prev.map(activity =>
+          activity.id === activityId
+            ? { ...activity, likes: activity.likes + 1, isLiked: true }
+            : activity
         )
       );
-    } catch (err) {
-      // Revert optimistic update
-      setItems(prev => prev.filter(item => item.id !== `temp-${Date.now()}`));
-      setError(err instanceof Error ? err.message : 'Failed to create post');
+    } catch (error) {
+      console.error('Failed to like activity:', error);
     }
   };
 
-  const handleLike = (postId: string) => {
-    // Implementation of handleLike function
+  const handleComment = async (activityId: string, comment: string) => {
+    if (!user || !comment.trim()) return;
+
+    try {
+      const response = await fetch(`/api/activities/${activityId}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: comment }),
+      });
+
+      const newComment = await response.json();
+
+      setActivities(prev =>
+        prev.map(activity =>
+          activity.id === activityId
+            ? { ...activity, comments: [...activity.comments, newComment] }
+            : activity
+        )
+      );
+    } catch (error) {
+      console.error('Failed to post comment:', error);
+    }
   };
 
-  const handleComment = (postId: string, comment: string) => {
-    // Implementation of handleComment function
-  };
-
-  const handleShare = (postId: string) => {
-    // Implementation of handleShare function
-  };
-
-  const transformFeedItemToPost = (item: FeedItem) => {
-    return {
-      id: item.id,
-      content: item.content.text,
-      author: {
-        id: item.author.id,
-        username: item.author.username,
-        avatarUrl: item.author.avatarUrl,
-        rank: item.author.rank,
-      },
-      createdAt: item.createdAt,
-      likes: item.reactions.filter(r => r.type === 'like').length,
-      comments: item.comments.length,
-      liked: item.reactions.some(r => r.type === 'like' && r.userId === user?.id),
-      media: item.content.attachments.map(attachment => ({
-        type: attachment.type as 'image' | 'video',
-        url: attachment.url,
-      })),
-      tags: [],
-    };
-  };
-
-  if (!user) {
+  if (error) {
     return (
-      <Container maxWidth="md" sx={{ mt: 10, mb: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom>
-          Please sign in to view the feed
-        </Typography>
-      </Container>
+      <div className="alert alert-error">
+        <span>{error}</span>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        maxWidth: 800,
-        mx: 'auto',
-        p: 2,
-      }}
-    >
-      <Paper
-        sx={{
-          p: 2,
-          mb: 3,
-          backgroundColor: 'rgba(8, 95, 128, 0.1)',
-        }}
-      >
-        <CreatePost onSubmit={handlePostCreate} />
-      </Paper>
+    <div className="space-y-4">
+      {activities.map((activity, index) => (
+        <div
+          key={activity.id}
+          ref={index === activities.length - 1 ? ref : undefined}
+          className="card bg-base-100 shadow-xl"
+        >
+          <div className="card-body">
+            <div className="flex items-center space-x-4">
+              <div className="avatar">
+                <div className="w-12 h-12 rounded-full">
+                  <img src={activity.user.avatar} alt={activity.user.username} />
+                </div>
+              </div>
+              <div>
+                <h3 className="font-bold">{activity.user.username}</h3>
+                <time className="text-sm opacity-60">{activity.createdAt}</time>
+              </div>
+            </div>
 
-      {items.map((item, index) => (
-        <React.Fragment key={item.id}>
-          <PostCard
-            post={transformFeedItemToPost(item)}
-            ref={index === items.length - 2 ? ref : undefined}
-            onLike={handleLike}
-            onComment={handleComment}
-            onShare={handleShare}
-          />
-          {index < items.length - 1 && (
-            <Divider sx={{ my: 2 }} />
-          )}
-        </React.Fragment>
+            <p className="py-4">{activity.content}</p>
+
+            {activity.media && (
+              <div className="rounded-lg overflow-hidden">
+                {activity.media.type === 'image' ? (
+                  <img src={activity.media.url || activity.media.preview} alt="Activity media" className="w-full" />
+                ) : (
+                  <video src={activity.media.url || activity.media.preview} controls className="w-full" />
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center space-x-4 mt-4">
+              <button
+                className={`btn btn-ghost gap-2 ${activity.isLiked ? 'text-primary' : ''}`}
+                onClick={() => handleLike(activity.id)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+                {activity.likes} Likes
+              </button>
+              <button className="btn btn-ghost gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+                {activity.comments.length} Comments
+              </button>
+            </div>
+          </div>
+        </div>
       ))}
 
       {loading && (
-        <Box display="flex" justifyContent="center" my={4}>
-          <CircularProgress />
-        </Box>
+        <div className="flex justify-center p-4">
+          <div className="loading loading-spinner loading-lg"></div>
+        </div>
       )}
 
-      {error && (
-        <Typography color="error" align="center" sx={{ my: 2 }}>
-          {error}
-        </Typography>
+      {!hasMore && activities.length > 0 && (
+        <div className="text-center text-gray-500 py-4">No more activities to load</div>
       )}
 
-      {!hasMore && items.length > 0 && (
-        <Typography
-          align="center"
-          color="textSecondary"
-          sx={{ my: 4 }}
-        >
-          No more posts to show
-        </Typography>
+      {!loading && activities.length === 0 && (
+        <div className="text-center text-gray-500 py-4">No activities yet</div>
       )}
-    </Box>
+    </div>
   );
 };
 
-export default Feed; 
+export default Feed;

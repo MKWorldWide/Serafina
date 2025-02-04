@@ -103,7 +103,8 @@ const Jobs: React.FC = () => {
           max: 80000,
           currency: 'USD',
         },
-        description: 'We\'re looking for an experienced Tournament Manager to organize and oversee our competitive gaming events.',
+        description:
+          "We're looking for an experienced Tournament Manager to organize and oversee our competitive gaming events.",
         requirements: [
           'Previous experience in esports tournament management',
           'Strong understanding of competitive gaming scenes',
@@ -129,7 +130,8 @@ const Jobs: React.FC = () => {
           max: 8000,
           currency: 'USD',
         },
-        description: 'Join our team of content creators and produce engaging gaming content for our platforms.',
+        description:
+          'Join our team of content creators and produce engaging gaming content for our platforms.',
         requirements: [
           'Proven track record in content creation',
           'Strong presence on social media platforms',
@@ -150,7 +152,8 @@ const Jobs: React.FC = () => {
   };
 
   const filteredJobs = jobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch =
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || job.skills.includes(selectedCategory);
     const matchesType = selectedType === 'all' || job.type === selectedType;
@@ -171,7 +174,7 @@ const Jobs: React.FC = () => {
               size="small"
               placeholder="Search jobs..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               InputProps={{
                 startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
               }}
@@ -183,7 +186,7 @@ const Jobs: React.FC = () => {
               <Select
                 value={selectedCategory}
                 label="Category"
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={e => setSelectedCategory(e.target.value)}
               >
                 <MenuItem value="all">All Categories</MenuItem>
                 <MenuItem value="gaming">Gaming</MenuItem>
@@ -198,7 +201,7 @@ const Jobs: React.FC = () => {
               <Select
                 value={selectedType}
                 label="Type"
-                onChange={(e) => setSelectedType(e.target.value)}
+                onChange={e => setSelectedType(e.target.value)}
               >
                 <MenuItem value="all">All Types</MenuItem>
                 <MenuItem value="full-time">Full-time</MenuItem>
@@ -209,11 +212,7 @@ const Jobs: React.FC = () => {
             </FormControl>
           </Grid>
           <Grid item>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleCreateJob}
-            >
+            <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateJob}>
               Post Job
             </Button>
           </Grid>
@@ -222,16 +221,13 @@ const Jobs: React.FC = () => {
 
       {/* Jobs Grid */}
       <Grid container spacing={3}>
-        {filteredJobs.map((job) => (
+        {filteredJobs.map(job => (
           <Grid item xs={12} key={job.id}>
             <StyledCard>
               <CardContent>
                 <Grid container spacing={3}>
                   <Grid item>
-                    <Avatar
-                      src={job.company.logo}
-                      sx={{ width: 64, height: 64 }}
-                    />
+                    <Avatar src={job.company.logo} sx={{ width: 64, height: 64 }} />
                   </Grid>
                   <Grid item xs>
                     <Box display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -244,16 +240,8 @@ const Jobs: React.FC = () => {
                         </Typography>
                       </Box>
                       <Box display="flex" gap={1}>
-                        <CategoryChip
-                          label={job.skills[0]}
-                          size="small"
-                          category={job.skills[0]}
-                        />
-                        <Chip
-                          label={job.type}
-                          size="small"
-                          variant="outlined"
-                        />
+                        <CategoryChip label={job.skills[0]} size="small" category={job.skills[0]} />
+                        <Chip label={job.type} size="small" variant="outlined" />
                       </Box>
                     </Box>
 
@@ -261,25 +249,22 @@ const Jobs: React.FC = () => {
                       <Grid item xs={12} sm={6} md={3}>
                         <Box display="flex" alignItems="center" gap={1}>
                           <LocationOnIcon color="action" />
-                          <Typography variant="body2">
-                            {job.company.location}
-                          </Typography>
+                          <Typography variant="body2">{job.company.location}</Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Box display="flex" alignItems="center" gap={1}>
                           <AttachMoneyIcon color="action" />
                           <Typography variant="body2">
-                            {job.salary.currency} {job.salary.min.toLocaleString()} - {job.salary.max.toLocaleString()}
+                            {job.salary.currency} {job.salary.min.toLocaleString()} -{' '}
+                            {job.salary.max.toLocaleString()}
                           </Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Box display="flex" alignItems="center" gap={1}>
                           <WorkIcon color="action" />
-                          <Typography variant="body2">
-                            {job.skills.join(', ')}
-                          </Typography>
+                          <Typography variant="body2">{job.skills.join(', ')}</Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
@@ -298,12 +283,7 @@ const Jobs: React.FC = () => {
 
                     <Box display="flex" gap={1} flexWrap="wrap">
                       {job.skills.map((skill, index) => (
-                        <Chip
-                          key={index}
-                          label={skill}
-                          size="small"
-                          variant="outlined"
-                        />
+                        <Chip key={index} label={skill} size="small" variant="outlined" />
                       ))}
                     </Box>
                   </Grid>
@@ -332,16 +312,8 @@ const Jobs: React.FC = () => {
         <DialogTitle>Post a Job</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
-            <TextField
-              fullWidth
-              label="Job Title"
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Company Name"
-              margin="normal"
-            />
+            <TextField fullWidth label="Job Title" margin="normal" />
+            <TextField fullWidth label="Company Name" margin="normal" />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth margin="normal">
@@ -367,36 +339,16 @@ const Jobs: React.FC = () => {
                 </FormControl>
               </Grid>
             </Grid>
-            <TextField
-              fullWidth
-              label="Location"
-              margin="normal"
-            />
+            <TextField fullWidth label="Location" margin="normal" />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Minimum Salary"
-                  type="number"
-                  margin="normal"
-                />
+                <TextField fullWidth label="Minimum Salary" type="number" margin="normal" />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Maximum Salary"
-                  type="number"
-                  margin="normal"
-                />
+                <TextField fullWidth label="Maximum Salary" type="number" margin="normal" />
               </Grid>
             </Grid>
-            <TextField
-              fullWidth
-              label="Description"
-              multiline
-              rows={4}
-              margin="normal"
-            />
+            <TextField fullWidth label="Description" multiline rows={4} margin="normal" />
             <TextField
               fullWidth
               label="Requirements (one per line)"
@@ -404,11 +356,7 @@ const Jobs: React.FC = () => {
               rows={4}
               margin="normal"
             />
-            <TextField
-              fullWidth
-              label="Skills (comma separated)"
-              margin="normal"
-            />
+            <TextField fullWidth label="Skills (comma separated)" margin="normal" />
           </Box>
         </DialogContent>
         <DialogActions>
@@ -422,4 +370,4 @@ const Jobs: React.FC = () => {
   );
 };
 
-export default Jobs; 
+export default Jobs;

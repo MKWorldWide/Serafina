@@ -125,9 +125,15 @@ export interface FeedState {
 }
 
 export interface WebSocketMessage {
-  type: 'post' | 'comment' | 'reaction' | 'message' | 'notification' | 'presence' | 'typing' | 'ping';
-  action: 'create' | 'update' | 'delete';
-  payload: any; // Type this properly based on the message type
+  id: string;
+  type: 'ACTIVITY_CREATE' | 'ACTIVITY_UPDATE' | 'ACTIVITY_DELETE' | 'MESSAGE_CREATE' | 'MESSAGE_UPDATE' | 'MESSAGE_DELETE';
+  data: {
+    activity?: IActivity;
+    activityId?: string;
+    message?: IMessage;
+    messageId?: string;
+  };
+  timestamp: string;
 }
 
 export interface CacheConfig {
@@ -137,176 +143,125 @@ export interface CacheConfig {
   dependencies: string[];
 }
 
-export interface IMessage {
+export interface IUser {
   id: string;
-  content: string;
-  sender: User;
-  recipient: User;
+  username: string;
+  email: string;
+  avatar: string;
+  bio?: string;
+  level: number;
+  xp: number;
+  nextLevelXp: number;
+  gamesCount: number;
+  matchesCount: number;
+  friendsCount: number;
   createdAt: string;
-  updatedAt?: string;
-  readAt?: string;
-  deletedAt?: string;
-  editHistory?: {
-    content: string;
-    editedAt: string;
-  }[];
-  attachments?: Attachment[];
-  replyTo?: IMessage;
-  reactions?: Reaction[];
-  type: 'text' | 'file' | 'image' | 'video' | 'system';
-  metadata?: {
-    isEdited: boolean;
-    isDeleted: boolean;
-    deliveredAt?: string;
-    readAt?: string;
-  };
-}
-
-export interface IConversation {
-  id: string;
-  type: 'direct' | 'group';
-  name?: string;
-  avatar?: string;
-  participants: IConversationParticipant[];
-  lastMessage?: IMessage;
-  unreadCount: number;
   updatedAt: string;
-  createdAt: string;
-  metadata?: {
-    isArchived: boolean;
-    isMuted: boolean;
-    isPinned: boolean;
-    theme?: string;
-    customEmoji?: string[];
-  };
 }
 
 export interface IConversationParticipant {
-  user: User;
-  role: 'owner' | 'admin' | 'member';
-  joinedAt: string;
-  lastSeen?: string;
-  isOnline: boolean;
-  typing?: boolean;
-  status?: 'active' | 'inactive' | 'blocked' | 'left';
+  id: string;
+  user: IUser;
+  conversation: IConversation;
+  lastRead?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IAttachment {
+  id: string;
+  type: 'image' | 'video' | 'file';
+  url: string;
+  filename: string;
+  size: number;
+  mimeType: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IMessage {
+  id: string;
+  content: string;
+  sender: IUser;
+  conversation: IConversation;
+  attachments?: IAttachment[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IMessageInput {
   content: string;
   recipientId: string;
   attachments?: File[];
-  replyToMessageId?: string;
-  metadata?: Record<string, any>;
 }
 
-export interface ITeam {
+export interface IConversation {
   id: string;
-  name: string;
-  description?: string;
-  avatar?: string;
-  banner?: string;
-  owner: User;
-  members: ITeamMember[];
-  games: string[];
-  stats: {
-    wins: number;
-    losses: number;
-    draws: number;
-    ranking?: number;
-    elo?: number;
-  };
+  participants: IConversationParticipant[];
+  lastMessage?: IMessage;
+  unreadCount: number;
   createdAt: string;
   updatedAt: string;
-  metadata?: {
-    isVerified: boolean;
-    region: string;
-    timezone: string;
-    languages: string[];
-    recruitment: {
-      isOpen: boolean;
-      positions: string[];
-      requirements?: string[];
-    };
-  };
 }
 
-export interface ITeamMember {
-  user: User;
-  role: 'owner' | 'captain' | 'manager' | 'player' | 'substitute';
-  joinedAt: string;
-  status: 'active' | 'inactive' | 'suspended';
-  permissions: string[];
-  stats?: {
-    gamesPlayed: number;
-    wins: number;
-    losses: number;
-    performance: number;
-  };
+export interface IActivity {
+  id: string;
+  type: 'post' | 'achievement' | 'game';
+  content: string;
+  user: IUser;
+  likes: number;
+  isLiked: boolean;
+  comments: IComment[];
+  media?: IPostMedia;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface ITournament {
+export interface IComment {
+  id: string;
+  content: string;
+  user: IUser;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IAchievement {
   id: string;
   name: string;
   description: string;
-  game: string;
-  format: 'single-elimination' | 'double-elimination' | 'round-robin' | 'swiss';
-  status: 'upcoming' | 'registration' | 'in-progress' | 'completed';
-  startDate: string;
-  endDate: string;
-  registrationDeadline: string;
-  maxTeams: number;
-  registeredTeams: ITeam[];
-  brackets: ITournamentBracket[];
-  prizes: ITournamentPrize[];
-  rules: string[];
-  organizer: User;
-  moderators: User[];
-  metadata?: {
-    region: string;
-    timezone: string;
-    streamUrl?: string;
-    discord?: string;
-    sponsors?: {
-      name: string;
-      logo: string;
-      website: string;
-    }[];
+  icon: string;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  progress?: {
+    current: number;
+    required: number;
   };
+  game?: string;
+  unlockedAt?: string;
 }
 
-export interface ITournamentBracket {
+export interface IGamePreference {
   id: string;
-  round: number;
-  matches: ITournamentMatch[];
+  name: string;
+  genre: string;
+  platform: string;
+  skillLevel: 'beginner' | 'intermediate' | 'advanced' | 'pro';
 }
 
-export interface ITournamentMatch {
-  id: string;
-  team1: ITeam;
-  team2: ITeam;
-  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
-  scheduledTime: string;
-  result?: {
-    winner: string;
-    score: {
-      team1: number;
-      team2: number;
-    };
-    stats?: Record<string, any>;
-  };
-  metadata?: {
-    streamUrl?: string;
-    referee?: User;
-    notes?: string;
-  };
+export interface ISocialLink {
+  platform: string;
+  url: string;
 }
 
-export interface ITournamentPrize {
-  position: number;
-  reward: {
-    type: 'cash' | 'item' | 'points';
-    amount: number;
-    currency?: string;
-    description: string;
-  };
-} 
+export interface IUserProfile extends IUser {
+  gamePreferences: IGamePreference[];
+  socialLinks: ISocialLink[];
+  achievements: IAchievement[];
+  bannerUrl?: string;
+}
+
+export interface IPostMedia {
+  type: 'image' | 'video';
+  file: File;
+  preview: string;
+  url?: string;
+}

@@ -8,24 +8,18 @@ import ActivityPost from '../ActivityFeed/ActivityPost';
 const UserActivity = ({ userId }) => {
   const { ref, inView } = useInView();
 
-  const {
-    data,
-    isLoading,
-    isError,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage
-  } = useInfiniteQuery({
-    queryKey: ['userActivity', userId],
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await api.get(`/users/${userId}/activities`, {
-        params: { page: pageParam, limit: 10 }
-      });
-      return data;
-    },
-    getNextPageParam: (lastPage) => lastPage.nextPage || undefined,
-    staleTime: 1000 * 60 * 2, // Cache for 2 minutes
-  });
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ['userActivity', userId],
+      queryFn: async ({ pageParam = 1 }) => {
+        const { data } = await api.get(`/users/${userId}/activities`, {
+          params: { page: pageParam, limit: 10 },
+        });
+        return data;
+      },
+      getNextPageParam: lastPage => lastPage.nextPage || undefined,
+      staleTime: 1000 * 60 * 2, // Cache for 2 minutes
+    });
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -33,7 +27,7 @@ const UserActivity = ({ userId }) => {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const handleLike = async (activityId) => {
+  const handleLike = async activityId => {
     await api.post(`/activities/${activityId}/like`);
   };
 
@@ -57,7 +51,7 @@ const UserActivity = ({ userId }) => {
     );
   }
 
-  const activities = data?.pages.flatMap((page) => page.activities) || [];
+  const activities = data?.pages.flatMap(page => page.activities) || [];
 
   if (activities.length === 0) {
     return (
@@ -81,11 +75,7 @@ const UserActivity = ({ userId }) => {
             exit={{ opacity: 0, y: -20 }}
             transition={{ delay: index * 0.1 }}
           >
-            <ActivityPost
-              activity={activity}
-              onLike={handleLike}
-              onComment={handleComment}
-            />
+            <ActivityPost activity={activity} onLike={handleLike} onComment={handleComment} />
           </motion.div>
         ))}
       </AnimatePresence>
@@ -113,4 +103,4 @@ const UserActivity = ({ userId }) => {
   );
 };
 
-export default UserActivity; 
+export default UserActivity;

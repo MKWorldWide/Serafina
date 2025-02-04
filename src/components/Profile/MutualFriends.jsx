@@ -41,7 +41,7 @@ const MutualFriends = ({ userId }) => {
           Mutual Friends
           <span className="badge badge-primary">{mutualFriends.length}</span>
         </h3>
-        
+
         <div className="space-y-3">
           {mutualFriends.map((friend, index) => (
             <motion.div
@@ -66,22 +66,18 @@ const MutualFriends = ({ userId }) => {
                   </div>
                 </div>
               </Link>
-              
-              {friend.isOnline && (
-                <div className="badge badge-success badge-sm">Online</div>
-              )}
+
+              {friend.isOnline && <div className="badge badge-success badge-sm">Online</div>}
             </motion.div>
           ))}
         </div>
 
         {mutualFriends.length > 5 && (
-          <button className="btn btn-ghost btn-sm mt-2">
-            View All ({mutualFriends.length})
-          </button>
+          <button className="btn btn-ghost btn-sm mt-2">View All ({mutualFriends.length})</button>
         )}
       </div>
     </motion.div>
   );
 };
 
-export default MutualFriends; 
+export default MutualFriends;

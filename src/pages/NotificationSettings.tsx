@@ -73,7 +73,7 @@ const NotificationSettings: React.FC = () => {
     value: boolean
   ) => {
     if (key in preferences.types) {
-      setPreferences((prev) => ({
+      setPreferences(prev => ({
         ...prev,
         types: {
           ...prev.types,
@@ -81,7 +81,7 @@ const NotificationSettings: React.FC = () => {
         },
       }));
     } else {
-      setPreferences((prev) => ({
+      setPreferences(prev => ({
         ...prev,
         [key]: value,
       }));
@@ -95,7 +95,7 @@ const NotificationSettings: React.FC = () => {
         hour: '2-digit',
         minute: '2-digit',
       });
-      setPreferences((prev) => ({
+      setPreferences(prev => ({
         ...prev,
         doNotDisturb: {
           ...prev.doNotDisturb,
@@ -151,7 +151,7 @@ const NotificationSettings: React.FC = () => {
                     control={
                       <Switch
                         checked={preferences.email}
-                        onChange={(e) => handleChange('email', e.target.checked)}
+                        onChange={e => handleChange('email', e.target.checked)}
                       />
                     }
                     label={
@@ -165,7 +165,7 @@ const NotificationSettings: React.FC = () => {
                     control={
                       <Switch
                         checked={preferences.push}
-                        onChange={(e) => handleChange('push', e.target.checked)}
+                        onChange={e => handleChange('push', e.target.checked)}
                       />
                     }
                     label={
@@ -179,7 +179,7 @@ const NotificationSettings: React.FC = () => {
                     control={
                       <Switch
                         checked={preferences.desktop}
-                        onChange={(e) => handleChange('desktop', e.target.checked)}
+                        onChange={e => handleChange('desktop', e.target.checked)}
                       />
                     }
                     label={
@@ -193,7 +193,7 @@ const NotificationSettings: React.FC = () => {
                     control={
                       <Switch
                         checked={preferences.sounds}
-                        onChange={(e) => handleChange('sounds', e.target.checked)}
+                        onChange={e => handleChange('sounds', e.target.checked)}
                       />
                     }
                     label={
@@ -222,9 +222,7 @@ const NotificationSettings: React.FC = () => {
                       control={
                         <Switch
                           checked={enabled}
-                          onChange={(e) =>
-                            handleChange(type as NotificationType, e.target.checked)
-                          }
+                          onChange={e => handleChange(type as NotificationType, e.target.checked)}
                         />
                       }
                       label={type.replace('_', ' ').toLowerCase()}
@@ -248,8 +246,8 @@ const NotificationSettings: React.FC = () => {
                     control={
                       <Switch
                         checked={preferences.doNotDisturb.enabled}
-                        onChange={(e) =>
-                          setPreferences((prev) => ({
+                        onChange={e =>
+                          setPreferences(prev => ({
                             ...prev,
                             doNotDisturb: {
                               ...prev.doNotDisturb,
@@ -266,12 +264,12 @@ const NotificationSettings: React.FC = () => {
                       <TimePicker
                         label="From"
                         value={new Date(`2000-01-01T${preferences.doNotDisturb.from}`)}
-                        onChange={(newValue) => handleTimeChange('from', newValue)}
+                        onChange={newValue => handleTimeChange('from', newValue)}
                       />
                       <TimePicker
                         label="To"
                         value={new Date(`2000-01-01T${preferences.doNotDisturb.to}`)}
-                        onChange={(newValue) => handleTimeChange('to', newValue)}
+                        onChange={newValue => handleTimeChange('to', newValue)}
                       />
                     </Box>
                   )}
@@ -293,10 +291,10 @@ const NotificationSettings: React.FC = () => {
         <Snackbar
           open={snackbar.open}
           autoHideDuration={6000}
-          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
         >
           <Alert
-            onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+            onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
             severity={snackbar.severity}
             sx={{ width: '100%' }}
           >
@@ -308,4 +306,4 @@ const NotificationSettings: React.FC = () => {
   );
 };
 
-export default NotificationSettings; 
+export default NotificationSettings;

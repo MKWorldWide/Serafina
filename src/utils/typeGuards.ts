@@ -3,11 +3,14 @@ import { ValidationResult } from '../types/utilities';
 
 // Basic type guards
 export const isString = (value: unknown): value is string => typeof value === 'string';
-export const isNumber = (value: unknown): value is number => typeof value === 'number' && !isNaN(value);
+export const isNumber = (value: unknown): value is number =>
+  typeof value === 'number' && !isNaN(value);
 export const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean';
-export const isObject = (value: unknown): value is object => typeof value === 'object' && value !== null;
+export const isObject = (value: unknown): value is object =>
+  typeof value === 'object' && value !== null;
 export const isArray = <T>(value: unknown): value is T[] => Array.isArray(value);
-export const isDefined = <T>(value: T | undefined | null): value is T => value !== undefined && value !== null;
+export const isDefined = <T>(value: T | undefined | null): value is T =>
+  value !== undefined && value !== null;
 
 // Complex type guards
 export const isUserProfile = (obj: unknown): obj is IUserProfile => {
@@ -29,7 +32,7 @@ export const validateEmail = (email: string): boolean => {
 
 export const validatePassword = (password: string): ValidationResult<string> => {
   const errors: string[] = [];
-  
+
   if (password.length < 8) {
     errors.push('Password must be at least 8 characters long');
   }
@@ -42,11 +45,11 @@ export const validatePassword = (password: string): ValidationResult<string> => 
   if (!/[0-9]/.test(password)) {
     errors.push('Password must contain at least one number');
   }
-  
+
   return {
     isValid: errors.length === 0,
     data: errors.length === 0 ? password : undefined,
-    errors: errors.length > 0 ? errors : undefined
+    errors: errors.length > 0 ? errors : undefined,
   };
 };
 
@@ -62,10 +65,7 @@ export function assertType<T>(
 }
 
 // Array type guards
-export const isArrayOfType = <T>(
-  arr: unknown,
-  guard: (item: unknown) => item is T
-): arr is T[] => {
+export const isArrayOfType = <T>(arr: unknown, guard: (item: unknown) => item is T): arr is T[] => {
   return Array.isArray(arr) && arr.every(guard);
 };
 
@@ -84,7 +84,7 @@ export const isValidUserProfileAsync = async (
   if (!isUserProfile(obj)) {
     return {
       isValid: false,
-      errors: ['Invalid user profile structure']
+      errors: ['Invalid user profile structure'],
     };
   }
 
@@ -99,12 +99,14 @@ export const isValidUserProfileAsync = async (
   return {
     isValid: errors.length === 0,
     data: errors.length === 0 ? obj : undefined,
-    errors: errors.length > 0 ? errors : undefined
+    errors: errors.length > 0 ? errors : undefined,
   };
 };
 
 // Type guard composition helper
-export const composeGuards = <T>(...guards: ((value: unknown) => value is T)[]): (value: unknown) => value is T => {
+export const composeGuards = <T>(
+  ...guards: ((value: unknown) => value is T)[]
+): ((value: unknown) => value is T) => {
   return (value: unknown): value is T => guards.every(guard => guard(value));
 };
 
@@ -116,4 +118,4 @@ export const isNullable = <T>(guard: (value: unknown) => value is T) => {
 // Optional type guard
 export const isOptional = <T>(guard: (value: unknown) => value is T) => {
   return (value: unknown): value is T | undefined => value === undefined || guard(value);
-}; 
+};

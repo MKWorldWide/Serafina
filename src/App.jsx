@@ -18,13 +18,13 @@ import Register from './components/Auth/Register';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const user = useStore((state) => state.user);
+  const user = useStore(state => state.user);
   return user ? children : <Navigate to="/login" />;
 };
 
 function App() {
   const { checkAuth } = useAuth();
-  const theme = useStore((state) => state.theme);
+  const theme = useStore(state => state.theme);
 
   useEffect(() => {
     checkAuth().catch(console.error);
@@ -43,54 +43,72 @@ function App() {
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
+
             {/* Protected Routes */}
-            <Route path="/" element={
-              <ProtectedRoute>
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  <div className="lg:col-span-3">
-                    <ProfileCard />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="lg:col-span-3">
+                      <ProfileCard />
+                    </div>
+                    <div className="lg:col-span-6">
+                      <ActivityFeed />
+                    </div>
+                    <div className="lg:col-span-3">
+                      <FriendsList />
+                      <NotificationCenter />
+                    </div>
                   </div>
-                  <div className="lg:col-span-6">
-                    <ActivityFeed />
-                  </div>
-                  <div className="lg:col-span-3">
-                    <FriendsList />
-                    <NotificationCenter />
-                  </div>
-                </div>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/profile/:userId" element={
-              <ProtectedRoute>
-                <ProfileCard />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/matches" element={
-              <ProtectedRoute>
-                <MatchFinder />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/messages/:chatId?" element={
-              <ProtectedRoute>
-                <Messages />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/friends" element={
-              <ProtectedRoute>
-                <FriendsList />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profile/:userId"
+              element={
+                <ProtectedRoute>
+                  <ProfileCard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/matches"
+              element={
+                <ProtectedRoute>
+                  <MatchFinder />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/messages/:chatId?"
+              element={
+                <ProtectedRoute>
+                  <Messages />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/friends"
+              element={
+                <ProtectedRoute>
+                  <FriendsList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </main>
       </div>
@@ -98,4 +116,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

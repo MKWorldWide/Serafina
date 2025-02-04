@@ -11,22 +11,22 @@ const api = axios.create({
 
 // Add a request interceptor
 api.interceptors.request.use(
-  (config) => {
+  config => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Add a response interceptor
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
 
     // If the error status is 401 and there is no originalRequest._retry flag,
@@ -97,29 +97,28 @@ export interface Post {
 }
 
 const authApi = {
-  login: (credentials: LoginCredentials) =>
-    api.post<AuthResponse>('/auth/login', credentials),
-  
+  login: (credentials: LoginCredentials) => api.post<AuthResponse>('/auth/login', credentials),
+
   register: (credentials: RegisterCredentials) =>
     api.post<AuthResponse>('/auth/register', credentials),
-  
+
   logout: () => api.post('/auth/logout'),
 };
 
 const postsApi = {
   getPosts: () => api.get<Post[]>('/posts'),
-  
+
   createPost: (data: FormData) =>
     api.post<Post>('/posts', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     }),
-  
+
   deletePost: (postId: string) => api.delete(`/posts/${postId}`),
-  
+
   likePost: (postId: string) => api.post(`/posts/${postId}/like`),
-  
+
   unlikePost: (postId: string) => api.delete(`/posts/${postId}/like`),
 };
 

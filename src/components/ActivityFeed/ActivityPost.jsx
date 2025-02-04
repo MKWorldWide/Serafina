@@ -15,7 +15,7 @@ const ActivityPost = ({ activity, onLike, onComment, currentUser }) => {
     }
   };
 
-  const handleComment = async (e) => {
+  const handleComment = async e => {
     e.preventDefault();
     if (!comment.trim() || !currentUser) return;
 
@@ -68,17 +68,36 @@ const ActivityPost = ({ activity, onLike, onComment, currentUser }) => {
             className={`btn btn-ghost gap-2 ${activity.isLiked ? 'text-primary' : ''}`}
             onClick={handleLike}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
             </svg>
             {activity.likes} Likes
           </button>
-          <button
-            className="btn btn-ghost gap-2"
-            onClick={() => setIsCommenting(!isCommenting)}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          <button className="btn btn-ghost gap-2" onClick={() => setIsCommenting(!isCommenting)}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              />
             </svg>
             {activity.comments.length} Comments
           </button>
@@ -93,13 +112,15 @@ const ActivityPost = ({ activity, onLike, onComment, currentUser }) => {
                 placeholder="Write a comment..."
                 className="input input-bordered flex-1"
                 value={comment}
-                onChange={(e) => setComment(e.target.value)}
+                onChange={e => setComment(e.target.value)}
               />
-              <button type="submit" className="btn btn-primary">Post</button>
+              <button type="submit" className="btn btn-primary">
+                Post
+              </button>
             </form>
 
             <div className="space-y-2">
-              {activity.comments.map((comment) => (
+              {activity.comments.map(comment => (
                 <div key={comment.id} className="bg-base-200 rounded-lg p-3">
                   <div className="flex items-center space-x-2">
                     <Link to={`/profile/${comment.user.id}`} className="font-bold">
@@ -120,4 +141,4 @@ const ActivityPost = ({ activity, onLike, onComment, currentUser }) => {
   );
 };
 
-export default ActivityPost; 
+export default ActivityPost;

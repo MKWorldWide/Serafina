@@ -8,13 +8,13 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
     avatar: null,
     banner: null,
     socialLinks: profile.socialLinks || {},
-    gamePreferences: profile.gamePreferences || []
+    gamePreferences: profile.gamePreferences || [],
   });
-  
+
   const [avatarPreview, setAvatarPreview] = useState(profile.avatar);
   const [bannerPreview, setBannerPreview] = useState(profile.bannerUrl);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const avatarInputRef = useRef();
   const bannerInputRef = useRef();
 
@@ -40,7 +40,7 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
@@ -57,8 +57,8 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
       ...prev,
       socialLinks: {
         ...prev.socialLinks,
-        [platform]: value
-      }
+        [platform]: value,
+      },
     }));
   };
 
@@ -67,7 +67,7 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
       ...prev,
       gamePreferences: isChecked
         ? [...prev.gamePreferences, game]
-        : prev.gamePreferences.filter(g => g !== game)
+        : prev.gamePreferences.filter(g => g !== game),
     }));
   };
 
@@ -101,7 +101,7 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
                 ref={avatarInputRef}
                 className="hidden"
                 accept="image/*"
-                onChange={(e) => handleFileChange(e, 'avatar')}
+                onChange={e => handleFileChange(e, 'avatar')}
               />
               <button
                 type="button"
@@ -126,7 +126,7 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
                 ref={bannerInputRef}
                 className="hidden"
                 accept="image/*"
-                onChange={(e) => handleFileChange(e, 'banner')}
+                onChange={e => handleFileChange(e, 'banner')}
               />
               <button
                 type="button"
@@ -146,7 +146,7 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
                 type="text"
                 className="input input-bordered w-full"
                 value={formData.username}
-                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                onChange={e => setFormData(prev => ({ ...prev, username: e.target.value }))}
                 required
               />
             </div>
@@ -156,7 +156,7 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
               <textarea
                 className="textarea textarea-bordered w-full"
                 value={formData.bio}
-                onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                onChange={e => setFormData(prev => ({ ...prev, bio: e.target.value }))}
                 rows="3"
               />
             </div>
@@ -173,7 +173,7 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
                     type="text"
                     className="input input-bordered w-full"
                     value={formData.socialLinks[platform] || ''}
-                    onChange={(e) => handleSocialLinkChange(platform, e.target.value)}
+                    onChange={e => handleSocialLinkChange(platform, e.target.value)}
                     placeholder={`Your ${platform} link`}
                   />
                 </div>
@@ -191,7 +191,7 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
                     type="checkbox"
                     className="checkbox"
                     checked={formData.gamePreferences.includes(game)}
-                    onChange={(e) => handleGamePreferenceChange(game, e.target.checked)}
+                    onChange={e => handleGamePreferenceChange(game, e.target.checked)}
                   />
                   <span>{game}</span>
                 </label>
@@ -223,4 +223,4 @@ const EditProfileModal = ({ profile, onClose, onSave }) => {
   );
 };
 
-export default EditProfileModal; 
+export default EditProfileModal;

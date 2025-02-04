@@ -13,22 +13,25 @@ const ActivityFeed = () => {
     fetchActivities,
     createActivity,
     likeActivity,
-    commentOnActivity
+    commentOnActivity,
   } = useActivityFeed();
 
   const observer = useRef();
-  const user = useStore((state) => state.user);
+  const user = useStore(state => state.user);
 
-  const lastActivityElementRef = useCallback(node => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        fetchActivities();
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, hasMore, fetchActivities]);
+  const lastActivityElementRef = useCallback(
+    node => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          fetchActivities();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, fetchActivities]
+  );
 
   useEffect(() => {
     fetchActivities(true);
@@ -47,7 +50,7 @@ const ActivityFeed = () => {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       {user && <CreatePost onPost={createActivity} />}
-      
+
       <div className="space-y-4">
         {activities.map((activity, index) => (
           <div
@@ -63,19 +66,17 @@ const ActivityFeed = () => {
           </div>
         ))}
       </div>
-      
+
       {loading && (
         <div className="flex justify-center p-4">
           <div className="loading loading-spinner loading-lg"></div>
         </div>
       )}
-      
+
       {!hasMore && activities.length > 0 && (
-        <div className="text-center text-gray-500 py-4">
-          No more activities to load
-        </div>
+        <div className="text-center text-gray-500 py-4">No more activities to load</div>
       )}
-      
+
       {!loading && activities.length === 0 && (
         <div className="text-center text-gray-500 py-4">
           No activities yet. Be the first to post!
@@ -85,4 +86,4 @@ const ActivityFeed = () => {
   );
 };
 
-export default ActivityFeed; 
+export default ActivityFeed;

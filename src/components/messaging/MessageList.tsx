@@ -30,9 +30,10 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
-import { IMessage } from '../../types/social';
+import { IMessage, IAttachment } from '../../types/social';
 import { useAuth } from '../../context/AuthContext';
 import ReactionBar from '../post/ReactionBar';
+import useStore from '../../store/useStore';
 
 interface MessageListProps {
   messages: IMessage[];
@@ -124,57 +125,49 @@ const MessageList: React.FC<MessageListProps> = ({
     handleMenuClose();
   };
 
-  const renderAttachments = (message: IMessage) => {
-    if (!message.attachments?.length) return null;
-
-    const imageAttachments = message.attachments.filter((att) =>
-      att.type === 'image'
-    );
-    const otherAttachments = message.attachments.filter(
-      (att) => att.type !== 'image'
-    );
-
-    return (
-      <Box sx={{ mt: 1 }}>
-        {imageAttachments.length > 0 && (
-          <ImageList cols={Math.min(imageAttachments.length, 3)} gap={8}>
-            {imageAttachments.map((attachment) => (
-              <ImageListItem key={attachment.url}>
-                <img
-                  src={attachment.url}
-                  alt={attachment.description || ''}
-                  loading="lazy"
-                  style={{ borderRadius: 4 }}
-                />
-              </ImageListItem>
-            ))}
-          </ImageList>
-        )}
-        {otherAttachments.map((attachment) => (
-          <Box
-            key={attachment.url}
-            component="a"
+  const renderAttachment = (attachment: IAttachment) => {
+    switch (attachment.type) {
+      case 'image':
+        return (
+          <div className="max-w-sm rounded-lg overflow-hidden">
+            <img
+              src={attachment.url}
+              alt={attachment.filename}
+              className="w-full h-auto"
+              loading="lazy"
+            />
+          </div>
+        );
+      case 'video':
+        return (
+          <div className="max-w-sm rounded-lg overflow-hidden">
+            <video src={attachment.url} controls className="w-full h-auto" />
+          </div>
+        );
+      case 'file':
+        return (
+          <a
             href={attachment.url}
             target="_blank"
             rel="noopener noreferrer"
-            sx={{
-              display: 'block',
-              mt: 1,
-              p: 1,
-              bgcolor: 'action.hover',
-              borderRadius: 1,
-              textDecoration: 'none',
-              color: 'text.primary',
-              '&:hover': {
-                bgcolor: 'action.selected',
-              },
-            }}
+            className="flex items-center space-x-2 p-2 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
           >
-            <Typography variant="body2">{attachment.description || 'Attachment'}</Typography>
-          </Box>
-        ))}
-      </Box>
-    );
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm">{attachment.filename}</span>
+          </a>
+        );
+    }
   };
 
   const renderMessage = (message: IMessage) => {
@@ -189,131 +182,72 @@ const MessageList: React.FC<MessageListProps> = ({
     const isOwnMessage = message.sender.id === user?.id;
 
     return (
-      <Box
+      <div
         key={message.id}
-        sx={{
-          display: 'flex',
-          flexDirection: isOwnMessage ? 'row-reverse' : 'row',
-          alignItems: 'flex-start',
-          mb: 2,
-        }}
+        id={`message-${message.id}`}
+        className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
       >
-        {!isOwnMessage && (
-          <Avatar
-            src={message.sender.avatarUrl}
-            alt={message.sender.username}
-            sx={{ mr: 1 }}
-          />
-        )}
-        <Box
-          sx={{
-            maxWidth: '70%',
-            [isOwnMessage ? 'ml' : 'mr']: 2,
-          }}
+        <div
+          className={`flex max-w-[80%] ${
+            isOwn ? 'flex-row-reverse items-end' : 'items-start'
+          }`}
         >
-          {message.replyTo && (
-            <Paper
-              elevation={0}
-              sx={{
-                p: 1,
-                mb: 1,
-                bgcolor: 'action.hover',
-                borderRadius: 1,
-                cursor: 'pointer',
-              }}
-              onClick={() => {
-                // Scroll to replied message
-                document.getElementById(`message-${message.replyTo?.id}`)?.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'center',
-                });
-              }}
-            >
-              <Typography variant="caption" color="text.secondary">
-                Reply to {message.replyTo.sender.username}
-              </Typography>
-              <Typography variant="body2" noWrap>
-                {message.replyTo.content}
-              </Typography>
-            </Paper>
+          {!isOwn && (
+            <div className="avatar">
+              <div className="w-8 h-8 rounded-full">
+                <img src={message.sender.avatarUrl} alt={message.sender.username} />
+              </div>
+            </div>
           )}
 
-          <Paper
-            elevation={0}
-            sx={{
-              p: 1.5,
-              bgcolor: isOwnMessage ? 'primary.main' : 'action.hover',
-              color: isOwnMessage ? 'primary.contrastText' : 'text.primary',
-              borderRadius: 2,
-              position: 'relative',
-            }}
+          <div
+            className={`flex flex-col space-y-1 ${
+              isOwn ? 'items-end mr-2' : 'items-start ml-2'
+            }`}
           >
-            <IconButton
-              size="small"
-              sx={{
-                position: 'absolute',
-                top: 4,
-                [isOwnMessage ? 'left' : 'right']: -28,
-                opacity: 0,
-                '&:hover': { opacity: 1 },
-                '.message-container:hover &': { opacity: 0.5 },
-              }}
-              onClick={(e) => handleMenuOpen(e, message)}
+            {!isOwn && (
+              <span className="text-sm font-medium">{message.sender.username}</span>
+            )}
+
+            <div
+              className={`rounded-lg p-3 ${
+                isOwn
+                  ? 'bg-primary text-primary-content'
+                  : 'bg-base-200 text-base-content'
+              }`}
             >
-              <MoreIcon fontSize="small" />
-            </IconButton>
+              <p className="whitespace-pre-wrap break-words">{message.content}</p>
 
-            <Typography variant="body1">{message.content}</Typography>
-            {message.metadata?.isEdited && (
-              <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
-                (edited)
-              </Typography>
-            )}
-            {renderAttachments(message)}
-          </Paper>
+              {message.attachments?.map((attachment, index) => (
+                <div key={index} className="mt-2">
+                  {renderAttachment(attachment)}
+                </div>
+              ))}
+            </div>
 
-          <Box
-            sx={{
-              mt: 0.5,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: isOwnMessage ? 'flex-end' : 'flex-start',
-              gap: 1,
-            }}
-          >
-            <Typography variant="caption" color="text.secondary">
-              {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
-            </Typography>
-            {message.metadata?.readAt && isOwnMessage && (
-              <Tooltip title="Read">
-                <CheckIcon fontSize="small" color="primary" />
-              </Tooltip>
-            )}
-          </Box>
-
-          {message.reactions && message.reactions.length > 0 && (
-            <Box sx={{ mt: 1 }}>
-              <ReactionBar
-                reactions={{
-                  like: { count: 0, reacted: false },
-                  love: { count: 0, reacted: false },
-                  happy: { count: 0, reacted: false },
-                  sad: { count: 0, reacted: false },
-                  celebrate: { count: 0, reacted: false },
-                  fire: { count: 0, reacted: false },
-                }}
-                commentCount={0}
-                shareCount={0}
-                onReact={(type) => onReactToMessage(message.id, type)}
-                onComment={() => {}}
-                onShare={() => {}}
-                showCommentButton={false}
-                showShareButton={false}
-              />
-            </Box>
-          )}
-        </Box>
-      </Box>
+            <div className="flex items-center space-x-2 text-xs opacity-60">
+              <time>{new Date(message.createdAt).toLocaleString()}</time>
+              {onReplyMessage(message.id)}
+              {isOwn && onEditMessage && (
+                <button
+                  className="hover:underline"
+                  onClick={handleEditClick}
+                >
+                  Edit
+                </button>
+              )}
+              {isOwn && onDeleteMessage && (
+                <button
+                  className="hover:underline text-error"
+                  onClick={handleDeleteClick}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -337,8 +271,7 @@ const MessageList: React.FC<MessageListProps> = ({
           const prevMessage = messages[index - 1];
           const showDivider =
             prevMessage &&
-            new Date(message.createdAt).getDate() !==
-              new Date(prevMessage.createdAt).getDate();
+            new Date(message.createdAt).getDate() !== new Date(prevMessage.createdAt).getDate();
 
           return (
             <React.Fragment key={message.id}>
@@ -349,7 +282,7 @@ const MessageList: React.FC<MessageListProps> = ({
                   </Typography>
                 </Divider>
               )}
-              <div id={`message-${message.id}`} className="message-container">
+              <div className="message-container">
                 {renderMessage(message)}
               </div>
             </React.Fragment>
@@ -358,11 +291,7 @@ const MessageList: React.FC<MessageListProps> = ({
         <div ref={messagesEndRef} />
       </Box>
 
-      <Menu
-        anchorEl={menuAnchorEl}
-        open={Boolean(menuAnchorEl)}
-        onClose={handleMenuClose}
-      >
+      <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={() => onReplyMessage(selectedMessage?.id || '')}>
           <ListItemIcon>
             <ReplyIcon fontSize="small" />
@@ -407,7 +336,7 @@ const MessageList: React.FC<MessageListProps> = ({
             multiline
             rows={4}
             value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
+            onChange={e => setEditContent(e.target.value)}
             sx={{ mt: 2 }}
           />
         </DialogContent>
@@ -441,7 +370,7 @@ const MessageList: React.FC<MessageListProps> = ({
             rows={4}
             placeholder="Please provide a reason for reporting this message..."
             value={reportReason}
-            onChange={(e) => setReportReason(e.target.value)}
+            onChange={e => setReportReason(e.target.value)}
             sx={{ mt: 2 }}
           />
         </DialogContent>
@@ -456,4 +385,4 @@ const MessageList: React.FC<MessageListProps> = ({
   );
 };
 
-export default MessageList; 
+export default MessageList;

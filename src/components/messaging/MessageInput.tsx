@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   Box,
   TextField,
@@ -20,179 +20,133 @@ import { IMessageInput } from '../../types/social';
 
 interface MessageInputProps {
   onSendMessage: (message: IMessageInput) => Promise<void>;
-  disabled?: boolean;
+  recipientId: string;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({
-  onSendMessage,
-  disabled = false,
-}) => {
+const MessageInput = ({ onSendMessage, recipientId }: MessageInputProps) => {
   const [content, setContent] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setAttachments(prev => [...prev, ...acceptedFiles]);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
     accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
-      'application/*': ['.pdf', '.doc', '.docx'],
+      'image/*': [],
+      'application/pdf': [],
     },
-    onDrop: (acceptedFiles) => {
-      setAttachments([...attachments, ...acceptedFiles]);
-    },
-    noClick: true,
+    maxSize: 5 * 1024 * 1024, // 5MB
   });
 
-  const handleSubmit = async () => {
-    if ((!content.trim() && attachments.length === 0) || isSubmitting) return;
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim() && attachments.length === 0) return;
+
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
       await onSendMessage({
         content: content.trim(),
+        recipientId,
         attachments,
       });
       setContent('');
       setAttachments([]);
+    } catch (error) {
+      console.error('Failed to send message:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      handleSubmit();
-    }
-  };
-
-  const removeAttachment = (index: number) => {
-    const newAttachments = [...attachments];
-    newAttachments.splice(index, 1);
-    setAttachments(newAttachments);
-  };
-
   return (
-    <Box {...getRootProps()}>
-      <input {...getInputProps()} />
-      <Paper
-        elevation={0}
-        sx={{
-          p: 2,
-          bgcolor: 'background.paper',
-          border: (theme) => `1px solid ${theme.palette.divider}`,
-          borderRadius: 2,
-        }}
-      >
-        {attachments.length > 0 && (
-          <Box sx={{ mb: 2 }}>
-            <ImageList cols={Math.min(attachments.length, 4)} gap={8}>
-              {attachments.map((file, index) => (
-                <ImageListItem key={index} sx={{ position: 'relative' }}>
-                  {file.type.startsWith('image/') ? (
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={file.name}
-                      loading="lazy"
-                      style={{ borderRadius: 4, height: 80, objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <Box
-                      sx={{
-                        height: 80,
-                        bgcolor: 'action.hover',
-                        borderRadius: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexDirection: 'column',
-                        p: 1,
-                      }}
-                    >
-                      <AttachFileIcon />
-                      <Typography variant="caption" noWrap>
-                        {file.name}
-                      </Typography>
-                    </Box>
-                  )}
-                  <IconButton
-                    size="small"
-                    onClick={() => removeAttachment(index)}
-                    sx={{
-                      position: 'absolute',
-                      top: 4,
-                      right: 4,
-                      bgcolor: 'background.paper',
-                      '&:hover': {
-                        bgcolor: 'background.paper',
-                      },
-                    }}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </ImageListItem>
-              ))}
-            </ImageList>
-          </Box>
-        )}
+    <form onSubmit={handleSubmit} className="p-4 border-t">
+      {/* Attachments Preview */}
+      {attachments.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {attachments.map((file, index) => (
+            <div key={index} className="relative">
+              {file.type.startsWith('image/') ? (
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={file.name}
+                  className="w-16 h-16 object-cover rounded"
+                />
+              ) : (
+                <div className="w-16 h-16 flex items-center justify-center bg-base-200 rounded">
+                  <span className="text-xs text-center">
+                    {file.name.slice(0, 10)}...
+                  </span>
+                </div>
+              )}
+              <button
+                type="button"
+                className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-error text-white flex items-center justify-center text-xs"
+                onClick={() => removeAttachment(index)}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
-        <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
-          <TextField
-            inputRef={inputRef}
-            fullWidth
-            multiline
-            maxRows={4}
-            placeholder="Type a message..."
+      <div className="flex items-end gap-2">
+        <div className="flex-1">
+          <textarea
+            className="textarea textarea-bordered w-full resize-none"
+            rows={1}
+            placeholder="Type your message..."
             value={content}
-            onChange={(e) => setContent(e.target.value)}
-            onKeyPress={handleKeyPress}
-            disabled={disabled || isSubmitting}
-            InputProps={{
-              sx: {
-                '& .MuiOutlinedInput-notchedOutline': {
-                  border: 'none',
-                },
-              },
+            onChange={e => setContent(e.target.value)}
+            onKeyPress={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
             }}
           />
-          <Tooltip title="Attach files">
-            <IconButton
-              component="label"
-              disabled={disabled || isSubmitting}
-            >
-              <input
-                type="file"
-                hidden
-                multiple
-                accept="image/*,.pdf,.doc,.docx"
-                onChange={(e) => {
-                  if (e.target.files) {
-                    setAttachments([...attachments, ...Array.from(e.target.files)]);
-                  }
-                }}
-              />
-              <AttachFileIcon />
-            </IconButton>
-          </Tooltip>
-          <IconButton
-            color="primary"
-            onClick={handleSubmit}
-            disabled={
-              disabled ||
-              isSubmitting ||
-              (!content.trim() && attachments.length === 0)
-            }
+        </div>
+
+        <div {...getRootProps()} className="cursor-pointer">
+          <input {...getInputProps()} />
+          <button
+            type="button"
+            className={`btn btn-circle btn-ghost ${isDragActive ? 'btn-primary' : ''}`}
           >
-            {isSubmitting ? (
-              <CircularProgress size={24} />
-            ) : (
-              <SendIcon />
-            )}
-          </IconButton>
-        </Box>
-      </Paper>
-    </Box>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <button
+          type="submit"
+          className={`btn btn-primary ${isSubmitting ? 'loading' : ''}`}
+          disabled={isSubmitting || (!content.trim() && attachments.length === 0)}
+        >
+          Send
+        </button>
+      </div>
+    </form>
   );
 };
 
-export default MessageInput; 
+export default MessageInput;

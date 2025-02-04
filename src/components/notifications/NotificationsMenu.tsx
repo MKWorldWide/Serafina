@@ -152,7 +152,15 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      <Box sx={{ px: 2, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box
+        sx={{
+          px: 2,
+          py: 1.5,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Typography variant="h6" component="div">
           Notifications
         </Typography>
@@ -160,7 +168,7 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
           <Tooltip title="Filter">
             <IconButton
               size="small"
-              onClick={(e) => {
+              onClick={e => {
                 // TODO: Add filter menu
               }}
             >
@@ -172,12 +180,7 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
 
       <Divider />
 
-      <Tabs
-        value={currentTab}
-        onChange={handleTabChange}
-        variant="fullWidth"
-        sx={{ px: 2, pt: 1 }}
-      >
+      <Tabs value={currentTab} onChange={handleTabChange} variant="fullWidth" sx={{ px: 2, pt: 1 }}>
         <Tab label="All" />
         <Tab label="Unread" />
       </Tabs>
@@ -214,13 +217,13 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
               {filter === 'all'
                 ? 'No notifications'
                 : filter === 'unread'
-                ? 'No unread notifications'
-                : `No ${filter.toLowerCase()} notifications`}
+                  ? 'No unread notifications'
+                  : `No ${filter.toLowerCase()} notifications`}
             </Typography>
           </Box>
         ) : (
           <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
-            {filteredNotifications.map((notification) => (
+            {filteredNotifications.map(notification => (
               <MenuItem
                 key={notification.id}
                 onClick={() => handleNotificationClick(notification)}
@@ -228,9 +231,7 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
                   borderLeft: !notification.read
                     ? `3px solid ${theme.palette.primary.main}`
                     : 'none',
-                  bgcolor: !notification.read
-                    ? 'action.hover'
-                    : 'transparent',
+                  bgcolor: !notification.read ? 'action.hover' : 'transparent',
                   '&:hover': {
                     '& .actions': {
                       opacity: 1,
@@ -273,7 +274,7 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
                     <Tooltip title="Mark as read">
                       <IconButton
                         size="small"
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation();
                           onMarkAsRead(notification.id);
                         }}
@@ -285,7 +286,7 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
                   <Tooltip title="Delete">
                     <IconButton
                       size="small"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         onDelete(notification.id);
                       }}
@@ -303,4 +304,4 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
   );
 };
 
-export default NotificationsMenu; 
+export default NotificationsMenu;

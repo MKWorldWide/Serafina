@@ -33,8 +33,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationsContext';
 import NotificationsMenu from './notifications/NotificationsMenu';
+import useStore from '../store/useStore';
 
 const Navbar: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -128,7 +131,12 @@ const Navbar: React.FC = () => {
         }}
       >
         <Toolbar>
-          <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'text.primary' }}>
+          <Typography
+            variant="h6"
+            component={Link}
+            to="/"
+            sx={{ flexGrow: 1, textDecoration: 'none', color: 'text.primary' }}
+          >
             GameDin
           </Typography>
           <Button color="primary" component={Link} to="/login">
@@ -161,7 +169,12 @@ const Navbar: React.FC = () => {
           <MenuIcon />
         </IconButton>
 
-        <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'text.primary' }}>
+        <Typography
+          variant="h6"
+          component={Link}
+          to="/"
+          sx={{ flexGrow: 1, textDecoration: 'none', color: 'text.primary' }}
+        >
           GameDin
         </Typography>
 
@@ -216,7 +229,7 @@ const Navbar: React.FC = () => {
               </Badge>
             </IconButton>
           </Tooltip>
-          
+
           <Tooltip title="Notifications">
             <IconButton color="inherit" onClick={handleNotificationsClick}>
               <Badge badgeContent={unreadCount} color="error">
@@ -227,11 +240,7 @@ const Navbar: React.FC = () => {
 
           <Box sx={{ position: 'relative' }}>
             <IconButton onClick={handleMenu}>
-              <Avatar
-                src={user.avatarUrl}
-                alt={user.username}
-                sx={{ width: 32, height: 32 }}
-              />
+              <Avatar src={user.avatarUrl} alt={user.username} sx={{ width: 32, height: 32 }} />
               <StatusIcon
                 sx={{
                   position: 'absolute',
@@ -282,9 +291,9 @@ const Navbar: React.FC = () => {
               {user.username}
             </Typography>
           </Box>
-          
+
           <Divider sx={{ my: 1 }} />
-          
+
           <MenuItem onClick={handleProfile}>
             <ListItemIcon>
               <PersonIcon fontSize="small" />
@@ -301,10 +310,12 @@ const Navbar: React.FC = () => {
             <ListItemText primary="Messages" />
           </MenuItem>
 
-          <MenuItem onClick={() => {
-            navigate('/settings/notifications');
-            handleClose();
-          }}>
+          <MenuItem
+            onClick={() => {
+              navigate('/settings/notifications');
+              handleClose();
+            }}
+          >
             <ListItemIcon>
               <NotificationsIcon fontSize="small" />
             </ListItemIcon>
@@ -320,19 +331,10 @@ const Navbar: React.FC = () => {
 
           <MenuItem onClick={handleThemeToggle}>
             <ListItemIcon>
-              {isDarkMode ? (
-                <LightModeIcon fontSize="small" />
-              ) : (
-                <DarkModeIcon fontSize="small" />
-              )}
+              {isDarkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
             </ListItemIcon>
             <ListItemText primary="Theme" />
-            <Switch
-              edge="end"
-              checked={isDarkMode}
-              onChange={handleThemeToggle}
-              size="small"
-            />
+            <Switch edge="end" checked={isDarkMode} onChange={handleThemeToggle} size="small" />
           </MenuItem>
 
           <Divider sx={{ my: 1 }} />

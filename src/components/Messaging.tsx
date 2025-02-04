@@ -225,7 +225,7 @@ const Messaging: React.FC = () => {
               size="small"
               placeholder="Search conversations..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               InputProps={{
                 startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
               }}
@@ -238,10 +238,8 @@ const Messaging: React.FC = () => {
                 <CircularProgress />
               </Box>
             ) : (
-              filteredConversations.map((conversation) => {
-                const otherParticipant = conversation.participants.find(
-                  p => p.id !== user?.id
-                );
+              filteredConversations.map(conversation => {
+                const otherParticipant = conversation.participants.find(p => p.id !== user?.id);
                 if (!otherParticipant) return null;
 
                 return (
@@ -304,43 +302,31 @@ const Messaging: React.FC = () => {
         {conversationId ? (
           <ChatContainer sx={{ flex: 1 }}>
             {/* Chat Header */}
-            <Box
-              p={2}
-              display="flex"
-              alignItems="center"
-              borderBottom={1}
-              borderColor="divider"
-            >
+            <Box p={2} display="flex" alignItems="center" borderBottom={1} borderColor="divider">
               {selectedConversation && (
                 <>
                   <OnlineBadge
                     overlap="circular"
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                     variant="dot"
-                    invisible={selectedConversation.participants.find(
-                      p => p.id !== user?.id
-                    )?.status !== 'online'}
+                    invisible={
+                      selectedConversation.participants.find(p => p.id !== user?.id)?.status !==
+                      'online'
+                    }
                   >
                     <Avatar
                       src={
-                        selectedConversation.participants.find(
-                          p => p.id !== user?.id
-                        )?.avatarUrl
+                        selectedConversation.participants.find(p => p.id !== user?.id)?.avatarUrl
                       }
                     />
                   </OnlineBadge>
                   <Box ml={2}>
                     <Typography variant="h6">
-                      {
-                        selectedConversation.participants.find(
-                          p => p.id !== user?.id
-                        )?.username
-                      }
+                      {selectedConversation.participants.find(p => p.id !== user?.id)?.username}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
-                      {selectedConversation.participants.find(
-                        p => p.id !== user?.id
-                      )?.status === 'online'
+                      {selectedConversation.participants.find(p => p.id !== user?.id)?.status ===
+                      'online'
                         ? 'Online'
                         : 'Offline'}
                     </Typography>
@@ -356,17 +342,10 @@ const Messaging: React.FC = () => {
                   <CircularProgress />
                 </Box>
               ) : (
-                messages.map((message) => (
-                  <MessageBubble
-                    key={message.id}
-                    isOwn={message.sender.id === user?.id}
-                  >
+                messages.map(message => (
+                  <MessageBubble key={message.id} isOwn={message.sender.id === user?.id}>
                     <Typography variant="body1">{message.content}</Typography>
-                    <Typography
-                      variant="caption"
-                      color="inherit"
-                      sx={{ opacity: 0.7 }}
-                    >
+                    <Typography variant="caption" color="inherit" sx={{ opacity: 0.7 }}>
                       {new Date(message.timestamp).toLocaleTimeString()}
                     </Typography>
                   </MessageBubble>
@@ -381,15 +360,11 @@ const Messaging: React.FC = () => {
                 fullWidth
                 placeholder="Type a message..."
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={e => setNewMessage(e.target.value)}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        type="submit"
-                        disabled={!newMessage.trim()}
-                        color="primary"
-                      >
+                      <IconButton type="submit" disabled={!newMessage.trim()} color="primary">
                         <SendIcon />
                       </IconButton>
                     </InputAdornment>
@@ -430,4 +405,4 @@ const Messaging: React.FC = () => {
   );
 };
 
-export default Messaging; 
+export default Messaging;
