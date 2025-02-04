@@ -5,9 +5,9 @@ export interface IUserProfile {
   username: string;
   email: string;
   bio: string;
-  avatarUrl: string;
+  avatar: string;
   coverUrl: string;
-  status: 'online' | 'offline' | 'in-game';
+  presence: 'online' | 'offline' | 'in-game';
   currentGame?: string;
   reputation: number;
   rank?: string;
@@ -88,8 +88,8 @@ export interface IUser {
   id: string;
   username: string;
   email: string;
-  avatarUrl: string;
-  status: 'online' | 'offline' | 'in-game';
+  avatar: string;
+  presence: 'online' | 'offline' | 'in-game';
   rank?: string;
   level?: number;
 }

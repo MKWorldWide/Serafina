@@ -91,10 +91,10 @@ const Achievements: React.FC = () => {
           id: user?.id || '',
           username: user?.username || '',
           email: user?.email || '',
-          avatarUrl: user?.avatarUrl || '',
+          avatar: user?.avatar || '',
           bio: '',
           coverUrl: '',
-          status: user?.status || 'offline',
+          presence: user?.presence || 'offline',
           reputation: 0,
           achievements: {
             total: 0,
@@ -194,6 +194,30 @@ const Achievements: React.FC = () => {
 
   const calculateLevelProgress = (currentXp: number, nextLevel: number) => {
     return (currentXp / nextLevel) * 100;
+  };
+
+  const handleUnlock = async (achievementId: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/achievements/${achievementId}/unlock`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user?.id,
+          username: user?.username,
+          avatar: user?.avatar || '',
+          presence: user?.presence || 'offline',
+        }),
+      });
+
+      if (response.ok) {
+        // ... rest of the function ...
+      }
+    } catch (error) {
+      // ... error handling ...
+    }
   };
 
   return (

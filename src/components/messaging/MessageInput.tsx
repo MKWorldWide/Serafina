@@ -19,11 +19,10 @@ import { useDropzone } from 'react-dropzone';
 import { IMessageInput } from '../../types/social';
 
 interface MessageInputProps {
-  onSendMessage: (message: IMessageInput) => Promise<void>;
-  recipientId: string;
+  onSubmit: (content: string) => Promise<void>;
 }
 
-const MessageInput = ({ onSendMessage, recipientId }: MessageInputProps) => {
+const MessageInput: React.FC<MessageInputProps> = ({ onSubmit }) => {
   const [content, setContent] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,11 +50,7 @@ const MessageInput = ({ onSendMessage, recipientId }: MessageInputProps) => {
 
     setIsSubmitting(true);
     try {
-      await onSendMessage({
-        content: content.trim(),
-        recipientId,
-        attachments,
-      });
+      await onSubmit(content.trim());
       setContent('');
       setAttachments([]);
     } catch (error) {

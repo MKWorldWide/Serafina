@@ -1,72 +1,36 @@
-import { Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Box } from '@mui/material';
 import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
 import ProfilePage from './components/Profile/ProfilePage';
 import MatchFinder from './components/MatchFinder';
 import Messages from './components/Messages';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import ProtectedRoute from './components/Auth/ProtectedRoute';
+import NotificationSettings from './pages/NotificationSettings';
+import { useAuth } from './context/AuthContext';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+const App: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
 
-function App() {
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-base-100">
-        <Navbar />
-        <main className="container mx-auto px-4 py-8">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-
-            {/* Protected Routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile/:userId"
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/matches"
-              element={
-                <ProtectedRoute>
-                  <MatchFinder />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/messages/:chatId?"
-              element={
-                <ProtectedRoute>
-                  <Messages />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
-    </QueryClientProvider>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Navbar />
+      <Box component="main" sx={{ pt: 8 }}>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/profile/:username" element={<ProfilePage />} />
+          <Route path="/match-finder" element={<MatchFinder />} />
+          <Route path="/messages/*" element={<Messages />} />
+          <Route path="/settings/notifications" element={<NotificationSettings />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Box>
+    </Box>
   );
-}
+};
 
 export default App;

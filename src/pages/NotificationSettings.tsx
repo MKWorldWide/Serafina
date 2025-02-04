@@ -1,26 +1,14 @@
 import React, { useState } from 'react';
 import {
-  Container,
   Box,
+  Container,
   Typography,
-  Paper,
   Switch,
-  FormControlLabel,
   FormGroup,
-  Divider,
+  FormControlLabel,
   Button,
   Alert,
   Snackbar,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Grid,
-  Card,
-  CardContent,
-  IconButton,
-  Tooltip,
 } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -43,14 +31,10 @@ const defaultPreferences: INotificationPreferences = {
   push: true,
   desktop: true,
   types: {
-    LIKE: true,
-    COMMENT: true,
-    FOLLOW: true,
-    MENTION: true,
-    TOURNAMENT_INVITE: true,
-    TEAM_INVITE: true,
-    ACHIEVEMENT: true,
-    SYSTEM: true,
+    FRIEND_REQUEST: true,
+    MESSAGE: true,
+    GAME_INVITE: true,
+    SYSTEM: true
   },
   sounds: true,
   doNotDisturb: {
@@ -138,146 +122,129 @@ const NotificationSettings: React.FC = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={3}>
-          {/* Notification Channels */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Notification Channels
-                </Typography>
-                <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={preferences.email}
-                        onChange={e => handleChange('email', e.target.checked)}
-                      />
-                    }
-                    label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <EmailIcon />
-                        <span>Email Notifications</span>
-                      </Box>
-                    }
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={preferences.push}
-                        onChange={e => handleChange('push', e.target.checked)}
-                      />
-                    }
-                    label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <PhoneIcon />
-                        <span>Push Notifications</span>
-                      </Box>
-                    }
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={preferences.desktop}
-                        onChange={e => handleChange('desktop', e.target.checked)}
-                      />
-                    }
-                    label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <DesktopIcon />
-                        <span>Desktop Notifications</span>
-                      </Box>
-                    }
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={preferences.sounds}
-                        onChange={e => handleChange('sounds', e.target.checked)}
-                      />
-                    }
-                    label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {preferences.sounds ? <VolumeUpIcon /> : <VolumeOffIcon />}
-                        <span>Notification Sounds</span>
-                      </Box>
-                    }
-                  />
-                </FormGroup>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Notification Types */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Notification Types
-                </Typography>
-                <FormGroup>
-                  {Object.entries(preferences.types).map(([type, enabled]) => (
-                    <FormControlLabel
-                      key={type}
-                      control={
-                        <Switch
-                          checked={enabled}
-                          onChange={e => handleChange(type as NotificationType, e.target.checked)}
-                        />
-                      }
-                      label={type.replace('_', ' ').toLowerCase()}
-                    />
-                  ))}
-                </FormGroup>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Do Not Disturb */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                  <TimeIcon />
-                  <Typography variant="h6">Do Not Disturb</Typography>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom>
+            Notification Channels
+          </Typography>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={preferences.email}
+                  onChange={e => handleChange('email', e.target.checked)}
+                />
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <EmailIcon />
+                  <span>Email Notifications</span>
                 </Box>
-                <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={preferences.doNotDisturb.enabled}
-                        onChange={e =>
-                          setPreferences(prev => ({
-                            ...prev,
-                            doNotDisturb: {
-                              ...prev.doNotDisturb,
-                              enabled: e.target.checked,
-                            },
-                          }))
-                        }
-                      />
-                    }
-                    label="Enable Do Not Disturb"
+              }
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={preferences.push}
+                  onChange={e => handleChange('push', e.target.checked)}
+                />
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <PhoneIcon />
+                  <span>Push Notifications</span>
+                </Box>
+              }
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={preferences.desktop}
+                  onChange={e => handleChange('desktop', e.target.checked)}
+                />
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <DesktopIcon />
+                  <span>Desktop Notifications</span>
+                </Box>
+              }
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={preferences.sounds}
+                  onChange={e => handleChange('sounds', e.target.checked)}
+                />
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {preferences.sounds ? <VolumeUpIcon /> : <VolumeOffIcon />}
+                  <span>Notification Sounds</span>
+                </Box>
+              }
+            />
+          </FormGroup>
+        </Box>
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom>
+            Notification Types
+          </Typography>
+          <FormGroup>
+            {Object.entries(preferences.types).map(([type, enabled]) => (
+              <FormControlLabel
+                key={type}
+                control={
+                  <Switch
+                    checked={enabled}
+                    onChange={e => handleChange(type as NotificationType, e.target.checked)}
                   />
-                  {preferences.doNotDisturb.enabled && (
-                    <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                      <TimePicker
-                        label="From"
-                        value={new Date(`2000-01-01T${preferences.doNotDisturb.from}`)}
-                        onChange={newValue => handleTimeChange('from', newValue)}
-                      />
-                      <TimePicker
-                        label="To"
-                        value={new Date(`2000-01-01T${preferences.doNotDisturb.to}`)}
-                        onChange={newValue => handleTimeChange('to', newValue)}
-                      />
-                    </Box>
-                  )}
-                </FormGroup>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                }
+                label={type.replace('_', ' ').toLowerCase()}
+              />
+            ))}
+          </FormGroup>
+        </Box>
+
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <TimeIcon />
+            <Typography variant="h6">Do Not Disturb</Typography>
+          </Box>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={preferences.doNotDisturb.enabled}
+                  onChange={e =>
+                    setPreferences(prev => ({
+                      ...prev,
+                      doNotDisturb: {
+                        ...prev.doNotDisturb,
+                        enabled: e.target.checked,
+                      },
+                    }))
+                  }
+                />
+              }
+              label="Enable Do Not Disturb"
+            />
+            {preferences.doNotDisturb.enabled && (
+              <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                <TimePicker
+                  label="From"
+                  value={new Date(`2000-01-01T${preferences.doNotDisturb.from}`)}
+                  onChange={newValue => handleTimeChange('from', newValue)}
+                />
+                <TimePicker
+                  label="To"
+                  value={new Date(`2000-01-01T${preferences.doNotDisturb.to}`)}
+                  onChange={newValue => handleTimeChange('to', newValue)}
+                />
+              </Box>
+            )}
+          </FormGroup>
+        </Box>
 
         <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
           <Button variant="outlined" onClick={handleReset}>

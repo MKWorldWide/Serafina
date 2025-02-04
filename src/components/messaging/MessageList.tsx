@@ -37,18 +37,18 @@ import useStore from '../../store/useStore';
 
 interface MessageListProps {
   messages: IMessage[];
-  onEditMessage: (messageId: string, newContent: string) => Promise<void>;
-  onDeleteMessage: (messageId: string) => Promise<void>;
-  onReplyMessage: (messageId: string) => void;
-  onReactToMessage: (messageId: string, reactionType: string) => Promise<void>;
-  onReportMessage: (messageId: string, reason: string) => Promise<void>;
+  onEdit?: (message: IMessage, newContent: string) => void;
+  onDelete?: (message: IMessage) => void;
+  onReply?: (message: IMessage) => void;
+  onReactToMessage?: (messageId: string, reaction: string) => void;
+  onReportMessage?: (messageId: string, reason: string) => void;
 }
 
 const MessageList: React.FC<MessageListProps> = ({
   messages,
-  onEditMessage,
-  onDeleteMessage,
-  onReplyMessage,
+  onEdit,
+  onDelete,
+  onReply,
   onReactToMessage,
   onReportMessage,
 }) => {
@@ -80,9 +80,9 @@ const MessageList: React.FC<MessageListProps> = ({
     setSelectedMessage(null);
   };
 
-  const handleEditClick = () => {
-    if (selectedMessage) {
-      setEditContent(selectedMessage.content);
+  const handleEditClick = (message: IMessage) => {
+    if (message) {
+      setEditContent(message.content);
       setEditDialogOpen(true);
     }
     handleMenuClose();
@@ -90,19 +90,19 @@ const MessageList: React.FC<MessageListProps> = ({
 
   const handleEditSubmit = async () => {
     if (selectedMessage && editContent.trim()) {
-      await onEditMessage(selectedMessage.id, editContent);
+      await onEdit?.(selectedMessage, editContent);
       setEditDialogOpen(false);
     }
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (message: IMessage) => {
     setDeleteDialogOpen(true);
     handleMenuClose();
   };
 
   const handleDeleteConfirm = async () => {
     if (selectedMessage) {
-      await onDeleteMessage(selectedMessage.id);
+      await onDelete?.(selectedMessage);
       setDeleteDialogOpen(false);
     }
   };
@@ -114,7 +114,7 @@ const MessageList: React.FC<MessageListProps> = ({
 
   const handleReportSubmit = async () => {
     if (selectedMessage && reportReason.trim()) {
-      await onReportMessage(selectedMessage.id, reportReason);
+      await onReportMessage?.(selectedMessage.id, reportReason);
       setReportDialogOpen(false);
       setReportReason('');
     }
@@ -132,7 +132,7 @@ const MessageList: React.FC<MessageListProps> = ({
           <div className="max-w-sm rounded-lg overflow-hidden">
             <img
               src={attachment.url}
-              alt={attachment.filename}
+              alt={attachment.name}
               className="w-full h-auto"
               loading="lazy"
             />
@@ -152,25 +152,15 @@ const MessageList: React.FC<MessageListProps> = ({
             rel="noopener noreferrer"
             className="flex items-center space-x-2 p-2 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span className="text-sm">{attachment.filename}</span>
+            <span className="text-sm">{attachment.name}</span>
           </a>
         );
     }
   };
 
   const renderMessage = (message: IMessage) => {
+    const isOwn = message.sender.id === user?.id;
+
     if (message.metadata?.isDeleted) {
       return (
         <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
@@ -178,8 +168,6 @@ const MessageList: React.FC<MessageListProps> = ({
         </Typography>
       );
     }
-
-    const isOwnMessage = message.sender.id === user?.id;
 
     return (
       <div
@@ -195,7 +183,7 @@ const MessageList: React.FC<MessageListProps> = ({
           {!isOwn && (
             <div className="avatar">
               <div className="w-8 h-8 rounded-full">
-                <img src={message.sender.avatarUrl} alt={message.sender.username} />
+                <img src={message.sender.avatar} alt={message.sender.username} />
               </div>
             </div>
           )}
@@ -227,22 +215,23 @@ const MessageList: React.FC<MessageListProps> = ({
 
             <div className="flex items-center space-x-2 text-xs opacity-60">
               <time>{new Date(message.createdAt).toLocaleString()}</time>
-              {onReplyMessage(message.id)}
-              {isOwn && onEditMessage && (
+              {typeof onReply === 'function' && (
                 <button
                   className="hover:underline"
-                  onClick={handleEditClick}
+                  onClick={() => onReply(message)}
                 >
-                  Edit
+                  Reply
                 </button>
               )}
-              {isOwn && onDeleteMessage && (
-                <button
-                  className="hover:underline text-error"
-                  onClick={handleDeleteClick}
-                >
-                  Delete
-                </button>
+              {isOwn && typeof onEdit === 'function' && (
+                <IconButton onClick={() => handleEditClick(message)}>
+                  <EditIcon />
+                </IconButton>
+              )}
+              {isOwn && typeof onDelete === 'function' && (
+                <IconButton onClick={() => handleDeleteClick(message)}>
+                  <DeleteIcon />
+                </IconButton>
               )}
             </div>
           </div>
@@ -292,13 +281,13 @@ const MessageList: React.FC<MessageListProps> = ({
       </Box>
 
       <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => onReplyMessage(selectedMessage?.id || '')}>
+        <MenuItem onClick={() => selectedMessage && onReply?.(selectedMessage)}>
           <ListItemIcon>
             <ReplyIcon fontSize="small" />
           </ListItemIcon>
           Reply
         </MenuItem>
-        <MenuItem onClick={() => handleCopyText(selectedMessage?.content || '')}>
+        <MenuItem onClick={() => selectedMessage && handleCopyText(selectedMessage.content)}>
           <ListItemIcon>
             <CopyIcon fontSize="small" />
           </ListItemIcon>
@@ -306,18 +295,22 @@ const MessageList: React.FC<MessageListProps> = ({
         </MenuItem>
         {selectedMessage?.sender.id === user?.id && (
           <>
-            <MenuItem onClick={handleEditClick}>
-              <ListItemIcon>
-                <EditIcon fontSize="small" />
-              </ListItemIcon>
-              Edit
-            </MenuItem>
-            <MenuItem onClick={handleDeleteClick}>
-              <ListItemIcon>
-                <DeleteIcon fontSize="small" />
-              </ListItemIcon>
-              Delete
-            </MenuItem>
+            {typeof onEdit === 'function' && selectedMessage && (
+              <MenuItem onClick={() => handleEditClick(selectedMessage)}>
+                <ListItemIcon>
+                  <EditIcon fontSize="small" />
+                </ListItemIcon>
+                Edit
+              </MenuItem>
+            )}
+            {typeof onDelete === 'function' && selectedMessage && (
+              <MenuItem onClick={() => handleDeleteClick(selectedMessage)}>
+                <ListItemIcon>
+                  <DeleteIcon fontSize="small" />
+                </ListItemIcon>
+                Delete
+              </MenuItem>
+            )}
           </>
         )}
         <MenuItem onClick={handleReportClick}>

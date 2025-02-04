@@ -156,142 +156,146 @@ const PostEditor: React.FC<IPostEditorProps> = ({
 
   return (
     <Paper sx={{ p: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
-        <Avatar src={user?.avatarUrl} alt={user?.username} />
-        <Typography variant="subtitle1">{user?.username}</Typography>
-        <Button
-          size="small"
-          startIcon={
-            privacy === 'public' ? (
-              <PublicIcon />
-            ) : privacy === 'private' ? (
-              <PrivateIcon />
-            ) : (
-              <GroupIcon />
-            )
-          }
-          onClick={() => setShowPrivacyDialog(true)}
-        >
-          {privacy.charAt(0).toUpperCase() + privacy.slice(1)}
-        </Button>
-      </Box>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <textarea
-          className="textarea textarea-bordered w-full"
-          placeholder="What's on your mind?"
-          value={content}
-          onChange={e => setContent(e.target.value)}
-          rows={3}
-        />
-
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-            isDragActive ? 'border-primary bg-primary/10' : 'border-base-300'
-          }`}
-        >
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <p>Drop the files here ...</p>
-          ) : (
-            <p>Drag 'n' drop some files here, or click to select files</p>
-          )}
-        </div>
-
-        {media.length > 0 && (
-          <div className="grid grid-cols-2 gap-4">
-            {media.map((item, index) => (
-              <div key={index} className="relative">
-                {item.type === 'image' ? (
-                  <img
-                    src={item.preview}
-                    alt={`Preview ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <Avatar src={user?.avatar} alt={user?.username} />
+        <Box sx={{ flex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+            <Typography variant="subtitle1">{user?.username}</Typography>
+            <Button
+              size="small"
+              startIcon={
+                privacy === 'public' ? (
+                  <PublicIcon />
+                ) : privacy === 'private' ? (
+                  <PrivateIcon />
                 ) : (
-                  <video
-                    src={item.preview}
-                    className="w-full h-32 object-cover rounded-lg"
-                    controls
-                  />
-                )}
-                <button
-                  type="button"
-                  onClick={() => removeMedia(index)}
-                  className="btn btn-circle btn-sm absolute top-2 right-2"
-                >
-                  ×
-                </button>
+                  <GroupIcon />
+                )
+              }
+              onClick={() => setShowPrivacyDialog(true)}
+            >
+              {privacy.charAt(0).toUpperCase() + privacy.slice(1)}
+            </Button>
+          </Box>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <textarea
+              className="textarea textarea-bordered w-full"
+              placeholder="What's on your mind?"
+              value={content}
+              onChange={e => setContent(e.target.value)}
+              rows={3}
+            />
+
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                isDragActive ? 'border-primary bg-primary/10' : 'border-base-300'
+              }`}
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <p>Drop the files here ...</p>
+              ) : (
+                <p>Drag 'n' drop some files here, or click to select files</p>
+              )}
+            </div>
+
+            {media.length > 0 && (
+              <div className="grid grid-cols-2 gap-4">
+                {media.map((item, index) => (
+                  <div key={index} className="relative">
+                    {item.type === 'image' ? (
+                      <img
+                        src={item.preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <video
+                        src={item.preview}
+                        className="w-full h-32 object-cover rounded-lg"
+                        controls
+                      />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => removeMedia(index)}
+                      className="btn btn-circle btn-sm absolute top-2 right-2"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        <Box sx={{ mt: 2 }}>
-          <Stack direction="row" spacing={1} flexWrap="wrap">
-            {tags.map(tag => (
-              <Chip key={tag} label={tag} onDelete={() => handleRemoveTag(tag)} size="small" />
-            ))}
-          </Stack>
-          <TextField
-            inputRef={tagInputRef}
-            size="small"
-            value={tagInput}
-            onChange={e => setTagInput(e.target.value)}
-            onKeyDown={handleAddTag}
-            placeholder="Add tags..."
-            sx={{ mt: 1 }}
-            InputProps={{
-              startAdornment: <TagIcon sx={{ mr: 1, color: 'action.active' }} />,
-            }}
-          />
+            <Box sx={{ mt: 2 }}>
+              <Stack direction="row" spacing={1} flexWrap="wrap">
+                {tags.map(tag => (
+                  <Chip key={tag} label={tag} onDelete={() => handleRemoveTag(tag)} size="small" />
+                ))}
+              </Stack>
+              <TextField
+                inputRef={tagInputRef}
+                size="small"
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+                onKeyDown={handleAddTag}
+                placeholder="Add tags..."
+                sx={{ mt: 1 }}
+                InputProps={{
+                  startAdornment: <TagIcon sx={{ mr: 1, color: 'action.active' }} />,
+                }}
+              />
+            </Box>
+
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                variant="contained"
+                className={`btn btn-primary ${loading ? 'loading' : ''}`}
+                disabled={loading || (!content.trim() && media.length === 0)}
+              >
+                {isEditing ? 'Save Changes' : 'Post'}
+              </Button>
+            </div>
+          </form>
+
+          {/* Privacy Dialog */}
+          <Dialog open={showPrivacyDialog} onClose={() => setShowPrivacyDialog(false)}>
+            <DialogTitle>Who can see your post?</DialogTitle>
+            <DialogContent>
+              <Stack spacing={2}>
+                <Button
+                  startIcon={<PublicIcon />}
+                  onClick={() => handlePrivacyChange('public')}
+                  variant={privacy === 'public' ? 'contained' : 'outlined'}
+                  fullWidth
+                >
+                  Public
+                </Button>
+                <Button
+                  startIcon={<GroupIcon />}
+                  onClick={() => handlePrivacyChange('friends')}
+                  variant={privacy === 'friends' ? 'contained' : 'outlined'}
+                  fullWidth
+                >
+                  Friends Only
+                </Button>
+                <Button
+                  startIcon={<PrivateIcon />}
+                  onClick={() => handlePrivacyChange('private')}
+                  variant={privacy === 'private' ? 'contained' : 'outlined'}
+                  fullWidth
+                >
+                  Only Me
+                </Button>
+              </Stack>
+            </DialogContent>
+          </Dialog>
         </Box>
-
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            variant="contained"
-            className={`btn btn-primary ${loading ? 'loading' : ''}`}
-            disabled={loading || (!content.trim() && media.length === 0)}
-          >
-            {isEditing ? 'Save Changes' : 'Post'}
-          </Button>
-        </div>
-      </form>
-
-      {/* Privacy Dialog */}
-      <Dialog open={showPrivacyDialog} onClose={() => setShowPrivacyDialog(false)}>
-        <DialogTitle>Who can see your post?</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2}>
-            <Button
-              startIcon={<PublicIcon />}
-              onClick={() => handlePrivacyChange('public')}
-              variant={privacy === 'public' ? 'contained' : 'outlined'}
-              fullWidth
-            >
-              Public
-            </Button>
-            <Button
-              startIcon={<GroupIcon />}
-              onClick={() => handlePrivacyChange('friends')}
-              variant={privacy === 'friends' ? 'contained' : 'outlined'}
-              fullWidth
-            >
-              Friends Only
-            </Button>
-            <Button
-              startIcon={<PrivateIcon />}
-              onClick={() => handlePrivacyChange('private')}
-              variant={privacy === 'private' ? 'contained' : 'outlined'}
-              fullWidth
-            >
-              Only Me
-            </Button>
-          </Stack>
-        </DialogContent>
-      </Dialog>
+      </Box>
     </Paper>
   );
 };

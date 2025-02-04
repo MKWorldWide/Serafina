@@ -1,132 +1,108 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { websocketService, WebSocketMessage } from '../services/websocket';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { INotification, NotificationsContextType } from '../types/notifications';
 import useStore from '../store/useStore';
 
-interface INotification {
-  id: string;
-  type: string;
-  title: string;
-  message: string;
-  data?: any;
-  sender?: {
-    id: string;
-    username: string;
-    avatar: string;
-  };
-  read: boolean;
-  createdAt: string;
-}
-
-interface NotificationsContextType {
-  notifications: INotification[];
-  unreadCount: number;
-  markAsRead: (notificationId: string) => void;
-  markAllAsRead: () => void;
-  clearAll: () => void;
-}
-
-const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
+const NotificationsContext = createContext<NotificationsContextType>({
+  notifications: [],
+  unreadCount: 0,
+  loading: false,
+  error: null,
+  markAsRead: async () => {},
+  markAllAsRead: async () => {},
+  deleteNotification: async () => {},
+  clearAllNotifications: async () => {},
+});
 
 export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const user = useStore(state => state.user);
 
   useEffect(() => {
     if (!user) return;
 
-    // Connect to WebSocket
-    websocketService.connect(localStorage.getItem('gamedin_token') || '');
-
-    // Subscribe to notification types
-    const unsubscribeHandlers = [
-      websocketService.subscribe('NOTIFICATION_LIKE', handleNotification),
-      websocketService.subscribe('NOTIFICATION_COMMENT', handleNotification),
-      websocketService.subscribe('NOTIFICATION_FOLLOW', handleNotification),
-      websocketService.subscribe('NOTIFICATION_MENTION', handleNotification),
-      websocketService.subscribe('NOTIFICATION_TOURNAMENT', handleNotification),
-      websocketService.subscribe('NOTIFICATION_TEAM', handleNotification),
-      websocketService.subscribe('NOTIFICATION_ACHIEVEMENT', handleNotification),
-      websocketService.subscribe('NOTIFICATION_SYSTEM', handleNotification),
-    ];
-
-    return () => {
-      unsubscribeHandlers.forEach(unsubscribe => unsubscribe());
-      websocketService.disconnect();
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/notifications');
+        const data = await response.json();
+        setNotifications(data.notifications);
+        setUnreadCount(data.unreadCount);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load notifications');
+      } finally {
+        setLoading(false);
+      }
     };
+
+    fetchNotifications();
   }, [user]);
 
-  const handleNotification = (message: WebSocketMessage) => {
-    const notification: INotification = {
-      id: message.id,
-      type: message.type,
-      title: message.data.title || '',
-      message: message.data.message,
-      data: message.data,
-      sender: message.data.sender,
-      read: false,
-      createdAt: message.timestamp,
-    };
-
-    setNotifications(prev => [notification, ...prev]);
+  const markAsRead = async (notificationId: string) => {
+    try {
+      await fetch(`/api/notifications/${notificationId}/read`, { method: 'POST' });
+      setNotifications(prev =>
+        prev.map(n =>
+          n.id === notificationId ? { ...n, read: true } : n
+        )
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error('Failed to mark notification as read:', err);
+    }
   };
 
-  const markAsRead = (notificationId: string) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === notificationId ? { ...notification, read: true } : notification
-      )
-    );
-
-    websocketService.send({
-      type: 'MARK_NOTIFICATION_READ',
-      data: {
-        notificationId,
-        message: 'Marking notification as read',
-      },
-    });
+  const markAllAsRead = async () => {
+    try {
+      await fetch('/api/notifications/read-all', { method: 'POST' });
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setUnreadCount(0);
+    } catch (err) {
+      console.error('Failed to mark all notifications as read:', err);
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(notification => ({ ...notification, read: true })));
-
-    websocketService.send({
-      type: 'MARK_ALL_NOTIFICATIONS_READ',
-      data: {
-        message: 'Marking all notifications as read',
-      },
-    });
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      await fetch(`/api/notifications/${notificationId}`, { method: 'DELETE' });
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      setUnreadCount(prev => (prev > 0 ? prev - 1 : 0));
+    } catch (err) {
+      console.error('Failed to delete notification:', err);
+    }
   };
 
-  const clearAll = () => {
-    setNotifications([]);
-
-    websocketService.send({
-      type: 'CLEAR_ALL_NOTIFICATIONS',
-      data: {
-        message: 'Clearing all notifications',
-      },
-    });
-  };
-
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  const value = {
-    notifications,
-    unreadCount,
-    markAsRead,
-    markAllAsRead,
-    clearAll,
+  const clearAllNotifications = async () => {
+    try {
+      await fetch('/api/notifications', { method: 'DELETE' });
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (err) {
+      console.error('Failed to clear notifications:', err);
+    }
   };
 
   return (
-    <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>
+    <NotificationsContext.Provider
+      value={{
+        notifications,
+        unreadCount,
+        loading,
+        error,
+        markAsRead,
+        markAllAsRead,
+        deleteNotification,
+        clearAllNotifications,
+      }}
+    >
+      {children}
+    </NotificationsContext.Provider>
   );
 };
 
-export const useNotifications = () => {
-  const context = useContext(NotificationsContext);
-  if (context === undefined) {
-    throw new Error('useNotifications must be used within a NotificationsProvider');
-  }
-  return context;
-};
+export const useNotifications = () => useContext(NotificationsContext);
+
+export default NotificationsContext;

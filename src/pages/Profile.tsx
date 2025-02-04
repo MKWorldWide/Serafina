@@ -197,17 +197,14 @@ const StatusBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const HighlightCard = styled(Paper)(({ theme }) => ({
-  position: 'relative',
-  height: '200px',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  borderRadius: '15px',
-  overflow: 'hidden',
-  cursor: 'pointer',
-  transition: 'transform 0.2s ease-in-out',
+const HighlightCard = styled(Paper)(() => ({
+  padding: '1rem',
+  borderRadius: '0.5rem',
+  backgroundColor: 'var(--highlight-bg)',
+  color: 'var(--highlight-text)',
   '&:hover': {
-    transform: 'scale(1.02)',
+    transform: 'translateY(-2px)',
+    transition: 'transform 0.2s ease-in-out',
   },
 }));
 

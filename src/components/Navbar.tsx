@@ -34,6 +34,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationsContext';
 import NotificationsMenu from './notifications/NotificationsMenu';
 import useStore from '../store/useStore';
+import { NotificationsContextType } from '../types/notifications';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,13 +45,13 @@ const Navbar: React.FC = () => {
   const {
     notifications,
     unreadCount,
-    loading: notificationsLoading,
-    error: notificationsError,
     markAsRead,
     markAllAsRead,
+    loading,
+    error,
     deleteNotification,
-    clearAll,
-  } = useNotifications();
+    clearAllNotifications,
+  }: NotificationsContextType = useNotifications();
   const [isScrolled, setIsScrolled] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
@@ -155,7 +156,7 @@ const Navbar: React.FC = () => {
       position="fixed"
       elevation={isScrolled ? 4 : 0}
       sx={{
-        bgcolor: 'background.paper',
+        bgcolor: isScrolled ? 'background.default' : 'transparent',
         transition: 'all 0.3s',
       }}
     >
@@ -239,8 +240,15 @@ const Navbar: React.FC = () => {
           </Tooltip>
 
           <Box sx={{ position: 'relative' }}>
-            <IconButton onClick={handleMenu}>
-              <Avatar src={user.avatarUrl} alt={user.username} sx={{ width: 32, height: 32 }} />
+            <IconButton
+              onClick={handleMenu}
+              size="small"
+              sx={{ ml: 2 }}
+              aria-controls={Boolean(anchorEl) ? 'account-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
+            >
+              <Avatar src={user.avatar} alt={user.username} sx={{ width: 32, height: 32 }} />
               <StatusIcon
                 sx={{
                   position: 'absolute',
@@ -348,15 +356,11 @@ const Navbar: React.FC = () => {
         </Menu>
 
         <NotificationsMenu
-          anchorEl={notificationAnchorEl}
-          onClose={handleNotificationsClose}
           notifications={notifications}
-          loading={notificationsLoading}
-          error={notificationsError}
+          anchorEl={notificationAnchorEl}
+          open={Boolean(notificationAnchorEl)}
+          onClose={handleNotificationsClose}
           onMarkAsRead={markAsRead}
-          onMarkAllAsRead={markAllAsRead}
-          onDelete={deleteNotification}
-          onClearAll={clearAll}
         />
       </Toolbar>
     </AppBar>

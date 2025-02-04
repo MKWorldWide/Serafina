@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useWebSocket } from '../hooks/useWebSocket';
 import useStore from '../store/useStore';
-import { IConversation, IMessage, IUser } from '../types/social';
+import { IConversation, IMessage, IUser, ExtendedConversation } from '../types/social';
 import ConversationsList from '../components/messaging/ConversationsList';
 import MessageList from '../components/messaging/MessageList';
 import MessageInput from '../components/messaging/MessageInput';
 import GroupChatDialog from '../components/messaging/GroupChatDialog';
-
-interface ExtendedConversation extends IConversation {
-  name: string;
-}
 
 const Messaging: React.FC = () => {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -67,23 +63,27 @@ const Messaging: React.FC = () => {
 
   useEffect(() => {
     const unsubscribeMessage = subscribe('MESSAGE_CREATE', message => {
-      if (message.data.message && message.data.message.conversation.id === selectedConversation?.id) {
-        setMessages(prev => [...prev, message.data.message!]);
+      if (message.data.message && selectedConversation) {
+        if (message.data.message.conversation === selectedConversation.id) {
+          setMessages(prev => [...prev, message.data.message!]);
+        }
       }
     });
 
     const unsubscribeMessageUpdate = subscribe('MESSAGE_UPDATE', message => {
-      if (message.data.message && message.data.message.conversation.id === selectedConversation?.id) {
-        setMessages(prev =>
-          prev.map(m =>
-            m.id === message.data.message!.id ? { ...m, ...message.data.message } : m
-          )
-        );
+      if (message.data.message && selectedConversation) {
+        if (message.data.message.conversation === selectedConversation.id) {
+          setMessages(prev =>
+            prev.map(m =>
+              m.id === message.data.message!.id ? { ...m, ...message.data.message } : m
+            )
+          );
+        }
       }
     });
 
     const unsubscribeMessageDelete = subscribe('MESSAGE_DELETE', message => {
-      if (message.data.messageId && selectedConversation?.id) {
+      if (message.data.messageId && selectedConversation) {
         setMessages(prev => prev.filter(m => m.id !== message.data.messageId));
       }
     });
@@ -96,24 +96,54 @@ const Messaging: React.FC = () => {
   }, [selectedConversation?.id, subscribe]);
 
   const handleSendMessage = async (content: string) => {
-    if (!selectedConversation || !user || !content.trim()) return;
+    if (!selectedConversation || !user) return;
+
+    const newMessage: IMessage = {
+      id: Date.now().toString(), // Temporary ID until server response
+      content,
+      sender: {
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar || '',
+      },
+      conversation: selectedConversation.id,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
     try {
-      const message: IMessage = {
-        id: crypto.randomUUID(),
-        content: content.trim(),
-        sender: user,
-        conversation: selectedConversation,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      // Optimistic update
-      setMessages(prev => [...prev, message]);
-
-      send('MESSAGE_CREATE', { message });
+      setMessages(prev => [...prev, newMessage]);
+      await fetch('/api/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content,
+          conversationId: selectedConversation.id,
+        }),
+      });
     } catch (error) {
       console.error('Failed to send message:', error);
+      setMessages(prev => prev.filter(m => m.id !== newMessage.id));
+    }
+  };
+
+  const handleWebSocketMessage = (message: {
+    type: string;
+    data: {
+      message?: IMessage;
+      messageId?: string;
+    };
+  }) => {
+    if (!selectedConversation) return;
+
+    if (message.type === 'MESSAGE_CREATE' && message.data.message) {
+      if (message.data.message.conversation === selectedConversation.id) {
+        setMessages(prev => [...prev, message.data.message!]);
+      }
+    } else if (message.type === 'MESSAGE_DELETE' && message.data.messageId) {
+      setMessages(prev => prev.filter(m => m.id !== message.data.messageId));
     }
   };
 
@@ -175,32 +205,31 @@ const Messaging: React.FC = () => {
     }
   };
 
-  const handleEditMessage = async (messageId: string, content: string) => {
+  const handleEditMessage = async (message: IMessage, newContent: string) => {
     try {
-      const response = await fetch(`/api/messages/${messageId}`, {
+      await fetch(`/api/messages/${message.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content: newContent }),
       });
 
-      const updatedMessage = await response.json();
       setMessages(prev =>
-        prev.map(m => (m.id === messageId ? updatedMessage : m))
+        prev.map(m => (m.id === message.id ? { ...m, content: newContent } : m))
       );
     } catch (error) {
       console.error('Failed to edit message:', error);
     }
   };
 
-  const handleDeleteMessage = async (messageId: string) => {
+  const handleDeleteMessage = async (message: IMessage) => {
     try {
-      await fetch(`/api/messages/${messageId}`, {
+      await fetch(`/api/messages/${message.id}`, {
         method: 'DELETE',
       });
 
-      setMessages(prev => prev.filter(m => m.id !== messageId));
+      setMessages(prev => prev.filter(m => m.id !== message.id));
     } catch (error) {
       console.error('Failed to delete message:', error);
     }
@@ -209,6 +238,14 @@ const Messaging: React.FC = () => {
   const handleReplyMessage = (message: IMessage) => {
     // Implement reply functionality
     console.log('Reply to message:', message);
+  };
+
+  const handleSelectConversation = (conversation: IConversation) => {
+    const extendedConversation: ExtendedConversation = {
+      ...conversation,
+      name: conversation.participants[0]?.user.username || 'Unnamed Conversation'
+    };
+    setSelectedConversation(extendedConversation);
   };
 
   if (error) {
@@ -233,7 +270,7 @@ const Messaging: React.FC = () => {
         <ConversationsList
           conversations={conversations}
           activeConversationId={selectedConversation?.id}
-          onSelectConversation={setSelectedConversation}
+          onSelectConversation={handleSelectConversation}
         />
       </div>
 
@@ -282,7 +319,10 @@ const Messaging: React.FC = () => {
         isOpen={isGroupDialogOpen}
         onClose={() => setIsGroupDialogOpen(false)}
         onSubmit={handleCreateGroup}
-        existingGroup={selectedConversation}
+        existingGroup={selectedConversation ? {
+          ...selectedConversation,
+          name: selectedConversation.name
+        } : undefined}
         onUpdateGroup={handleUpdateGroup}
       />
     </div>

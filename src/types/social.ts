@@ -148,15 +148,10 @@ export interface IUser {
   username: string;
   email: string;
   avatar: string;
+  presence: 'online' | 'offline' | 'in-game';
   bio?: string;
-  level: number;
-  xp: number;
-  nextLevelXp: number;
-  gamesCount: number;
-  matchesCount: number;
-  friendsCount: number;
-  createdAt: string;
-  updatedAt: string;
+  rank?: string;
+  level?: number;
 }
 
 export interface IConversationParticipant {
@@ -172,21 +167,27 @@ export interface IAttachment {
   id: string;
   type: 'image' | 'video' | 'file';
   url: string;
-  filename: string;
-  size: number;
-  mimeType: string;
-  createdAt: string;
-  updatedAt: string;
+  name: string;
+  size?: number;
+  mimeType?: string;
 }
 
 export interface IMessage {
   id: string;
   content: string;
-  sender: IUser;
-  conversation: IConversation;
-  attachments?: IAttachment[];
+  sender: {
+    id: string;
+    username: string;
+    avatar: string;
+  };
+  conversation: string;
   createdAt: string;
   updatedAt: string;
+  attachments?: IAttachment[];
+  metadata?: {
+    isDeleted: boolean;
+    isEdited: boolean;
+  };
 }
 
 export interface IMessageInput {
@@ -202,6 +203,10 @@ export interface IConversation {
   unreadCount: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ExtendedConversation extends IConversation {
+  name: string;
 }
 
 export interface IActivity {

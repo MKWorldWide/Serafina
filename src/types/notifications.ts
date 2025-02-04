@@ -1,34 +1,34 @@
-export type NotificationType =
-  | 'LIKE'
-  | 'COMMENT'
-  | 'FOLLOW'
-  | 'MENTION'
-  | 'TOURNAMENT_INVITE'
-  | 'TEAM_INVITE'
-  | 'ACHIEVEMENT'
-  | 'SYSTEM';
+export type NotificationType = 'FRIEND_REQUEST' | 'MESSAGE' | 'GAME_INVITE' | 'SYSTEM';
 
 export interface INotification {
   id: string;
   type: NotificationType;
-  title: string;
-  message: string;
-  createdAt: string;
+  content: string;
+  timestamp: string;
   read: boolean;
-  data?: {
-    postId?: string;
-    commentId?: string;
-    userId?: string;
-    tournamentId?: string;
-    teamId?: string;
-    achievementId?: string;
-    [key: string]: any;
-  };
   sender?: {
     id: string;
     username: string;
-    avatarUrl?: string;
+    avatar?: string;
   };
+  metadata?: {
+    gameId?: string;
+    gameName?: string;
+    messageId?: string;
+    conversationId?: string;
+    userId?: string;
+  };
+}
+
+export interface NotificationsContextType {
+  notifications: INotification[];
+  unreadCount: number;
+  loading: boolean;
+  error: string | null;
+  markAsRead: (notificationId: string) => Promise<void>;
+  deleteNotification: (notificationId: string) => Promise<void>;
+  clearAllNotifications: () => Promise<void>;
+  markAllAsRead: () => Promise<void>;
 }
 
 export interface INotificationState {

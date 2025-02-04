@@ -1,99 +1,59 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { IUser } from '../types/user';
-
-interface ILoginCredentials {
-  email: string;
-  password: string;
-}
-
-interface IRegistrationData {
-  username: string;
-  email: string;
-  password: string;
-}
+import { IUser } from '../types/social';
 
 interface IAuthContextType {
   user: IUser | null;
-  login: (credentials: ILoginCredentials) => Promise<void>;
-  logout: () => void;
-  register: (data: IRegistrationData) => Promise<void>;
+  isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (userData: Partial<IUser> & { password: string }) => Promise<void>;
+  logout: () => void;
+  updateProfile: (userData: Partial<IUser>) => Promise<void>;
 }
 
-const MOCK_USER: IUser = {
-  id: '1',
-  username: 'demo_user',
-  email: 'demo@example.com',
-  avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo_user',
-  status: 'online',
-  rank: 'Gold',
-  level: 42,
-};
-
-const AuthContext = createContext<IAuthContextType | undefined>(undefined);
+const AuthContext = createContext<IAuthContextType>({
+  user: null,
+  isAuthenticated: false,
+  loading: false,
+  error: null,
+  login: async () => {},
+  register: async () => {},
+  logout: () => {},
+  updateProfile: async () => {},
+});
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const login = async (credentials: ILoginCredentials) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Mock login - accept any credentials for demo
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      localStorage.setItem('auth_token', 'mock_token');
-      setUser(MOCK_USER);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const register = async (data: IRegistrationData) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Mock registration - always succeed for demo
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      localStorage.setItem('auth_token', 'mock_token');
-      setUser({
-        ...MOCK_USER,
-        username: data.username,
-        email: data.email,
-        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`,
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('auth_token');
-    setUser(null);
-  };
-
   useEffect(() => {
-    // Check for stored auth token
     const checkAuth = async () => {
       try {
-        setLoading(true);
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-          // For demo, just set the mock user if token exists
-          setUser(MOCK_USER);
+        const token = localStorage.getItem('gamedin_token');
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+          setError(null);
+        } else {
+          localStorage.removeItem('gamedin_token');
+          setUser(null);
+          setError('Session expired');
         }
       } catch (err) {
-        setError('Authentication failed');
+        setError('Failed to check authentication');
       } finally {
         setLoading(false);
       }
@@ -102,17 +62,110 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuth();
   }, []);
 
+  const login = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('gamedin_token', data.token);
+        setUser(data.user);
+        setError(null);
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('Failed to login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const register = async (userData: Partial<IUser> & { password: string }) => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('gamedin_token', data.token);
+        setUser(data.user);
+        setError(null);
+      } else {
+        setError(data.message || 'Registration failed');
+      }
+    } catch (err) {
+      setError('Failed to register');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('gamedin_token');
+    setUser(null);
+  };
+
+  const updateProfile = async (userData: Partial<IUser>) => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/auth/profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('gamedin_token')}`,
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUser(data.user);
+        setError(null);
+      } else {
+        setError(data.message || 'Failed to update profile');
+      }
+    } catch (err) {
+      setError('Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, error }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        loading,
+        error,
+        login,
+        register,
+        logout,
+        updateProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
+
+export default AuthContext;
