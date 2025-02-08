@@ -1,91 +1,144 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import {
+  Container,
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Divider,
+  CircularProgress,
+} from '@mui/material';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login, loading, error: authError, user } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    e.stopPropagation();
+    
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
 
     try {
+      setError('');
       await login(email, password);
-      navigate('/');
+      // Navigation is handled by the useEffect above
     } catch (err) {
+      console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Failed to login');
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="card w-96 bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title justify-center text-2xl mb-4">Login</h2>
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Card sx={{ width: '100%', maxWidth: 400 }}>
+          <CardContent>
+            <Typography variant="h4" component="h1" align="center" gutterBottom>
+              Welcome Back
+            </Typography>
 
-          {error && (
-            <div className="alert alert-error">
-              <span>{error}</span>
-            </div>
-          )}
+            {(error || authError) && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error || authError}
+              </Alert>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
-              <input
+            <Box component="form" onSubmit={handleSubmit} noValidate>
+              <TextField
+                fullWidth
+                label="Email"
                 type="email"
-                placeholder="Enter your email"
-                className="input input-bordered"
+                margin="normal"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
+                error={!!error}
+                autoComplete="email"
+                name="email"
               />
-            </div>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
-              <input
+              <TextField
+                fullWidth
+                label="Password"
                 type="password"
-                placeholder="Enter your password"
-                className="input input-bordered"
+                margin="normal"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
+                error={!!error}
+                autoComplete="current-password"
+                name="password"
               />
-            </div>
 
-            <button
-              type="submit"
-              className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                size="large"
+                disabled={loading}
+                sx={{ mt: 3, position: 'relative', minHeight: 48 }}
+              >
+                {loading ? (
+                  <>
+                    <CircularProgress
+                      size={24}
+                      sx={{
+                        position: 'absolute',
+                        left: '50%',
+                        marginLeft: '-12px',
+                      }}
+                    />
+                    <span style={{ visibility: 'hidden' }}>Sign In</span>
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
+            </Box>
+
+            <Divider sx={{ my: 3 }}>OR</Divider>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              size="large"
+              onClick={() => navigate('/register')}
               disabled={loading}
             >
-              Login
-            </button>
-          </form>
-
-          <div className="divider">OR</div>
-
-          <button
-            onClick={() => navigate('/register')}
-            className="btn btn-outline btn-block"
-          >
-            Create Account
-          </button>
-        </div>
-      </div>
-    </div>
+              Create Account
+            </Button>
+          </CardContent>
+        </Card>
+      </Box>
+    </Container>
   );
 };
 

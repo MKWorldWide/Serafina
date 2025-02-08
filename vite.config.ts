@@ -11,18 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:3001',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-      '/ws': {
-        target: process.env.VITE_WS_URL || 'ws://localhost:3001',
-        ws: true,
-      },
-    },
+    port: 3001,
   },
   build: {
     outDir: 'dist',

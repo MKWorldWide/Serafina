@@ -1,185 +1,228 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Container,
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Avatar,
+  Grid,
+  Divider,
+  Stack,
+  CircularProgress,
+  Alert,
+} from '@mui/material';
 import useStore from '../../store/useStore';
-import api from '../../lib/api/axios';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-
-import AchievementCard from './AchievementCard';
-import MutualFriends from './MutualFriends';
-import UserActivity from './UserActivity';
-import EditProfileModal from './EditProfileModal';
+import Timeline from './Timeline';
 
 const ProfilePage = () => {
-  const { userId } = useParams();
-  const queryClient = useQueryClient();
-  const [isEditing, setIsEditing] = useState(false);
-  const currentUser = useStore(state => state.user);
-  const isOwnProfile = currentUser?.id === userId;
+  const { username } = useParams();
+  const navigate = useNavigate();
+  const { user, addFriend } = useStore();
+  const isOwnProfile = user?.username === username;
 
-  // Fetch profile data with React Query
-  const {
-    data: profile,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['profile', userId],
+  const { data: profile, isLoading, error } = useQuery({
+    queryKey: ['profile', username],
     queryFn: async () => {
-      const { data } = await api.get(`/users/${userId}`);
-      return data;
+      // Mock API call - replace with actual API call
+      return {
+        id: '123',
+        username: username,
+        bio: 'Competitive gamer looking for teammates',
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
+        level: 42,
+        rank: 'Diamond',
+        stats: {
+          gamesPlayed: 150,
+          winRate: 65,
+          matchesWon: 98,
+          matchesLost: 52,
+          favoriteGame: 'Valorant',
+          playtime: 450,
+        },
+      };
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    enabled: !!username,
   });
 
-  // Fetch achievements
-  const { data: achievements } = useQuery({
-    queryKey: ['achievements', userId],
-    queryFn: async () => {
-      const { data } = await api.get(`/users/${userId}/achievements`);
-      return data;
-    },
-    enabled: !!profile,
-  });
+  const handleEditProfile = () => {
+    // Handle edit profile
+    console.log('Edit profile');
+  };
 
-  const handleProfileUpdate = async updates => {
+  const handleAddFriend = async () => {
+    if (!profile) return;
     try {
-      const formData = new FormData();
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value instanceof File) {
-          formData.append(key, value);
-        } else {
-          formData.append(key, JSON.stringify(value));
-        }
-      });
-
-      await api.patch(`/users/${userId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      queryClient.invalidateQueries(['profile', userId]);
-      setIsEditing(false);
+      await addFriend(profile.id);
+      // Show success message
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      console.error('Failed to add friend:', error);
+      // Show error message
     }
+  };
+
+  const handleSendMessage = () => {
+    if (!profile) return;
+    navigate(`/messages/${profile.id}`);
   };
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="loading loading-spinner loading-lg"></div>
-      </div>
+      <Container maxWidth="lg">
+        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+          <CircularProgress />
+        </Box>
+      </Container>
     );
   }
 
   if (error) {
     return (
-      <div className="alert alert-error">
-        <span>Failed to load profile. Please try again later.</span>
-      </div>
+      <Container maxWidth="lg">
+        <Box sx={{ mt: 4 }}>
+          <Alert severity="error">Error loading profile. Please try again later.</Alert>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <Container maxWidth="lg">
+        <Box sx={{ mt: 4 }}>
+          <Alert severity="info">Profile not found.</Alert>
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Profile Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative h-80 rounded-xl overflow-hidden mb-6"
-      >
-        <img
-          src={profile.bannerUrl || '/default-banner.jpg'}
-          alt="Profile Banner"
-          className="w-full h-full object-cover"
-        />
-        {isOwnProfile && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="absolute top-4 right-4 btn btn-primary btn-sm"
-          >
-            Edit Profile
-          </button>
-        )}
-      </motion.div>
+    <Container maxWidth="lg">
+      <Box sx={{ mt: 4, mb: 4 }}>
+        {/* Profile Header */}
+        <Card sx={{ mb: 4 }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start' }}>
+              <Avatar
+                src={profile.avatar}
+                alt={profile.username}
+                sx={{ width: 120, height: 120 }}
+              />
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h4" gutterBottom>
+                  {profile.username}
+                </Typography>
+                <Typography variant="body1" color="text.secondary" gutterBottom>
+                  {profile.bio}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                  {isOwnProfile ? (
+                    <Button variant="contained" onClick={handleEditProfile}>
+                      Edit Profile
+                    </Button>
+                  ) : (
+                    <>
+                      <Button variant="outlined" onClick={handleAddFriend}>
+                        Add Friend
+                      </Button>
+                      <Button variant="outlined" onClick={handleSendMessage}>
+                        Message
+                      </Button>
+                    </>
+                  )}
+                </Box>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
 
-      {/* Profile Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column - Profile Info */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-3"
-        >
-          <div className="card bg-base-100 shadow-xl">
-            <div className="card-body">
-              <div className="avatar">
-                <div className="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                  <img src={profile.avatar} alt={profile.username} />
-                </div>
-              </div>
-              <h2 className="card-title mt-4">{profile.username}</h2>
-              <p className="text-sm opacity-70">{profile.bio}</p>
+        {/* Stats Grid */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} md={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Level & Rank
+                </Typography>
+                <Stack spacing={1}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography>Level</Typography>
+                    <Typography>{profile.level}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography>Rank</Typography>
+                    <Typography>{profile.rank}</Typography>
+                  </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Gaming Stats
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Games Played
+                    </Typography>
+                    <Typography variant="h6">{profile.stats.gamesPlayed}</Typography>
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Win Rate
+                    </Typography>
+                    <Typography variant="h6">{profile.stats.winRate}%</Typography>
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Matches Won
+                    </Typography>
+                    <Typography variant="h6">{profile.stats.matchesWon}</Typography>
+                  </Grid>
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Matches Lost
+                    </Typography>
+                    <Typography variant="h6">{profile.stats.matchesLost}</Typography>
+                  </Grid>
+                </Grid>
+                <Divider sx={{ my: 2 }} />
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Favorite Game
+                    </Typography>
+                    <Typography variant="h6">{profile.stats.favoriteGame}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Total Playtime
+                    </Typography>
+                    <Typography variant="h6">{profile.stats.playtime} hours</Typography>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
-              <div className="stats stats-vertical shadow mt-4">
-                <div className="stat">
-                  <div className="stat-title">Games</div>
-                  <div className="stat-value">{profile.gamesCount}</div>
-                </div>
-                <div className="stat">
-                  <div className="stat-title">Friends</div>
-                  <div className="stat-value">{profile.friendsCount}</div>
-                </div>
-                <div className="stat">
-                  <div className="stat-title">Achievements</div>
-                  <div className="stat-value">{achievements?.length || 0}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Mutual Friends */}
-          {!isOwnProfile && <MutualFriends userId={userId} />}
-        </motion.div>
-
-        {/* Middle Column - Activity Feed */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-6"
-        >
-          <UserActivity userId={userId} />
-        </motion.div>
-
-        {/* Right Column - Achievements & Stats */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-3"
-        >
-          <div className="card bg-base-100 shadow-xl">
-            <div className="card-body">
-              <h3 className="card-title">Achievements</h3>
-              <div className="space-y-4 mt-4">
-                {achievements?.map(achievement => (
-                  <AchievementCard key={achievement.id} achievement={achievement} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Edit Profile Modal */}
-      <AnimatePresence>
-        {isEditing && (
-          <EditProfileModal
-            profile={profile}
-            onClose={() => setIsEditing(false)}
-            onSave={handleProfileUpdate}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+        {/* Timeline */}
+        <Card>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Activity Feed
+            </Typography>
+            <Timeline userId={profile.id} />
+          </CardContent>
+        </Card>
+      </Box>
+    </Container>
   );
 };
 

@@ -2,6 +2,38 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { INotification, NotificationsContextType } from '../types/notifications';
 import useStore from '../store/useStore';
 
+// Mock data
+const mockNotifications: INotification[] = [
+  {
+    id: '1',
+    type: 'FRIEND_REQUEST',
+    content: 'John Doe sent you a friend request',
+    timestamp: new Date().toISOString(),
+    read: false,
+    sender: {
+      id: '123',
+      username: 'John Doe',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John'
+    }
+  },
+  {
+    id: '2',
+    type: 'GAME_INVITE',
+    content: 'Jane Smith invited you to play Fortnite',
+    timestamp: new Date().toISOString(),
+    read: false,
+    sender: {
+      id: '456',
+      username: 'Jane Smith',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane'
+    },
+    metadata: {
+      gameId: '789',
+      gameName: 'Fortnite'
+    }
+  }
+];
+
 const NotificationsContext = createContext<NotificationsContextType>({
   notifications: [],
   unreadCount: 0,
@@ -23,66 +55,37 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!user) return;
 
-    const fetchNotifications = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/notifications');
-        const data = await response.json();
-        setNotifications(data.notifications);
-        setUnreadCount(data.unreadCount);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load notifications');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNotifications();
+    // Simulate API call with mock data
+    setLoading(true);
+    setTimeout(() => {
+      setNotifications(mockNotifications);
+      setUnreadCount(mockNotifications.filter(n => !n.read).length);
+      setLoading(false);
+    }, 1000);
   }, [user]);
 
   const markAsRead = async (notificationId: string) => {
-    try {
-      await fetch(`/api/notifications/${notificationId}/read`, { method: 'POST' });
-      setNotifications(prev =>
-        prev.map(n =>
-          n.id === notificationId ? { ...n, read: true } : n
-        )
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (err) {
-      console.error('Failed to mark notification as read:', err);
-    }
+    setNotifications(prev =>
+      prev.map(n =>
+        n.id === notificationId ? { ...n, read: true } : n
+      )
+    );
+    setUnreadCount(prev => Math.max(0, prev - 1));
   };
 
   const markAllAsRead = async () => {
-    try {
-      await fetch('/api/notifications/read-all', { method: 'POST' });
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      setUnreadCount(0);
-    } catch (err) {
-      console.error('Failed to mark all notifications as read:', err);
-    }
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setUnreadCount(0);
   };
 
   const deleteNotification = async (notificationId: string) => {
-    try {
-      await fetch(`/api/notifications/${notificationId}`, { method: 'DELETE' });
-      setNotifications(prev => prev.filter(n => n.id !== notificationId));
-      setUnreadCount(prev => (prev > 0 ? prev - 1 : 0));
-    } catch (err) {
-      console.error('Failed to delete notification:', err);
-    }
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    setUnreadCount(prev => prev - 1);
   };
 
   const clearAllNotifications = async () => {
-    try {
-      await fetch('/api/notifications', { method: 'DELETE' });
-      setNotifications([]);
-      setUnreadCount(0);
-    } catch (err) {
-      console.error('Failed to clear notifications:', err);
-    }
+    setNotifications([]);
+    setUnreadCount(0);
   };
 
   return (

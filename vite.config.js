@@ -9,7 +9,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false,
+    sourcemap: true,
+    target: 'esnext',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -18,16 +19,15 @@ export default defineConfig({
         },
       },
     },
-    target: 'es2015',
     minify: 'esbuild',
   },
   optimizeDeps: {
     include: ['@emotion/react', '@emotion/styled', '@mui/material'],
     esbuildOptions: {
-      target: 'es2015',
+      target: 'esnext',
     },
   },
   esbuild: {
-    target: 'es2015',
+    target: 'esnext',
   },
 });

@@ -1,225 +1,320 @@
-import { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Stack,
+  Box,
+  Typography,
+  Chip,
+  IconButton,
+  Grid,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Autocomplete,
+} from '@mui/material';
+import { Add as AddIcon, Close as CloseIcon } from '@mui/icons-material';
 
 const EditProfileModal = ({ profile, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    username: profile.username,
-    bio: profile.bio,
-    avatar: null,
-    banner: null,
-    socialLinks: profile.socialLinks || {},
-    gamePreferences: profile.gamePreferences || [],
+    username: profile.username || '',
+    bio: profile.bio || '',
+    languages: profile.languages || [],
+    games: profile.games || [],
+    availability: profile.availability || {
+      schedule: [
+        { day: 'Weekdays', time: '18:00-23:00' },
+        { day: 'Weekends', time: '14:00-02:00' },
+      ],
+      timezone: 'UTC-5',
+    },
+    preferences: profile.preferences || {
+      roles: [],
+      playstyle: [],
+      communication: [],
+    },
   });
 
-  const [avatarPreview, setAvatarPreview] = useState(profile.avatar);
-  const [bannerPreview, setBannerPreview] = useState(profile.bannerUrl);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newLanguage, setNewLanguage] = useState('');
+  const [newGame, setNewGame] = useState({ name: '', rank: '' });
 
-  const avatarInputRef = useRef();
-  const bannerInputRef = useRef();
-
-  const handleFileChange = (e, type) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (type === 'avatar') {
-        setAvatarPreview(reader.result);
-        setFormData(prev => ({ ...prev, avatar: file }));
-      } else {
-        setBannerPreview(reader.result);
-        setFormData(prev => ({ ...prev, banner: file }));
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await onSave(formData);
-    } catch (error) {
-      console.error('Failed to save profile:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleSocialLinkChange = (platform, value) => {
+  const handleChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      socialLinks: {
-        ...prev.socialLinks,
-        [platform]: value,
+      [field]: value,
+    }));
+  };
+
+  const handleNestedChange = (parent, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [parent]: {
+        ...prev[parent],
+        [field]: value,
       },
     }));
   };
 
-  const handleGamePreferenceChange = (game, isChecked) => {
-    setFormData(prev => ({
-      ...prev,
-      gamePreferences: isChecked
-        ? [...prev.gamePreferences, game]
-        : prev.gamePreferences.filter(g => g !== game),
-    }));
+  const handleSubmit = () => {
+    onSave(formData);
+  };
+
+  const addLanguage = () => {
+    if (newLanguage && !formData.languages.includes(newLanguage)) {
+      handleChange('languages', [...formData.languages, newLanguage]);
+      setNewLanguage('');
+    }
+  };
+
+  const removeLanguage = (lang) => {
+    handleChange('languages', formData.languages.filter(l => l !== lang));
+  };
+
+  const addGame = () => {
+    if (newGame.name && newGame.rank) {
+      handleChange('games', [...formData.games, { ...newGame, hours: 0 }]);
+      setNewGame({ name: '', rank: '' });
+    }
+  };
+
+  const removeGame = (gameName) => {
+    handleChange('games', formData.games.filter(g => g.name !== gameName));
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-    >
-      <motion.div
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
-        className="bg-base-100 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-      >
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <h2 className="text-2xl font-bold">Edit Profile</h2>
-
-          {/* Avatar & Banner Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="label">Profile Picture</label>
-              <div className="avatar">
-                <div className="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                  <img src={avatarPreview} alt="Avatar Preview" />
-                </div>
-              </div>
-              <input
-                type="file"
-                ref={avatarInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={e => handleFileChange(e, 'avatar')}
-              />
-              <button
-                type="button"
-                className="btn btn-sm mt-2"
-                onClick={() => avatarInputRef.current.click()}
-              >
-                Change Avatar
-              </button>
-            </div>
-
-            <div>
-              <label className="label">Profile Banner</label>
-              <div className="aspect-video rounded-lg overflow-hidden">
-                <img
-                  src={bannerPreview}
-                  alt="Banner Preview"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <input
-                type="file"
-                ref={bannerInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={e => handleFileChange(e, 'banner')}
-              />
-              <button
-                type="button"
-                className="btn btn-sm mt-2"
-                onClick={() => bannerInputRef.current.click()}
-              >
-                Change Banner
-              </button>
-            </div>
-          </div>
-
+    <Dialog open onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>
+        Edit Profile
+        <IconButton
+          onClick={onClose}
+          sx={{ position: 'absolute', right: 8, top: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Stack spacing={3}>
           {/* Basic Info */}
-          <div className="space-y-4">
-            <div>
-              <label className="label">Username</label>
-              <input
-                type="text"
-                className="input input-bordered w-full"
+          <Box>
+            <Typography variant="h6" gutterBottom>Basic Information</Typography>
+            <Stack spacing={2}>
+              <TextField
+                label="Username"
                 value={formData.username}
-                onChange={e => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                required
+                onChange={(e) => handleChange('username', e.target.value)}
+                fullWidth
               />
-            </div>
-
-            <div>
-              <label className="label">Bio</label>
-              <textarea
-                className="textarea textarea-bordered w-full"
+              <TextField
+                label="Bio"
                 value={formData.bio}
-                onChange={e => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                rows="3"
+                onChange={(e) => handleChange('bio', e.target.value)}
+                multiline
+                rows={3}
+                fullWidth
               />
-            </div>
-          </div>
+            </Stack>
+          </Box>
 
-          {/* Social Links */}
-          <div>
-            <h3 className="font-semibold mb-2">Social Links</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {['twitch', 'youtube', 'twitter', 'discord'].map(platform => (
-                <div key={platform}>
-                  <label className="label capitalize">{platform}</label>
-                  <input
-                    type="text"
-                    className="input input-bordered w-full"
-                    value={formData.socialLinks[platform] || ''}
-                    onChange={e => handleSocialLinkChange(platform, e.target.value)}
-                    placeholder={`Your ${platform} link`}
-                  />
-                </div>
+          {/* Languages */}
+          <Box>
+            <Typography variant="h6" gutterBottom>Languages</Typography>
+            <Box mb={2}>
+              <Grid container spacing={1}>
+                {formData.languages.map((lang) => (
+                  <Grid item key={lang}>
+                    <Chip
+                      label={lang}
+                      onDelete={() => removeLanguage(lang)}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+            <Box display="flex" gap={1}>
+              <TextField
+                label="Add Language"
+                value={newLanguage}
+                onChange={(e) => setNewLanguage(e.target.value)}
+                size="small"
+              />
+              <Button
+                variant="outlined"
+                onClick={addLanguage}
+                disabled={!newLanguage}
+              >
+                Add
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Games */}
+          <Box>
+            <Typography variant="h6" gutterBottom>Games</Typography>
+            <Box mb={2}>
+              <Grid container spacing={1}>
+                {formData.games.map((game) => (
+                  <Grid item key={game.name} xs={12} sm={6} md={4}>
+                    <Chip
+                      label={`${game.name} - ${game.rank}`}
+                      onDelete={() => removeGame(game.name)}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+            <Box display="flex" gap={1}>
+              <TextField
+                label="Game Name"
+                value={newGame.name}
+                onChange={(e) => setNewGame({ ...newGame, name: e.target.value })}
+                size="small"
+              />
+              <TextField
+                label="Rank"
+                value={newGame.rank}
+                onChange={(e) => setNewGame({ ...newGame, rank: e.target.value })}
+                size="small"
+              />
+              <Button
+                variant="outlined"
+                onClick={addGame}
+                disabled={!newGame.name || !newGame.rank}
+              >
+                Add
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Preferences */}
+          <Box>
+            <Typography variant="h6" gutterBottom>Gaming Preferences</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Roles</InputLabel>
+                  <Select
+                    multiple
+                    value={formData.preferences.roles}
+                    onChange={(e) => handleNestedChange('preferences', 'roles', e.target.value)}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} size="small" />
+                        ))}
+                      </Box>
+                    )}
+                  >
+                    {['Entry Fragger', 'IGL', 'Support', 'Lurker', 'AWPer'].map((role) => (
+                      <MenuItem key={role} value={role}>
+                        {role}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Playstyle</InputLabel>
+                  <Select
+                    multiple
+                    value={formData.preferences.playstyle}
+                    onChange={(e) => handleNestedChange('preferences', 'playstyle', e.target.value)}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} size="small" />
+                        ))}
+                      </Box>
+                    )}
+                  >
+                    {['Aggressive', 'Strategic', 'Defensive', 'Flex'].map((style) => (
+                      <MenuItem key={style} value={style}>
+                        {style}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Communication</InputLabel>
+                  <Select
+                    multiple
+                    value={formData.preferences.communication}
+                    onChange={(e) => handleNestedChange('preferences', 'communication', e.target.value)}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} size="small" />
+                        ))}
+                      </Box>
+                    )}
+                  >
+                    {['Voice Chat', 'Discord', 'Text Chat', 'Hand Signals 👋'].map((comm) => (
+                      <MenuItem key={comm} value={comm}>
+                        {comm}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Availability */}
+          <Box>
+            <Typography variant="h6" gutterBottom>Availability</Typography>
+            <Grid container spacing={2}>
+              {formData.availability.schedule.map((slot, index) => (
+                <Grid item xs={12} sm={6} key={slot.day}>
+                  <Stack spacing={1}>
+                    <TextField
+                      label="Day"
+                      value={slot.day}
+                      onChange={(e) => {
+                        const newSchedule = [...formData.availability.schedule];
+                        newSchedule[index] = { ...slot, day: e.target.value };
+                        handleNestedChange('availability', 'schedule', newSchedule);
+                      }}
+                      fullWidth
+                    />
+                    <TextField
+                      label="Time"
+                      value={slot.time}
+                      onChange={(e) => {
+                        const newSchedule = [...formData.availability.schedule];
+                        newSchedule[index] = { ...slot, time: e.target.value };
+                        handleNestedChange('availability', 'schedule', newSchedule);
+                      }}
+                      fullWidth
+                    />
+                  </Stack>
+                </Grid>
               ))}
-            </div>
-          </div>
-
-          {/* Game Preferences */}
-          <div>
-            <h3 className="font-semibold mb-2">Game Preferences</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {['FPS', 'MOBA', 'RPG', 'Strategy', 'Sports', 'Racing'].map(game => (
-                <label key={game} className="label cursor-pointer justify-start gap-2">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    checked={formData.gamePreferences.includes(game)}
-                    onChange={e => handleGamePreferenceChange(game, e.target.checked)}
-                  />
-                  <span>{game}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className={`btn btn-primary ${isSubmitting ? 'loading' : ''}`}
-              disabled={isSubmitting}
-            >
-              Save Changes
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </motion.div>
+              <Grid item xs={12}>
+                <TextField
+                  label="Timezone"
+                  value={formData.availability.timezone}
+                  onChange={(e) => handleNestedChange('availability', 'timezone', e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleSubmit} variant="contained">
+          Save Changes
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

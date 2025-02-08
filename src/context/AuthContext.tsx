@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { IUser } from '../types/social';
+import useStore from '../store/useStore';
 
 interface IAuthContextType {
   user: IUser | null;
@@ -11,6 +12,17 @@ interface IAuthContextType {
   logout: () => void;
   updateProfile: (userData: Partial<IUser>) => Promise<void>;
 }
+
+// Mock user for testing
+const mockUser: IUser = {
+  id: '1',
+  username: 'TestUser',
+  email: 'test@example.com',
+  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=TestUser',
+  presence: 'online',
+  rank: 'Gold',
+  level: 42
+};
 
 const AuthContext = createContext<IAuthContextType>({
   user: null,
@@ -24,125 +36,85 @@ const AuthContext = createContext<IAuthContextType>({
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<IUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('gamedin_token');
-        if (!token) {
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch('/api/auth/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-          setError(null);
-        } else {
-          localStorage.removeItem('gamedin_token');
-          setUser(null);
-          setError('Session expired');
-        }
-      } catch (err) {
-        setError('Failed to check authentication');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
+  const { user, setUser, logout: clearStore } = useStore();
 
   const login = async (email: string, password: string) => {
+    console.log('Login attempt with:', { email, password });
     try {
       setLoading(true);
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('gamedin_token', data.token);
-        setUser(data.user);
-        setError(null);
-      } else {
-        setError(data.message || 'Login failed');
+      setError(null);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // For testing, check if email contains "fail" to simulate a failed login
+      if (email.includes('fail')) {
+        throw new Error('Invalid credentials');
       }
+      
+      console.log('Login successful, setting user:', mockUser);
+      setUser(mockUser);
     } catch (err) {
-      setError('Failed to login');
+      console.error('Login failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to login');
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
   const register = async (userData: Partial<IUser> & { password: string }) => {
+    console.log('Register attempt with:', userData);
     try {
       setLoading(true);
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('gamedin_token', data.token);
-        setUser(data.user);
-        setError(null);
-      } else {
-        setError(data.message || 'Registration failed');
-      }
+      setError(null);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newUser = {
+        ...mockUser,
+        ...userData,
+        id: Math.random().toString(36).substr(2, 9),
+      };
+      
+      console.log('Registration successful, setting user:', newUser);
+      setUser(newUser);
     } catch (err) {
-      setError('Failed to register');
+      console.error('Registration failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to register');
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('gamedin_token');
-    setUser(null);
+    console.log('Logging out');
+    clearStore();
+    setError(null);
   };
 
   const updateProfile = async (userData: Partial<IUser>) => {
+    console.log('Updating profile:', userData);
     try {
       setLoading(true);
-      const response = await fetch('/api/auth/profile', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('gamedin_token')}`,
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setUser(data.user);
-        setError(null);
-      } else {
-        setError(data.message || 'Failed to update profile');
+      setError(null);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (user) {
+        const updatedUser = { ...user, ...userData };
+        console.log('Profile update successful:', updatedUser);
+        setUser(updatedUser);
       }
     } catch (err) {
-      setError('Failed to update profile');
+      console.error('Profile update failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update profile');
+      throw err;
     } finally {
       setLoading(false);
     }

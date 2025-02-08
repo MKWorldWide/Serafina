@@ -1,52 +1,79 @@
 import { Link } from 'react-router-dom';
+import { Box, Card, CardContent, Typography, Button, List, ListItem, ListItemAvatar, ListItemText, Avatar, Container, Grid } from '@mui/material';
+import { People as PeopleIcon } from '@mui/icons-material';
 import useStore from '../store/useStore';
 
 const Dashboard = () => {
-  const { user, matches } = useStore(state => ({
-    user: state.user,
-    matches: state.matches,
-  }));
+  const user = useStore(state => state.user);
+  const matches = useStore(state => state.matches || []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">Welcome {user?.username || 'Gamer'}!</h2>
-          <p>Find your perfect gaming match today.</p>
-          <div className="card-actions justify-end">
-            <Link to="/matches" className="btn btn-primary">
-              Find Matches
-            </Link>
-          </div>
-        </div>
-      </div>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h5" component="h2" gutterBottom>
+                Welcome {user?.username || 'Gamer'}!
+              </Typography>
+              <Typography variant="body1" color="text.secondary" paragraph>
+                Find your perfect gaming match today.
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  component={Link}
+                  to="/matches"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<PeopleIcon />}
+                >
+                  Find Matches
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">Recent Matches</h2>
-          {matches.length > 0 ? (
-            <ul className="menu bg-base-200 rounded-box">
-              {matches.slice(0, 5).map(match => (
-                <li key={match.id}>
-                  <Link to={`/messages/${match.id}`}>
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={match.avatar}
-                        alt={match.username}
-                        className="w-10 h-10 rounded-full"
+        <Grid item xs={12} md={6}>
+          <Card elevation={3}>
+            <CardContent>
+              <Typography variant="h5" component="h2" gutterBottom>
+                Recent Matches
+              </Typography>
+              {matches?.length > 0 ? (
+                <List>
+                  {matches.slice(0, 5).map(match => (
+                    <ListItem
+                      key={match.id}
+                      component={Link}
+                      to={`/messages/${match.id}`}
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: 'action.hover',
+                          borderRadius: 1,
+                        },
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar src={match.avatar} alt={match.username} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={match.username}
+                        secondary={`Level ${match.level || '1'}`}
                       />
-                      <span>{match.username}</span>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No matches yet. Start browsing to find gaming partners!</p>
-          )}
-        </div>
-      </div>
-    </div>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Typography variant="body1" color="text.secondary">
+                  No matches yet. Start browsing to find gaming partners!
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 
