@@ -10,7 +10,7 @@ import RegisterPage from './components/Auth/RegisterPage';
 import MessagesPage from './components/Messages/MessagesPage';
 import FriendsPage from './components/Friends/FriendsPage';
 import Settings from './components/Settings/Settings';
-import { useStore } from './store/useStore';
+import useStore from './store/useStore';
 import { Store } from './types/store';
 
 const queryClient = new QueryClient({

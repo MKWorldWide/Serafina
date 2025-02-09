@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { IUser } from '../types/social';
-import { useStore } from '../store/useStore';
+import useStore from '../store/useStore';
 import { Store } from '../types/store';
 
 interface AuthContextType {
