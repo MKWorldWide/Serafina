@@ -42,6 +42,7 @@ export interface StoreActions {
   updateSettings: (settings: Partial<ISettings>) => void;
   login: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => void;
+  setError: (error: string | null) => void;
 }
 
 export type Store = StoreState & StoreActions; 

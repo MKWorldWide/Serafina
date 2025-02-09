@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { Store, ISettings } from '../types/store';
 import { IUser } from '../types/social';
 
@@ -33,53 +33,54 @@ const initialSettings: ISettings = {
 };
 
 const useStore = create<Store>()(
-  devtools(
-    persist(
-      (set) => ({
-        user: null,
-        isAuthenticated: false,
-        settings: initialSettings,
-        loading: false,
-        error: null,
+  persist(
+    (set) => ({
+      user: null,
+      isAuthenticated: false,
+      settings: initialSettings,
+      loading: false,
+      error: null,
 
-        setUser: (user) => set({ user, isAuthenticated: !!user }),
-        
-        updateSettings: (newSettings) => 
-          set((state) => ({
-            settings: {
-              ...state.settings,
-              ...newSettings,
-            },
-          })),
+      setUser: (user) => set({ user, isAuthenticated: !!user }),
+      
+      updateSettings: (newSettings) => 
+        set((state) => ({
+          settings: {
+            ...state.settings,
+            ...newSettings,
+          },
+        })),
 
-        login: async (credentials) => {
-          set({ loading: true, error: null });
-          try {
-            const mockUser: IUser = {
-              id: '1',
-              username: 'TestUser',
-              email: credentials.email,
-              avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${credentials.email}`,
-              presence: 'online' as const,
-              rank: 'Beginner',
-              level: 1
-            };
-            set({ user: mockUser, isAuthenticated: true, loading: false });
-          } catch (error) {
-            set({ error: 'Login failed', loading: false });
-            throw error;
-          }
-        },
+      setError: (error) => set({ error }),
 
-        logout: () => {
-          set({ user: null, isAuthenticated: false });
-        },
-      }),
-      {
-        name: 'gamedin-storage',
-        version: 1,
-      }
-    )
+      login: async (credentials) => {
+        set({ loading: true, error: null });
+        try {
+          const mockUser: IUser = {
+            id: '1',
+            username: 'TestUser',
+            email: credentials.email,
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${credentials.email}`,
+            presence: 'online' as const,
+            rank: 'Beginner',
+            level: 1
+          };
+          set({ user: mockUser, isAuthenticated: true, loading: false });
+        } catch (error) {
+          set({ error: 'Login failed', loading: false });
+          throw error;
+        }
+      },
+
+      logout: () => {
+        set({ user: null, isAuthenticated: false });
+      },
+    }),
+    {
+      name: 'gamedin-storage',
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
+    }
   )
 );
 
