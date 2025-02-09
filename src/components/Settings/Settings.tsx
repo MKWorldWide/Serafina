@@ -96,7 +96,7 @@ const settingsSections: SettingSection[] = [
 
 const Settings = () => {
   const [selectedSection, setSelectedSection] = useState('account');
-  const { user, settings, updateSettings } = useStore((state: Store) => ({
+  const { user, settings, updateSettings } = useStore(state => ({
     user: state.user,
     settings: state.settings,
     updateSettings: state.updateSettings,

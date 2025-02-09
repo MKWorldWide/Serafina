@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { IStoreState, IStoreActions, Store } from '../types/store';
+import { Store, ISettings } from '../types/store';
 
-const initialSettings = {
-  profileVisibility: 'public' as const,
+const initialSettings: ISettings = {
+  profileVisibility: 'public',
   showOnlineStatus: true,
   showGameActivity: true,
   emailNotifications: {
-    frequency: 'none' as const,
+    frequency: 'none',
     friendRequests: true,
     messages: true,
     gameInvites: true,
@@ -20,7 +20,7 @@ const initialSettings = {
   },
   emailDigestTime: '09:00',
   theme: {
-    mode: 'dark' as const,
+    mode: 'dark',
     color: '#7289da',
   },
   pushNotifications: false,
@@ -29,7 +29,7 @@ const initialSettings = {
   allowMessages: true,
   darkMode: true,
   themeColor: '#7289da',
-} as const;
+};
 
 const useStore = create<Store>()(
   persist(
@@ -53,14 +53,13 @@ const useStore = create<Store>()(
       login: async (credentials) => {
         set({ loading: true, error: null });
         try {
-          // Mock login - replace with actual API call
           const mockUser = {
             id: '1',
             username: 'TestUser',
             email: credentials.email,
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${credentials.email}`,
             bio: 'Gamer extraordinaire',
-            presence: 'online' as const,
+            presence: 'online',
             rank: 'Beginner',
             level: 1
           };
@@ -86,5 +85,4 @@ const useStore = create<Store>()(
   )
 );
 
-export default useStore;
-export { useStore }; 
+export default useStore; 

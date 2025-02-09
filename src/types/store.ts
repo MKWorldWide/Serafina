@@ -11,10 +11,10 @@ export interface ISettings {
     gameInvites: boolean;
     achievements: boolean;
     newsAndUpdates: boolean;
-    security?: boolean;
-    teamInvites?: boolean;
-    matchmaking?: boolean;
-    marketing?: boolean;
+    security: boolean;
+    teamInvites: boolean;
+    matchmaking: boolean;
+    marketing: boolean;
   };
   emailDigestTime: string;
   theme: {
