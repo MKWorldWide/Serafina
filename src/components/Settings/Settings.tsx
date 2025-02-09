@@ -45,9 +45,17 @@ import {
   EmojiEvents as EventsIcon,
   Campaign as CampaignIcon,
 } from '@mui/icons-material';
-import useStore from '../../store/useStore';
+import { useStore } from '../../store/useStore';
+import { ISettings, Store } from '../../types/store';
 
-const settingsSections = [
+interface SettingSection {
+  id: string;
+  title: string;
+  icon: JSX.Element;
+  description: string;
+}
+
+const settingsSections: SettingSection[] = [
   {
     id: 'account',
     title: 'Account Settings',
@@ -88,13 +96,17 @@ const settingsSections = [
 
 const Settings = () => {
   const [selectedSection, setSelectedSection] = useState('account');
-  const { user, settings, updateSettings } = useStore();
+  const { user, settings, updateSettings } = useStore((state: Store) => ({
+    user: state.user,
+    settings: state.settings,
+    updateSettings: state.updateSettings,
+  }));
 
-  const handleSettingChange = (setting: string, value: any) => {
+  const handleSettingChange = (setting: keyof ISettings, value: any) => {
     updateSettings({ [setting]: value });
   };
 
-  const handleNotificationChange = (key: string, value: any) => {
+  const handleNotificationChange = (key: keyof ISettings['emailNotifications'], value: any) => {
     updateSettings({
       emailNotifications: {
         ...settings.emailNotifications,

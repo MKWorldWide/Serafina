@@ -1,16 +1,13 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { IUser } from '../types/social';
-import useStore from '../store/useStore';
+import { useStore } from '../store/useStore';
+import { Store } from '../types/store';
 
-interface IAuthContextType {
-  user: IUser | null;
+interface AuthContextType {
   isAuthenticated: boolean;
-  loading: boolean;
-  error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: Partial<IUser> & { password: string }) => Promise<void>;
-  logout: () => void;
-  updateProfile: (userData: Partial<IUser>) => Promise<void>;
+  user: Store['user'];
+  login: Store['login'];
+  logout: Store['logout'];
 }
 
 // Mock user for testing
@@ -24,120 +21,31 @@ const mockUser: IUser = {
   level: 42
 };
 
-const AuthContext = createContext<IAuthContextType>({
-  user: null,
-  isAuthenticated: false,
-  loading: false,
-  error: null,
-  login: async () => {},
-  register: async () => {},
-  logout: () => {},
-  updateProfile: async () => {},
-});
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { user, setUser, logout: clearStore } = useStore();
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const { user, setUser, logout } = useStore((state: Store) => ({
+    user: state.user,
+    setUser: state.setUser,
+    logout: state.logout,
+  }));
 
-  const login = async (email: string, password: string) => {
-    console.log('Login attempt with:', { email, password });
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For testing, check if email contains "fail" to simulate a failed login
-      if (email.includes('fail')) {
-        throw new Error('Invalid credentials');
-      }
-      
-      console.log('Login successful, setting user:', mockUser);
-      setUser(mockUser);
-    } catch (err) {
-      console.error('Login failed:', err);
-      setError(err instanceof Error ? err.message : 'Failed to login');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
+  const value = {
+    isAuthenticated: !!user,
+    user,
+    login: useStore.getState().login,
+    logout,
   };
 
-  const register = async (userData: Partial<IUser> & { password: string }) => {
-    console.log('Register attempt with:', userData);
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newUser = {
-        ...mockUser,
-        ...userData,
-        id: Math.random().toString(36).substr(2, 9),
-      };
-      
-      console.log('Registration successful, setting user:', newUser);
-      setUser(newUser);
-    } catch (err) {
-      console.error('Registration failed:', err);
-      setError(err instanceof Error ? err.message : 'Failed to register');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    console.log('Logging out');
-    clearStore();
-    setError(null);
-  };
-
-  const updateProfile = async (userData: Partial<IUser>) => {
-    console.log('Updating profile:', userData);
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (user) {
-        const updatedUser = { ...user, ...userData };
-        console.log('Profile update successful:', updatedUser);
-        setUser(updatedUser);
-      }
-    } catch (err) {
-      console.error('Profile update failed:', err);
-      setError(err instanceof Error ? err.message : 'Failed to update profile');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        loading,
-        error,
-        login,
-        register,
-        logout,
-        updateProfile,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 export default AuthContext;
