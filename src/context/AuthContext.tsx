@@ -6,7 +6,7 @@ import { Store } from '../types/store';
 interface AuthContextType {
   isAuthenticated: boolean;
   user: Store['user'];
-  login: (email: string, password: string) => Promise<void>;
+  login: (credentials: { email: string; password: string }) => Promise<void>;
   register: (userData: Partial<IUser> & { password: string }) => Promise<void>;
   logout: () => void;
   loading: boolean;
