@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import Navbar from './components/Navbar/Navbar';
 import FeedPage from './components/Feed/FeedPage';
 import ProfilePage from './components/Profile/ProfilePage';
@@ -10,8 +10,28 @@ import FriendsPage from './components/Friends/FriendsPage';
 import Settings from './components/Settings/Settings';
 import useStore from './store/useStore';
 
-const App: React.FC = () => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useStore((state) => state.isAuthenticated);
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  return <>{children}</>;
+};
+
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const App: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
@@ -22,15 +42,17 @@ const App: React.FC = () => {
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route path="/" element={isAuthenticated ? <FeedPage /> : <Navigate to="/login" replace state={{ from: location }} />} />
-        <Route path="/profile/:username" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" replace state={{ from: location }} />} />
-        <Route path="/messages" element={isAuthenticated ? <MessagesPage /> : <Navigate to="/login" replace state={{ from: location }} />} />
-        <Route path="/friends" element={isAuthenticated ? <FriendsPage /> : <Navigate to="/login" replace state={{ from: location }} />} />
-        <Route path="/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/login" replace state={{ from: location }} />} />
-        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" replace />} />
-        <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<ProtectedRoute><FeedPage /></ProtectedRoute>} />
+          <Route path="/profile/:username" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+          <Route path="/friends" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+        </Routes>
+      </Suspense>
     </>
   );
 };

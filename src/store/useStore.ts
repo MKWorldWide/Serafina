@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import { Store, ISettings } from '../types/store';
 import { IUser } from '../types/social';
+import { persist } from 'zustand/middleware';
 
 const initialSettings: ISettings = {
   profileVisibility: 'public',
@@ -77,8 +77,7 @@ const useStore = create<Store>()(
       },
     }),
     {
-      name: 'gamedin-storage',
-      storage: createJSONStorage(() => localStorage),
+      name: 'app-store',
       version: 1,
     }
   )
