@@ -34,7 +34,7 @@ const initialSettings: ISettings = {
 
 const store = create<Store>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       isAuthenticated: false,
       settings: initialSettings,
@@ -76,6 +76,7 @@ const store = create<Store>()(
     }),
     {
       name: 'gamedin-storage',
+      version: 1,
       partialize: (state) => ({
         user: state.user,
         settings: state.settings,

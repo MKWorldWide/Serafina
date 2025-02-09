@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import FeedPage from './components/Feed/FeedPage';
 import ProfilePage from './components/Profile/ProfilePage';
@@ -11,21 +11,19 @@ import store from './store/useStore';
 import { Store } from './types/store';
 
 const App: React.FC = () => {
-  const { isAuthenticated } = store<Pick<Store, 'isAuthenticated'>>(state => ({
-    isAuthenticated: state.isAuthenticated
-  }));
+  const isAuthenticated = store((state: Store) => state.isAuthenticated);
 
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<FeedPage />} />
-        <Route path="/profile/:username" element={<ProfilePage />} />
-        <Route path="/messages" element={<MessagesPage />} />
-        <Route path="/friends" element={<FriendsPage />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={isAuthenticated ? <FeedPage /> : <Navigate to="/login" />} />
+        <Route path="/profile/:username" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
+        <Route path="/messages" element={isAuthenticated ? <MessagesPage /> : <Navigate to="/login" />} />
+        <Route path="/friends" element={isAuthenticated ? <FriendsPage /> : <Navigate to="/login" />} />
+        <Route path="/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} />
+        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
+        <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/" />} />
       </Routes>
     </>
   );
