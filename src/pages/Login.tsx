@@ -17,14 +17,15 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const { login, error, loading } = useAuth();
   const navigate = useNavigate();
+  const [errorState, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      await login({ email, password });
       navigate('/');
     } catch (err) {
-      console.error('Login failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to login');
     }
   };
 
@@ -43,9 +44,9 @@ const Login: React.FC = () => {
             Sign in to GameDin
           </Typography>
 
-          {error && (
+          {errorState && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
+              {errorState}
             </Alert>
           )}
 

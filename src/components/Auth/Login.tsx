@@ -30,20 +30,11 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    e.stopPropagation();
-    
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
     try {
-      setError('');
-      await login(email, password);
-      // Navigation is handled by the useEffect above
+      await login({ email, password });
+      navigate('/');
     } catch (err) {
-      console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to login');
+      console.error('Login failed:', err);
     }
   };
 
