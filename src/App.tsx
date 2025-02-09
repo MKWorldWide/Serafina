@@ -23,7 +23,9 @@ const queryClient = new QueryClient({
 });
 
 const App: React.FC = () => {
-  const isAuthenticated = store<Store>(state => state.isAuthenticated);
+  const { isAuthenticated } = store<Pick<Store, 'isAuthenticated'>>(state => ({
+    isAuthenticated: state.isAuthenticated
+  }));
 
   return (
     <QueryClientProvider client={queryClient}>
