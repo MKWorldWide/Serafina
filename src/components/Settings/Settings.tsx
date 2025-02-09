@@ -45,7 +45,7 @@ import {
   EmojiEvents as EventsIcon,
   Campaign as CampaignIcon,
 } from '@mui/icons-material';
-import { useStore } from '../../store/useStore';
+import useStore from '../../store/useStore';
 import { ISettings, Store } from '../../types/store';
 
 interface SettingSection {

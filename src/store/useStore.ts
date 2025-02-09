@@ -31,7 +31,7 @@ const initialSettings = {
   themeColor: '#7289da',
 } as const;
 
-export const useStore = create<Store>()(
+const useStore = create<Store>()(
   persist(
     (set) => ({
       user: null,
@@ -84,4 +84,7 @@ export const useStore = create<Store>()(
       }),
     }
   )
-); 
+);
+
+export default useStore;
+export { useStore }; 
