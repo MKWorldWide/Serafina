@@ -27,13 +27,15 @@ const mockUser: IUser = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { user, setUser, logout, loading, error, login } = store<Store>(state => ({
+  const { user, setUser, logout, loading, error, login, isAuthenticated, settings } = store<Store>(state => ({
     user: state.user,
     setUser: state.setUser,
     logout: state.logout,
     loading: state.loading,
     error: state.error,
     login: state.login,
+    isAuthenticated: state.isAuthenticated,
+    settings: state.settings
   }));
 
   const register = async (userData: Partial<IUser> & { password: string }) => {

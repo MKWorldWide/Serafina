@@ -96,10 +96,13 @@ const settingsSections: SettingSection[] = [
 
 const Settings = () => {
   const [selectedSection, setSelectedSection] = useState('account');
-  const { user, settings, updateSettings } = store<Store>(state => ({
+  const { user, settings, updateSettings, isAuthenticated, loading, error } = store<Store>(state => ({
     user: state.user,
     settings: state.settings,
-    updateSettings: state.updateSettings
+    updateSettings: state.updateSettings,
+    isAuthenticated: state.isAuthenticated,
+    loading: state.loading,
+    error: state.error
   }));
 
   const handleSettingChange = (setting: keyof ISettings, value: any) => {
