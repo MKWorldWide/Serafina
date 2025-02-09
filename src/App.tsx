@@ -30,7 +30,7 @@ const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Navbar />
-        <Routes future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Routes>
           <Route path="/" element={<FeedPage />} />
           <Route path="/profile/:username" element={<ProfilePage />} />
           <Route path="/messages" element={<MessagesPage />} />

@@ -6,8 +6,11 @@ import { Store } from '../types/store';
 interface AuthContextType {
   isAuthenticated: boolean;
   user: Store['user'];
-  login: Store['login'];
-  logout: Store['logout'];
+  login: (email: string, password: string) => Promise<void>;
+  register: (userData: Partial<IUser> & { password: string }) => Promise<void>;
+  logout: () => void;
+  loading: boolean;
+  error: string | null;
 }
 
 // Mock user for testing
@@ -24,17 +27,35 @@ const mockUser: IUser = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { user, setUser, logout } = useStore((state: Store) => ({
+  const { user, setUser, logout, loading, error } = useStore((state: Store) => ({
     user: state.user,
     setUser: state.setUser,
     logout: state.logout,
+    loading: state.loading,
+    error: state.error,
   }));
+
+  const register = async (userData: Partial<IUser> & { password: string }) => {
+    try {
+      const newUser = {
+        ...mockUser,
+        ...userData,
+        id: Math.random().toString(36).substr(2, 9),
+      };
+      setUser(newUser);
+    } catch (error) {
+      throw new Error('Registration failed');
+    }
+  };
 
   const value = {
     isAuthenticated: !!user,
     user,
     login: useStore.getState().login,
+    register,
     logout,
+    loading,
+    error,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

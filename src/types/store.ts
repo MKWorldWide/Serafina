@@ -11,12 +11,22 @@ export interface ISettings {
     gameInvites: boolean;
     achievements: boolean;
     newsAndUpdates: boolean;
+    security?: boolean;
+    teamInvites?: boolean;
+    matchmaking?: boolean;
+    marketing?: boolean;
   };
   emailDigestTime: string;
   theme: {
     mode: 'light' | 'dark';
     color: string;
   };
+  pushNotifications: boolean;
+  matchmakingEnabled: boolean;
+  allowFriendRequests: boolean;
+  allowMessages: boolean;
+  darkMode: boolean;
+  themeColor: string;
 }
 
 export interface IStoreState {

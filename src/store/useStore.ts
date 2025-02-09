@@ -13,13 +13,23 @@ const initialSettings = {
     gameInvites: true,
     achievements: true,
     newsAndUpdates: false,
+    security: false,
+    teamInvites: false,
+    matchmaking: false,
+    marketing: false,
   },
   emailDigestTime: '09:00',
   theme: {
     mode: 'dark' as const,
     color: '#7289da',
   },
-};
+  pushNotifications: false,
+  matchmakingEnabled: false,
+  allowFriendRequests: true,
+  allowMessages: true,
+  darkMode: true,
+  themeColor: '#7289da',
+} as const;
 
 export const useStore = create<Store>()(
   persist(
@@ -50,6 +60,9 @@ export const useStore = create<Store>()(
             email: credentials.email,
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${credentials.email}`,
             bio: 'Gamer extraordinaire',
+            presence: 'online' as const,
+            rank: 'Beginner',
+            level: 1
           };
           set({ user: mockUser, isAuthenticated: true, loading: false });
         } catch (error) {
