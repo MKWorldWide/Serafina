@@ -39,11 +39,12 @@ export interface StoreState {
 
 export interface StoreActions {
   setUser: (user: IUser | null) => void;
+  setIsAuthenticated: (value: boolean) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
   updateSettings: (settings: Partial<ISettings>) => void;
   login: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => void;
-  setError: (error: string | null) => void;
-  setLoading: (loading: boolean) => void;
 }
 
 export type Store = StoreState & StoreActions; 

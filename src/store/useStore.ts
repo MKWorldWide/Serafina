@@ -41,7 +41,10 @@ const useStore = create<Store>()(
       loading: false,
       error: null,
 
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
+      setUser: (user) => set({ user }),
+      setIsAuthenticated: (value) => set({ isAuthenticated: value }),
+      setLoading: (loading) => set({ loading }),
+      setError: (error) => set({ error }),
       
       updateSettings: (newSettings) => 
         set((state) => ({
@@ -50,10 +53,6 @@ const useStore = create<Store>()(
             ...newSettings,
           },
         })),
-
-      setError: (error) => set({ error }),
-      
-      setLoading: (loading) => set({ loading }),
 
       login: async (credentials) => {
         set({ loading: true, error: null });
