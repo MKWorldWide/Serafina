@@ -10,7 +10,7 @@ import RegisterPage from './components/Auth/RegisterPage';
 import MessagesPage from './components/Messages/MessagesPage';
 import FriendsPage from './components/Friends/FriendsPage';
 import Settings from './components/Settings/Settings';
-import useStore from './store/useStore';
+import store from './store/useStore';
 import { Store } from './types/store';
 
 const queryClient = new QueryClient({
@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
 });
 
 const App: React.FC = () => {
-  const isAuthenticated = useStore((state: Store) => state.isAuthenticated);
+  const isAuthenticated = store<Store>(state => state.isAuthenticated);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { IUser } from '../types/social';
-import useStore from '../store/useStore';
+import store from '../store/useStore';
 import { Store } from '../types/store';
 
 interface AuthContextType {
@@ -27,7 +27,7 @@ const mockUser: IUser = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { user, setUser, logout, loading, error, login } = useStore((state: Store) => ({
+  const { user, setUser, logout, loading, error, login } = store<Store>(state => ({
     user: state.user,
     setUser: state.setUser,
     logout: state.logout,

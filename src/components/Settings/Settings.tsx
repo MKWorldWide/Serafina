@@ -45,8 +45,8 @@ import {
   EmojiEvents as EventsIcon,
   Campaign as CampaignIcon,
 } from '@mui/icons-material';
-import useStore from '../../store/useStore';
-import { ISettings, Store } from '../../types/store';
+import store from '../../store/useStore';
+import { Store, ISettings } from '../../types/store';
 
 interface SettingSection {
   id: string;
@@ -96,7 +96,7 @@ const settingsSections: SettingSection[] = [
 
 const Settings = () => {
   const [selectedSection, setSelectedSection] = useState('account');
-  const { user, settings, updateSettings } = useStore((state: Store) => ({
+  const { user, settings, updateSettings } = store<Store>(state => ({
     user: state.user,
     settings: state.settings,
     updateSettings: state.updateSettings
