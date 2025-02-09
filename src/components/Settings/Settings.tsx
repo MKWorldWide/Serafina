@@ -96,7 +96,20 @@ const settingsSections: SettingSection[] = [
 
 const Settings = () => {
   const [selectedSection, setSelectedSection] = useState('account');
-  const { user, settings, updateSettings, isAuthenticated, loading, error, setUser, login, logout } = store<Store>(state => ({
+  const {
+    user,
+    settings,
+    updateSettings,
+    isAuthenticated,
+    loading,
+    error,
+    setUser,
+    setIsAuthenticated,
+    setLoading,
+    setError,
+    login,
+    logout
+  } = store<Store>(state => ({
     user: state.user,
     settings: state.settings,
     updateSettings: state.updateSettings,
@@ -104,6 +117,9 @@ const Settings = () => {
     loading: state.loading,
     error: state.error,
     setUser: state.setUser,
+    setIsAuthenticated: state.setIsAuthenticated,
+    setLoading: state.setLoading,
+    setError: state.setError,
     login: state.login,
     logout: state.logout
   }));
