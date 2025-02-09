@@ -7,11 +7,10 @@ import RegisterPage from './components/Auth/RegisterPage';
 import MessagesPage from './components/Messages/MessagesPage';
 import FriendsPage from './components/Friends/FriendsPage';
 import Settings from './components/Settings/Settings';
-import store from './store/useStore';
-import { Store } from './types/store';
+import useStore from './store/useStore';
 
 const App: React.FC = () => {
-  const isAuthenticated = store((state: Store) => state.isAuthenticated);
+  const isAuthenticated = useStore((state) => state.isAuthenticated);
 
   return (
     <>
