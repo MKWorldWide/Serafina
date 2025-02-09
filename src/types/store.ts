@@ -29,7 +29,7 @@ export interface ISettings {
   themeColor: string;
 }
 
-export interface IStoreState {
+export interface StoreState {
   user: IUser | null;
   isAuthenticated: boolean;
   settings: ISettings;
@@ -37,11 +37,11 @@ export interface IStoreState {
   error: string | null;
 }
 
-export interface IStoreActions {
+export interface StoreActions {
   setUser: (user: IUser | null) => void;
   updateSettings: (settings: Partial<ISettings>) => void;
   login: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => void;
 }
 
-export type Store = IStoreState & IStoreActions; 
+export type Store = StoreState & StoreActions; 

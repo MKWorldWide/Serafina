@@ -27,20 +27,25 @@ const mockUser: IUser = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { user, setUser, logout, loading, error } = useStore((state: Store) => ({
+  const { user, setUser, logout, loading, error, login } = useStore((state: Store) => ({
     user: state.user,
     setUser: state.setUser,
     logout: state.logout,
     loading: state.loading,
     error: state.error,
+    login: state.login,
   }));
 
   const register = async (userData: Partial<IUser> & { password: string }) => {
     try {
-      const newUser = {
-        ...mockUser,
-        ...userData,
+      const newUser: IUser = {
         id: Math.random().toString(36).substr(2, 9),
+        username: userData.username || 'User',
+        email: userData.email || '',
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.email}`,
+        presence: 'online' as const,
+        rank: 'Beginner',
+        level: 1,
       };
       setUser(newUser);
     } catch (error) {
@@ -51,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     isAuthenticated: !!user,
     user,
-    login: useStore.getState().login,
+    login,
     register,
     logout,
     loading,

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Store, ISettings } from '../types/store';
+import { IUser } from '../types/social';
 
 const initialSettings: ISettings = {
   profileVisibility: 'public',
@@ -13,22 +14,22 @@ const initialSettings: ISettings = {
     gameInvites: true,
     achievements: true,
     newsAndUpdates: false,
-    security: false,
-    teamInvites: false,
-    matchmaking: false,
-    marketing: false,
+    security: true,
+    teamInvites: true,
+    matchmaking: true,
+    marketing: true
   },
   emailDigestTime: '09:00',
   theme: {
     mode: 'dark',
-    color: '#7289da',
+    color: '#7289da'
   },
   pushNotifications: false,
   matchmakingEnabled: false,
   allowFriendRequests: true,
   allowMessages: true,
   darkMode: true,
-  themeColor: '#7289da',
+  themeColor: '#7289da'
 };
 
 const useStore = create<Store>()(
@@ -53,13 +54,12 @@ const useStore = create<Store>()(
       login: async (credentials) => {
         set({ loading: true, error: null });
         try {
-          const mockUser = {
+          const mockUser: IUser = {
             id: '1',
             username: 'TestUser',
             email: credentials.email,
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${credentials.email}`,
-            bio: 'Gamer extraordinaire',
-            presence: 'online',
+            presence: 'online' as const,
             rank: 'Beginner',
             level: 1
           };
