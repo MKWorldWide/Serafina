@@ -1,4 +1,5 @@
 import { IUser } from '../types/social';
+import { Store, ISettings } from '../types/store';
 
 export interface StoreState {
   user: IUser | null;
@@ -11,5 +12,5 @@ export interface StoreState {
   setError: (error: string | null) => void;
 }
 
-declare const useStore: <T = StoreState>(selector: (state: StoreState) => T) => T;
+declare const useStore: <T = Store>(selector: (state: Store) => T) => T;
 export default useStore; 

@@ -52,6 +52,8 @@ const useStore = create<Store>()(
         })),
 
       setError: (error) => set({ error }),
+      
+      setLoading: (loading) => set({ loading }),
 
       login: async (credentials) => {
         set({ loading: true, error: null });

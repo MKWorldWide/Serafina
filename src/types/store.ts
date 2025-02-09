@@ -43,6 +43,7 @@ export interface StoreActions {
   login: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => void;
   setError: (error: string | null) => void;
+  setLoading: (loading: boolean) => void;
 }
 
 export type Store = StoreState & StoreActions; 
