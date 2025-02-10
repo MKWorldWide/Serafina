@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -11,32 +12,15 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+        display: ['Lexend', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        },
-        secondary: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-        },
+        primary: colors.blue,
+        secondary: colors.gray,
+        success: colors.green,
+        warning: colors.yellow,
+        error: colors.red,
+        info: colors.blue,
       },
       spacing: {
         '128': '32rem',
@@ -48,6 +32,7 @@ module.exports = {
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-in': 'slideIn 0.5s ease-in-out',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         fadeIn: {
@@ -59,17 +44,42 @@ module.exports = {
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
       },
+      screens: {
+        'xs': '475px',
+        ...defaultTheme.screens,
+      },
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
+    require('@tailwindcss/forms')({
+      strategy: 'class',
+    }),
     require('@tailwindcss/typography'),
     require('@tailwindcss/aspect-ratio'),
+    require('@tailwindcss/line-clamp'),
   ],
   future: {
     hoverOnlyWhenSupported: true,
+    respectDefaultRingColorOpacity: true,
+    disableColorOpacityUtilitiesByDefault: true,
+    purgeLayersByDefault: true,
   },
   experimental: {
     optimizeUniversalDefaults: true,
+    matchVariant: true,
+    container: {
+      center: true,
+      padding: '1rem',
+    },
+  },
+  variants: {
+    extend: {
+      backgroundColor: ['active', 'group-focus'],
+      borderColor: ['active', 'group-focus'],
+      boxShadow: ['active', 'group-focus'],
+      opacity: ['group-hover', 'group-focus'],
+      scale: ['group-hover', 'group-focus'],
+      transform: ['group-hover', 'group-focus'],
+    },
   },
 };
