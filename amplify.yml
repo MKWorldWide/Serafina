@@ -1,9 +1,14 @@
 version: 1
+env:
+  variables:
+    AMPLIFY_MONOREPO_APP_ROOT: frontend
+    AMPLIFY_DIFF_DEPLOY: false
+    AMPLIFY_DIFF_BACKEND: false
+
 frontend:
   phases:
     preBuild:
       commands:
-        - cd frontend
         - npm ci
         - npm run test:ci
     build:
@@ -13,7 +18,7 @@ frontend:
       commands:
         - npm run generate-sitemap
   artifacts:
-    baseDirectory: dist
+    baseDirectory: build
     files:
       - '**/*'
   cache:
@@ -37,10 +42,14 @@ frontend:
 
 backend:
   phases:
+    preBuild:
+      commands:
+        - npm ci
+        - npm install -g @aws-amplify/cli
     build:
       commands:
-        - amplifyPush --simple
-        - amplify env checkout prod
+        - amplify configure --app-id $AWS_APP_ID --envName $AWS_BRANCH --yes
+        - amplify push --yes
   artifacts:
     baseDirectory: amplify/backend
     files:
