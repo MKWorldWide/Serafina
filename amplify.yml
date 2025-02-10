@@ -5,7 +5,7 @@ env:
     AMPLIFY_DIFF_DEPLOY: false
     AMPLIFY_DIFF_BACKEND: false
     NODE_OPTIONS: --max-old-space-size=4096
-    AWS_APP_ID: d123456789
+    AWS_APP_ID: d3pld36iocd243
     AWS_BRANCH: main
 
 frontend:
@@ -51,7 +51,7 @@ backend:
     build:
       commands:
         - amplify init --amplify "{\"envName\":\"main\"}" --yes
-        - amplify pull --appId d123456789 --envName main --providers aws --yes
+        - amplify pull --appId d3pld36iocd243 --envName main --providers aws --yes
   artifacts:
     baseDirectory: amplify/backend
     files:
