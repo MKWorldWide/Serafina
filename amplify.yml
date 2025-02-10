@@ -43,13 +43,12 @@ frontend:
 
 backend:
   phases:
+    preBuild:
+      commands:
+        - npm install -g @aws-amplify/cli@latest
     build:
       commands:
-        - yum install -y aws-cli
-        - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-        - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-        - aws configure set default.region $AWS_REGION
-        - aws amplify pull --appId $AWS_APP_ID --envName $AWS_BRANCH --yes
+        - amplify pull --appId $AWS_APP_ID --envName $AWS_BRANCH --yes
   artifacts:
     baseDirectory: amplify/backend
     files:
