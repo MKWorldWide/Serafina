@@ -1,14 +1,18 @@
 # Dependencies
-node_modules
-.pnp
+/node_modules
+/.pnp
 .pnp.js
 
 # Testing
-coverage
+/coverage
+/cypress/videos
+/cypress/screenshots
 
 # Production
-dist
-build
+/build
+/dist
+/.next
+.serverless
 
 # Misc
 .DS_Store
@@ -17,34 +21,47 @@ build
 .env.development.local
 .env.test.local
 .env.production.local
+.env*.local
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# TypeScript
+# AWS
+aws-exports.js
+aws-exports-*.js
+/amplify/team-provider-info.json
+/amplify/backend/amplify-meta.json
+/amplify/backend/awscloudformation/
+/amplify/#current-cloud-backend
+/amplify/backend/api/API.json
+/amplify/backend/hosting/
+.amplify/
+
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
+
+# Build output
 *.tsbuildinfo
+.next
+out/
 
-# Dependency directories
-jspm_packages/
+# Test coverage
+coverage/
+.nyc_output/
 
-# TypeScript v1 declaration files
-typings/
-
-# Windows Installer files
-*.cab
-*.msi
-
-# Linux system files
-.directory
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db

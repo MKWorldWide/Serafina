@@ -1,60 +1,38 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useEffect, Suspense } from 'react';
-import Navbar from './components/Navbar/Navbar';
-import FeedPage from './components/Feed/FeedPage';
-import ProfilePage from './components/Profile/ProfilePage';
-import LoginPage from './components/Auth/LoginPage';
-import RegisterPage from './components/Auth/RegisterPage';
-import MessagesPage from './components/Messages/MessagesPage';
-import FriendsPage from './components/Friends/FriendsPage';
-import Settings from './components/Settings/Settings';
-import useStore from './store/useStore';
+import React from 'react';
+import { Amplify } from 'aws-amplify';
+import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import awsconfig from './aws-exports';
+import Navigation from './components/Navigation';
+import Home from './pages/Home';
+import Games from './pages/Games';
+import Profile from './pages/Profile';
+import GameDetails from './pages/GameDetails';
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = useStore((state) => state.isAuthenticated);
-  const location = useLocation();
+// Configure Amplify
+Amplify.configure(awsconfig);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  return <>{children}</>;
-};
-
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = useStore((state) => state.isAuthenticated);
-
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <>{children}</>;
-};
-
-const App: React.FC = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    // Clear any error messages when route changes
-    useStore.getState().setError(null);
-  }, [location.pathname]);
-
+function App() {
   return (
-    <>
-      <Navbar />
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          <Route path="/" element={<ProtectedRoute><FeedPage /></ProtectedRoute>} />
-          <Route path="/profile/:username" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
-          <Route path="/friends" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-          <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-        </Routes>
-      </Suspense>
-    </>
+    <Authenticator>
+      {({ signOut, user }) => (
+        <Router>
+          <div className="min-h-screen bg-gray-100">
+            <Navigation user={user} signOut={signOut} />
+            <main className="container mx-auto px-4 py-8">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/games" element={<Games />} />
+                <Route path="/games/:id" element={<GameDetails />} />
+                <Route path="/profile" element={<Profile user={user} />} />
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      )}
+    </Authenticator>
   );
-};
+}
 
 export default App; 

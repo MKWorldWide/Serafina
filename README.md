@@ -170,3 +170,140 @@ The following environment variables are required:
 - React Router
 - React Dropzone
 - React Quill
+
+# GameDin.xyz
+
+A modern, serverless gaming platform built with AWS Amplify, React, and GraphQL.
+
+## Features
+
+- Real-time game recommendations using Amazon Personalize
+- Social gaming features with WebSocket-based real-time communication
+- Achievement system and leaderboards
+- Multi-factor authentication and secure user management
+- Global data replication with DynamoDB Global Tables
+- Scalable serverless architecture
+
+## Tech Stack
+
+- **Frontend**: React, Tailwind CSS, AWS Amplify UI Components
+- **Backend**: AWS Amplify, AWS Lambda, Amazon DynamoDB
+- **Authentication**: Amazon Cognito
+- **API**: AWS AppSync (GraphQL), API Gateway (WebSocket)
+- **Real-time**: PubSub, WebSocket API
+- **Machine Learning**: Amazon Personalize
+- **CDN & Hosting**: AWS Amplify Hosting
+- **Security**: AWS WAF, AWS Shield
+- **Monitoring**: AWS CloudWatch
+
+## Prerequisites
+
+- Node.js (v16 or later)
+- AWS Account
+- AWS Amplify CLI
+- Git
+
+## Local Development Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/gamedin.xyz.git
+   cd gamedin.xyz
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Initialize Amplify:
+   ```bash
+   amplify init
+   ```
+
+4. Push the backend to AWS:
+   ```bash
+   amplify push
+   ```
+
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+REACT_APP_REGION=us-east-1
+REACT_APP_API_ENDPOINT=your-api-endpoint
+REACT_APP_WEBSOCKET_URL=your-websocket-url
+REACT_APP_PERSONALIZE_TRACKING_ID=your-tracking-id
+```
+
+## Testing
+
+- Run unit tests:
+  ```bash
+  npm run test
+  ```
+
+- Run E2E tests:
+  ```bash
+  npm run test:e2e
+  ```
+
+## Deployment
+
+The application is automatically deployed through AWS Amplify's CI/CD pipeline when changes are pushed to the main branch.
+
+Manual deployment:
+```bash
+amplify push
+```
+
+## Project Structure
+
+```
+├── amplify/              # AWS Amplify backend configuration
+├── public/               # Static assets
+├── src/
+│   ├── components/       # React components
+│   ├── pages/           # Page components
+│   ├── hooks/           # Custom React hooks
+│   ├── graphql/         # GraphQL queries and mutations
+│   ├── utils/           # Utility functions
+│   ├── styles/          # Global styles and Tailwind configuration
+│   └── config/          # Configuration files
+├── tests/
+│   ├── unit/            # Unit tests
+│   └── e2e/             # End-to-end tests
+└── scripts/             # Build and deployment scripts
+```
+
+## Available Scripts
+
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run test`: Run unit tests
+- `npm run test:e2e`: Run end-to-end tests
+- `npm run lint`: Run ESLint
+- `npm run format`: Format code with Prettier
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+Your Name - [@yourusername](https://twitter.com/yourusername)
+Project Link: [https://github.com/yourusername/gamedin.xyz](https://github.com/yourusername/gamedin.xyz)
