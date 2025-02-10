@@ -1,4 +1,5 @@
 version: 1
+appRoot: frontend
 applications:
   - frontend:
       phases:
@@ -14,14 +15,12 @@ applications:
           commands:
             - npm run generate-sitemap
       artifacts:
-        baseDirectory: frontend/dist
+        baseDirectory: dist
         files:
           - '**/*'
       cache:
         paths:
-          - frontend/node_modules/**/*
-          - frontend/.next/cache/**/*
-      appRoot: frontend
+          - node_modules/**/*
       customHeaders:
         - pattern: '**/*'
           headers:
@@ -62,6 +61,7 @@ applications:
           condition: null
 
   - backend:
+      appRoot: backend
       phases:
         build:
           commands:
@@ -73,5 +73,4 @@ applications:
           - '**/*'
       cache:
         paths:
-          - node_modules/**/*
-      appRoot: backend 
+          - node_modules/**/* 
