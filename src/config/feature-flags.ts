@@ -88,7 +88,7 @@ class FeatureFlagService {
   onFlagChange(flagKey: keyof FeatureFlags, callback: (value: boolean) => void): void {
     if (!this.client) return;
 
-    this.client.on(`change:${flagKey}`, (value) => {
+    this.client.on(`change:${flagKey}`, (value: boolean) => {
       callback(value);
     });
   }

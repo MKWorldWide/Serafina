@@ -25,16 +25,22 @@
     "classnames": "^2.3.0",
     "date-fns": "^2.30.0",
     "graphql": "^16.7.0",
+    "launchdarkly-js-client-sdk": "^3.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.14.0",
     "react-query": "^3.39.0",
+    "react-router-dom": "^6.14.0",
     "tailwindcss": "^3.3.0",
     "zod": "^3.21.0"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.16.0",
-    "@testing-library/react": "^14.0.0",
+    "@babel/core": "^7.26.8",
+    "@babel/preset-env": "^7.26.8",
+    "@babel/preset-react": "^7.26.3",
+    "@babel/preset-typescript": "^7.26.0",
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.4.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.3.0",
@@ -44,6 +50,7 @@
     "@typescript-eslint/parser": "^5.59.0",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.0",
+    "babel-jest": "^29.7.0",
     "cypress": "^12.14.0",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
@@ -54,8 +61,10 @@
     "eslint-plugin-react": "^7.32.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^8.0.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
+    "jest-watch-typeahead": "^2.2.2",
     "lint-staged": "^13.2.0",
     "postcss": "^8.4.0",
     "prettier": "^2.8.0",
@@ -93,4 +102,4 @@
       "last 1 safari version"
     ]
   }
-} 
+}

@@ -5,13 +5,26 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/__mocks__/fileMock.js'
+    '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/test/__mocks__/fileMock.js',
+    '^aws-amplify$': '<rootDir>/node_modules/aws-amplify/lib/index.js'
   },
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
+    '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: 'tsconfig.jest.json'
-    }]
+    }],
+    '^.+\\.jsx?$': 'babel-jest'
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(aws-amplify|@aws-amplify|@aws-sdk|uuid)/)'
+  ],
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}'
+  ],
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts'
+  ],
   coverageThreshold: {
     global: {
       branches: 80,
@@ -20,20 +33,8 @@ module.exports = {
       statements: 80
     }
   },
-  collectCoverageFrom: [
-    'src/**/*.{js,jsx,ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/index.tsx',
-    '!src/serviceWorker.ts',
-    '!src/reportWebVitals.ts'
-  ],
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname'
-  ],
-  resetMocks: true,
-  testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}'
   ]
 }; 
