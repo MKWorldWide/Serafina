@@ -48,7 +48,8 @@ backend:
         - npm install -g @aws-amplify/cli@latest
     build:
       commands:
-        - amplify pull --appId $AWS_APP_ID --envName $AWS_BRANCH --yes
+        - amplify configure project --json --provider aws --accessKeyId $AWS_ACCESS_KEY_ID --secretAccessKey $AWS_SECRET_ACCESS_KEY --region $AWS_REGION --yes
+        - amplify pull --appId $AWS_APP_ID --envName $AWS_BRANCH --providers aws --yes
   artifacts:
     baseDirectory: amplify/backend
     files:
