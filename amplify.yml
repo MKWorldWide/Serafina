@@ -4,12 +4,13 @@ env:
     AMPLIFY_MONOREPO_APP_ROOT: frontend
     AMPLIFY_DIFF_DEPLOY: false
     AMPLIFY_DIFF_BACKEND: false
+    NODE_OPTIONS: --max-old-space-size=4096
 
 frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - npm ci --production --no-audit
         - npm run test:ci
     build:
       commands:
@@ -42,14 +43,13 @@ frontend:
 
 backend:
   phases:
-    preBuild:
-      commands:
-        - npm ci
-        - npm install -g @aws-amplify/cli
     build:
       commands:
-        - amplify configure --app-id $AWS_APP_ID --envName $AWS_BRANCH --yes
-        - amplify push --yes
+        - yum install -y aws-cli
+        - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+        - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+        - aws configure set default.region $AWS_REGION
+        - aws amplify pull --appId $AWS_APP_ID --envName $AWS_BRANCH --yes
   artifacts:
     baseDirectory: amplify/backend
     files:
