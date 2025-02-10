@@ -5,6 +5,8 @@ env:
     AMPLIFY_DIFF_DEPLOY: false
     AMPLIFY_DIFF_BACKEND: false
     NODE_OPTIONS: --max-old-space-size=4096
+    AWS_APP_ID: d123456789
+    AWS_BRANCH: main
 
 frontend:
   phases:
@@ -48,8 +50,8 @@ backend:
         - npm install -g @aws-amplify/cli@latest
     build:
       commands:
-        - amplify init --amplify "{\"envName\":\"$AWS_BRANCH\"}" --yes
-        - amplify pull --appId $AWS_APP_ID --envName $AWS_BRANCH --providers aws --yes
+        - amplify init --amplify "{\"envName\":\"main\"}" --yes
+        - amplify pull --appId d123456789 --envName main --providers aws --yes
   artifacts:
     baseDirectory: amplify/backend
     files:
