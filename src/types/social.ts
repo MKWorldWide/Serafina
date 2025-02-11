@@ -145,22 +145,21 @@ export interface INotification {
 
 export interface FeedItem {
   id: string;
-  type: 'post' | 'achievement' | 'game_activity';
+  userId: string;
+  content: string;
+  timestamp: string;
+  likes: number;
+  comments: number;
+  liked: boolean;
   author: {
     id: string;
     username: string;
     avatar: string;
   };
-  content: PostContent;
-  createdAt: string;
-  likes: number;
-  comments: Comment[];
-  shares: number;
-  game?: {
-    id: string;
-    name: string;
-    cover: string;
-  };
+  media?: {
+    type: 'image' | 'video';
+    url: string;
+  }[];
 }
 
 export interface WebSocketMessage {

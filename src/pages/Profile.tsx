@@ -1,6 +1,5 @@
 import { Box, Typography, Avatar, Button, Grid, Paper } from '@mui/material';
 import { useUser } from '../hooks/useUser';
-import { User } from '../types/social';
 
 export const Profile = () => {
   const { user } = useUser();
@@ -14,6 +13,8 @@ export const Profile = () => {
   }
 
   const avatarUrl = user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`;
+  const displayName = user.attributes?.name || user.username;
+  const email = user.attributes?.email;
 
   return (
     <Box p={4}>
@@ -21,7 +22,7 @@ export const Profile = () => {
         <Grid item xs={12} md={4} textAlign="center">
           <Avatar
             src={avatarUrl}
-            alt={user.username}
+            alt={displayName}
             sx={{ width: 200, height: 200, mx: 'auto', mb: 2 }}
           />
           <Button variant="contained" color="primary">
@@ -30,13 +31,15 @@ export const Profile = () => {
         </Grid>
         <Grid item xs={12} md={8}>
           <Typography variant="h4" gutterBottom>
-            {user.username}
+            {displayName}
           </Typography>
-          <Typography variant="body1" color="textSecondary" gutterBottom>
-            {user.attributes?.email || user.email}
-          </Typography>
+          {email && (
+            <Typography variant="body1" color="textSecondary" gutterBottom>
+              {email}
+            </Typography>
+          )}
           <Typography variant="body1" paragraph>
-            {user.attributes?.bio || 'Bio coming soon...'}
+            Bio coming soon...
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={6}>

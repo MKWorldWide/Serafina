@@ -39,7 +39,7 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
                 <>
                   {conversation.lastMessage.content}
                   {' • '}
-                  {new Date(conversation.lastMessage.createdAt).toLocaleDateString()}
+                  {new Date(conversation.lastMessage.timestamp).toLocaleDateString()}
                 </>
               )
             }

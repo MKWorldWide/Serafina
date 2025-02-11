@@ -28,7 +28,7 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
           }}
         >
           <Box sx={{ mr: 2, ml: message.userId === user?.username ? 2 : 0 }}>
-            <Avatar src={message.sender.avatar} alt={message.sender.username} />
+            <Avatar src={message.userAvatar} alt={message.userName} />
           </Box>
           <Box
             sx={{
@@ -53,7 +53,7 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
                 opacity: 0.7,
               }}
             >
-              {new Date(message.createdAt).toLocaleTimeString()}
+              {new Date(message.timestamp).toLocaleTimeString()}
             </Typography>
           </Box>
         </Box>

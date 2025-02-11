@@ -1,27 +1,25 @@
-import { Box, TextField, IconButton } from '@mui/material';
-import { Send as SendIcon } from '@mui/icons-material';
-import { useState, FormEvent } from 'react';
+import React, { useState } from 'react';
+import {
+  Box,
+  IconButton,
+  TextField,
+} from '@mui/material';
+import {
+  Send as SendIcon,
+} from '@mui/icons-material';
 
 interface MessageInputProps {
   onSubmit: (content: string) => Promise<void>;
 }
 
-export const MessageInput = ({ onSubmit }: MessageInputProps) => {
-  const [content, setContent] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const MessageInput: React.FC<MessageInputProps> = ({ onSubmit }) => {
+  const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || isSubmitting) return;
-
-    try {
-      setIsSubmitting(true);
-      await onSubmit(content);
-      setContent('');
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    } finally {
-      setIsSubmitting(false);
+    if (message.trim()) {
+      await onSubmit(message);
+      setMessage('');
     }
   };
 
@@ -30,28 +28,22 @@ export const MessageInput = ({ onSubmit }: MessageInputProps) => {
       component="form"
       onSubmit={handleSubmit}
       sx={{
+        p: 2,
         display: 'flex',
         gap: 1,
         alignItems: 'center',
+        borderTop: 1,
+        borderColor: 'divider',
       }}
     >
       <TextField
         fullWidth
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
         placeholder="Type a message..."
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        disabled={isSubmitting}
         size="small"
-        multiline
-        maxRows={4}
-        sx={{ flex: 1 }}
       />
-      <IconButton
-        type="submit"
-        color="primary"
-        disabled={!content.trim() || isSubmitting}
-        size="small"
-      >
+      <IconButton type="submit" color="primary" disabled={!message.trim()}>
         <SendIcon />
       </IconButton>
     </Box>
