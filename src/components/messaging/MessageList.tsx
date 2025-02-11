@@ -39,12 +39,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
         <Box
           key={message.id}
           display="flex"
-          justifyContent={message.userId === user?.username ? 'flex-end' : 'flex-start'}
+          justifyContent={message.sender.id === user?.username ? 'flex-end' : 'flex-start'}
           mb={2}
         >
           <MessageBubble 
             message={message} 
-            isOwn={message.userId === user?.username} 
+            isOwn={message.sender.id === user?.username} 
           />
         </Box>
       ))}

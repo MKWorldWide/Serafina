@@ -7,6 +7,10 @@ import ConversationsList from '../components/messaging/ConversationsList';
 import MessageList from '../components/messaging/MessageList';
 import MessageInput from '../components/messaging/MessageInput';
 
+interface MessageInputProps {
+  onSubmit: (content: string) => Promise<void>;
+}
+
 const Messaging = () => {
   const { user } = useUser();
   const { subscribe, send } = useWebSocket();
@@ -33,19 +37,21 @@ const Messaging = () => {
   const handleSendMessage = async (content: string) => {
     if (!selectedConversation || !user) return;
 
+    const avatarUrl = user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`;
+
     const newMessage: IMessage = {
       id: Date.now().toString(),
       content,
       userId: user.username,
       userName: user.username,
-      userAvatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
+      userAvatar: avatarUrl,
       timestamp: new Date().toISOString(),
       conversationId: selectedConversation.id,
       read: false,
       sender: {
         id: user.username,
         username: user.username,
-        avatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`
+        avatar: avatarUrl
       },
       createdAt: new Date().toISOString()
     };

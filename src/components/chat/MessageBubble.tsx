@@ -7,39 +7,41 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
-  const avatarUrl = message.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${message.userName}`;
-  
   return (
-    <Box display="flex" alignItems="flex-start" flexDirection={isOwn ? 'row-reverse' : 'row'}>
+    <Box
+      display="flex"
+      flexDirection={isOwn ? 'row-reverse' : 'row'}
+      alignItems="flex-start"
+      gap={1}
+    >
       <Avatar
-        src={avatarUrl}
-        alt={message.userName}
-        sx={{ width: 40, height: 40, mr: isOwn ? 0 : 1, ml: isOwn ? 1 : 0 }}
+        src={message.sender.avatar}
+        alt={message.sender.username}
+        sx={{ width: 32, height: 32 }}
       />
       <Box
         sx={{
           maxWidth: '70%',
-          p: 2,
+          p: 1.5,
           borderRadius: 2,
           bgcolor: isOwn ? 'primary.main' : 'grey.100',
+          color: isOwn ? 'white' : 'text.primary',
         }}
       >
-        <Typography
-          variant="body1"
-          sx={{ color: isOwn ? 'primary.contrastText' : 'text.primary' }}
-        >
-          {message.content}
-        </Typography>
+        <Typography variant="body1">{message.content}</Typography>
         <Typography
           variant="caption"
           sx={{
-            color: isOwn ? 'primary.contrastText' : 'text.secondary',
-            opacity: 0.8,
             display: 'block',
-            mt: 0.5
+            mt: 0.5,
+            opacity: 0.7,
+            textAlign: isOwn ? 'right' : 'left',
           }}
         >
-          {new Date(message.timestamp).toLocaleTimeString()}
+          {new Date(message.createdAt).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </Typography>
       </Box>
     </Box>

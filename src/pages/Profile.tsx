@@ -1,4 +1,4 @@
-import { Box, Typography, Avatar, Button, Grid, Paper } from '@mui/material';
+import { Box, Avatar, Typography, Container } from '@mui/material';
 import { useUser } from '../hooks/useUser';
 
 const Profile = () => {
@@ -17,33 +17,32 @@ const Profile = () => {
   const email = user.attributes?.email || user.username;
 
   return (
-    <Box p={4}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <Avatar
-              src={avatarUrl}
-              alt={displayName}
-              sx={{ width: 150, height: 150, mb: 2 }}
-            />
-            <Typography variant="h5" gutterBottom>
-              {displayName}
-            </Typography>
-            <Typography variant="body1" color="textSecondary" gutterBottom>
-              {email}
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Typography variant="h6" gutterBottom>
-            Bio
-          </Typography>
-          <Typography variant="body1">
-            {user.attributes?.bio || 'Bio coming soon...'}
-          </Typography>
-        </Grid>
-      </Grid>
-    </Box>
+    <Container maxWidth="md">
+      <Box
+        sx={{
+          mt: 4,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 2
+        }}
+      >
+        <Avatar
+          src={avatarUrl}
+          alt={displayName}
+          sx={{ width: 120, height: 120 }}
+        />
+        <Typography variant="h4" component="h1">
+          {displayName}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          {email}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" textAlign="center" maxWidth="sm">
+          {user.attributes?.bio || "No bio available"}
+        </Typography>
+      </Box>
+    </Container>
   );
 };
 
