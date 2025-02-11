@@ -1,0 +1,103 @@
+import { Box, Typography, Grid } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { useUser } from '../hooks/useUser';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { IMessage, IConversation } from '../types/social';
+import ConversationsList from '../components/messaging/ConversationsList';
+import MessageList from '../components/messaging/MessageList';
+import MessageInput from '../components/chat/MessageInput';
+
+interface WebSocketEvent {
+  type: 'NEW_MESSAGE' | 'MESSAGE_READ';
+  data: {
+    message: IMessage;
+  };
+}
+
+export const Messaging = () => {
+  const { user } = useUser();
+  const { subscribe, send } = useWebSocket();
+  const [conversations, setConversations] = useState<IConversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<IConversation | null>(null);
+  const [messages, setMessages] = useState<IMessage[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const handleWebSocketMessage = (event: WebSocketEvent) => {
+      if (event.type === 'NEW_MESSAGE') {
+        const { message } = event.data;
+        if (message.conversationId === selectedConversation?.id) {
+          setMessages((prev) => [...prev, message]);
+        }
+      }
+    };
+
+    const unsubscribe = subscribe(handleWebSocketMessage);
+    return () => unsubscribe();
+  }, [user, selectedConversation, subscribe]);
+
+  const handleSendMessage = async (content: string) => {
+    if (!selectedConversation || !user) return;
+
+    const newMessage: IMessage = {
+      id: Date.now().toString(),
+      content,
+      userId: user.username,
+      conversationId: selectedConversation.id,
+      createdAt: new Date().toISOString(),
+      read: false,
+      sender: {
+        id: user.username,
+        username: user.username,
+        avatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
+      },
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    send({
+      type: 'NEW_MESSAGE',
+      data: {
+        message: newMessage,
+      },
+    });
+  };
+
+  if (!user) {
+    return (
+      <Box p={4}>
+        <Typography>Please sign in to access messaging</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box p={4}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <ConversationsList
+            conversations={conversations}
+            selectedConversation={selectedConversation}
+            onSelectConversation={setSelectedConversation}
+          />
+        </Grid>
+        <Grid item xs={12} md={8}>
+          {selectedConversation ? (
+            <>
+              <MessageList messages={messages} user={user} />
+              <MessageInput onSubmit={handleSendMessage} />
+            </>
+          ) : (
+            <Box p={4} textAlign="center">
+              <Typography color="textSecondary">
+                Select a conversation to start messaging
+              </Typography>
+            </Box>
+          )}
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default Messaging; 

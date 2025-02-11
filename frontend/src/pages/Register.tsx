@@ -1,25 +1,33 @@
 import React, { useState } from 'react';
-import { Container, Box, Typography, TextField, Button, Paper, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Paper,
+  Link,
+  Grid,
+} from '@mui/material';
 import { useAuth } from '../context/AuthContext';
+import { CognitoAttributes } from '../types/auth';
 
 interface RegisterFormData {
-  username: string;
   email: string;
-  phoneNumber: string;
   password: string;
   confirmPassword: string;
+  phoneNumber: string;
 }
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
   const [formData, setFormData] = useState<RegisterFormData>({
-    username: '',
     email: '',
-    phoneNumber: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    phoneNumber: '',
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -34,21 +42,25 @@ const Register: React.FC = () => {
 
     try {
       await register({
-        username: formData.username,
+        password: formData.password,
         attributes: {
           email: formData.email,
-          phone_number: formData.phoneNumber
-        },
-        password: formData.password
+          phone_number: formData.phoneNumber,
+        } as CognitoAttributes,
       });
-      navigate('/');
+      navigate('/login');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   return (
-    <Container maxWidth="sm">
+    <Container component="main" maxWidth="xs">
       <Box
         sx={{
           marginTop: 8,
@@ -58,155 +70,92 @@ const Register: React.FC = () => {
         }}
       >
         <Paper
-          elevation={0}
+          elevation={3}
           sx={{
-            p: 4,
+            padding: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             width: '100%',
-            backgroundColor: 'rgba(8, 95, 128, 0.1)',
-            borderRadius: '20px',
           }}
         >
-          <Typography component="h1" variant="h4" align="center" sx={{ mb: 3 }}>
-            Create Account
+          <Typography component="h1" variant="h5">
+            Register
           </Typography>
-          {error && (
-            <Typography color="error" align="center" sx={{ mb: 2 }}>
-              {error}
-            </Typography>
-          )}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              autoFocus
-              value={formData.username}
-              onChange={e => setFormData(prev => ({ ...prev, username: e.target.value }))}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.23)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                  },
-                },
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              value={formData.email}
-              onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.23)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                  },
-                },
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="phoneNumber"
-              label="Phone Number"
-              name="phoneNumber"
-              autoComplete="tel"
-              value={formData.phoneNumber}
-              onChange={e => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.23)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                  },
-                },
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="new-password"
-              value={formData.password}
-              onChange={e => setFormData(prev => ({ ...prev, password: e.target.value }))}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.23)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                  },
-                },
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              id="confirmPassword"
-              autoComplete="new-password"
-              value={formData.confirmPassword}
-              onChange={e => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.23)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                  },
-                },
-              }}
-            />
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="phoneNumber"
+                  label="Phone Number"
+                  name="phoneNumber"
+                  autoComplete="tel"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="+1234567890"
+                  helperText="Please include country code (e.g., +1 for US)"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  type="password"
+                  id="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+              </Grid>
+            </Grid>
+            {error && (
+              <Typography color="error" sx={{ mt: 2 }}>
+                {error}
+              </Typography>
+            )}
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, py: 1.5, fontSize: '1.1rem' }}
+              sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              Register
             </Button>
-            <Box sx={{ textAlign: 'center' }}>
-              <Link
-                component="button"
-                variant="body2"
-                onClick={() => navigate('/login')}
-                sx={{
-                  color: 'primary.main',
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                Already have an account? Sign In
-              </Link>
-            </Box>
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Link href="/login" variant="body2">
+                  Already have an account? Sign in
+                </Link>
+              </Grid>
+            </Grid>
           </Box>
         </Paper>
       </Box>

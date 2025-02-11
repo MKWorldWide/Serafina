@@ -148,10 +148,10 @@ export interface IUser {
   username: string;
   email: string;
   avatar: string;
-  presence: 'online' | 'offline' | 'in-game';
+  presence: 'online' | 'offline' | 'away';
   bio?: string;
-  rank?: string;
-  level?: number;
+  rank: string;
+  level: number;
 }
 
 export interface IConversationParticipant {
@@ -175,19 +175,10 @@ export interface IAttachment {
 export interface IMessage {
   id: string;
   content: string;
-  sender: {
-    id: string;
-    username: string;
-    avatar: string;
-  };
-  conversation: string;
-  createdAt: string;
-  updatedAt: string;
-  attachments?: IAttachment[];
-  metadata?: {
-    isDeleted: boolean;
-    isEdited: boolean;
-  };
+  timestamp: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
 }
 
 export interface IMessageInput {
@@ -269,4 +260,37 @@ export interface IPostMedia {
   file: File;
   preview: string;
   url?: string;
+}
+
+export interface INotification {
+  id: string;
+  title: string;
+  description: string;
+  type: 'friend_request' | 'message' | 'achievement' | 'system';
+  timestamp: string;
+  read: boolean;
+  metadata?: {
+    userId?: string;
+    gameId?: string;
+    achievementId?: string;
+  };
+}
+
+export interface FeedItem {
+  id: string;
+  userId: string;
+  content: string;
+  timestamp: string;
+  likes: number;
+  comments: number;
+  liked: boolean;
+  author: {
+    id: string;
+    username: string;
+    avatar: string;
+  };
+  media?: {
+    type: 'image' | 'video';
+    url: string;
+  }[];
 }
