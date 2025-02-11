@@ -2,17 +2,10 @@ import { Box, Typography, Grid } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useUser } from '../hooks/useUser';
 import { useWebSocket } from '../hooks/useWebSocket';
-import { IMessage, IConversation } from '../types/social';
-import ConversationsList from '../components/messaging/ConversationsList';
-import MessageList from '../components/messaging/MessageList';
-import MessageInput from '../components/chat/MessageInput';
-
-interface WebSocketEvent {
-  type: 'NEW_MESSAGE' | 'MESSAGE_READ';
-  data: {
-    message: IMessage;
-  };
-}
+import { IMessage, IConversation, WebSocketMessage } from '../types/social';
+import ConversationsList from './messaging/ConversationsList';
+import MessageList from './messaging/MessageList';
+import MessageInput from './messaging/MessageInput';
 
 export const Messaging = () => {
   const { user } = useUser();
@@ -24,10 +17,10 @@ export const Messaging = () => {
   useEffect(() => {
     if (!user) return;
 
-    const handleWebSocketMessage = (event: WebSocketEvent) => {
-      if (event.type === 'NEW_MESSAGE') {
+    const handleWebSocketMessage = (event: WebSocketMessage) => {
+      if (event.type === 'MESSAGE_CREATE' && event.data.message) {
         const { message } = event.data;
-        if (message.conversationId === selectedConversation?.id) {
+        if (selectedConversation && message.conversationId === selectedConversation.id) {
           setMessages((prev) => [...prev, message]);
         }
       }
@@ -44,22 +37,26 @@ export const Messaging = () => {
       id: Date.now().toString(),
       content,
       userId: user.username,
+      userName: user.username,
+      userAvatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
+      timestamp: new Date().toISOString(),
       conversationId: selectedConversation.id,
-      createdAt: new Date().toISOString(),
       read: false,
       sender: {
         id: user.username,
         username: user.username,
-        avatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
+        avatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`
       },
+      createdAt: new Date().toISOString()
     };
 
     setMessages((prev) => [...prev, newMessage]);
     send({
-      type: 'NEW_MESSAGE',
+      type: 'MESSAGE_CREATE',
       data: {
-        message: newMessage,
+        message: newMessage
       },
+      timestamp: new Date().toISOString()
     });
   };
 
