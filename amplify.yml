@@ -15,6 +15,9 @@ frontend:
   phases:
     preBuild:
       commands:
+        - npm install -g npm@latest
+        - npm install -g @aws-amplify/cli@latest rimraf@latest glob@latest
+        - npm config set legacy-peer-deps true
         - npm ci --production --no-audit
         - npm run test:ci
     build:
@@ -50,7 +53,7 @@ backend:
   phases:
     preBuild:
       commands:
-        - npm install -g @aws-amplify/cli@latest
+        - npm install -g @aws-amplify/cli@latest rimraf@latest glob@latest
         - amplify configure --json --provider aws --accessKeyId AKIAQKZQVFHEJY5NXVWL --secretAccessKey 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 --region us-east-1 --yes
     build:
       commands:
