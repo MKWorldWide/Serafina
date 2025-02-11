@@ -1,36 +1,24 @@
 # Dependencies
-/node_modules
-/frontend/node_modules
-/.pnp
+**/node_modules/
+**/.pnp/
 .pnp.js
 
 # Testing
-/coverage
-/cypress/videos
-/cypress/screenshots
+**/coverage/
+**/cypress/videos/
+**/cypress/screenshots/
 
 # Production
-/build
-/dist
-/.next
-.serverless
+**/build/
+**/dist/
+**/.next/
+.serverless/
 
-# Misc
-.DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env*.local
+# Environment
+.env*
+!config/.env.example
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
-
-# Editor directories and files
+# IDE
 .idea/
 .vscode/
 *.swp
@@ -45,24 +33,23 @@ aws-exports-*.js
 /amplify/#current-cloud-backend
 /amplify/backend/api/API.json
 /amplify/backend/hosting/
-.amplify/
 
 # Cache
 .cache/
 .eslintcache
 .stylelintcache
 
-# Build output
+# Build
 *.tsbuildinfo
-.next
+.next/
 out/
 
-# Test coverage
-coverage/
-.nyc_output/
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
 
-# Temporary files
-*.tmp
-*.temp
+# System
 .DS_Store
 Thumbs.db
