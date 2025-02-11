@@ -151,15 +151,15 @@ export interface FeedItem {
   likes: number;
   comments: number;
   liked: boolean;
+  media?: {
+    type: 'image' | 'video';
+    url: string;
+  }[];
   author: {
     id: string;
     username: string;
     avatar: string;
   };
-  media?: {
-    type: 'image' | 'video';
-    url: string;
-  }[];
 }
 
 export interface WebSocketMessage {

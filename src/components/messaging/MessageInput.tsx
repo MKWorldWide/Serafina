@@ -3,6 +3,7 @@ import {
   Box,
   IconButton,
   TextField,
+  Grid,
 } from '@mui/material';
 import {
   Send as SendIcon,
@@ -13,13 +14,21 @@ interface MessageInputProps {
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({ onSubmit }) => {
-  const [message, setMessage] = useState('');
+  const [content, setContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      await onSubmit(message);
-      setMessage('');
+    if (!content.trim() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit(content.trim());
+      setContent('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -29,23 +38,35 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSubmit }) => {
       onSubmit={handleSubmit}
       sx={{
         p: 2,
-        display: 'flex',
-        gap: 1,
-        alignItems: 'center',
         borderTop: 1,
         borderColor: 'divider',
+        bgcolor: 'background.paper'
       }}
     >
-      <TextField
-        fullWidth
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type a message..."
-        size="small"
-      />
-      <IconButton type="submit" color="primary" disabled={!message.trim()}>
-        <SendIcon />
-      </IconButton>
+      <Grid container spacing={2}>
+        <Grid item xs>
+          <TextField
+            fullWidth
+            placeholder="Type a message..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            disabled={isSubmitting}
+            multiline
+            maxRows={4}
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+          />
+        </Grid>
+        <Grid item>
+          <IconButton
+            type="submit"
+            color="primary"
+            disabled={!content.trim() || isSubmitting}
+            sx={{ height: '100%' }}
+          >
+            <SendIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

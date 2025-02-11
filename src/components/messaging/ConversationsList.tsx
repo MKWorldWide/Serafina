@@ -21,7 +21,7 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
   }
 
   return (
-    <List>
+    <List sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
       {conversations.map((conversation) => (
         <ListItem
           key={conversation.id}
@@ -30,24 +30,52 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
           onClick={() => onSelectConversation(conversation)}
         >
           <ListItemAvatar>
-            <Avatar src={conversation.avatar} alt={conversation.name} />
+            <Avatar
+              src={conversation.participants[0].avatar}
+              alt={conversation.participants[0].username}
+            />
           </ListItemAvatar>
           <ListItemText
-            primary={conversation.name}
+            primary={conversation.participants[0].username}
             secondary={
-              conversation.lastMessage && (
-                <>
-                  {conversation.lastMessage.content}
-                  {' • '}
-                  {new Date(conversation.lastMessage.timestamp).toLocaleDateString()}
-                </>
-              )
+              conversation.lastMessage
+                ? `${conversation.lastMessage.content} · ${formatTimestamp(conversation.lastMessage.timestamp)}`
+                : 'No messages yet'
             }
+            secondaryTypographyProps={{
+              noWrap: true,
+              sx: { opacity: 0.7 }
+            }}
           />
         </ListItem>
       ))}
+      {conversations.length === 0 && (
+        <ListItem>
+          <ListItemText
+            primary="No conversations yet"
+            secondary="Start a new conversation to chat"
+          />
+        </ListItem>
+      )}
     </List>
   );
+};
+
+const formatTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (days === 0) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } else if (days === 1) {
+    return 'Yesterday';
+  } else if (days < 7) {
+    return date.toLocaleDateString([], { weekday: 'long' });
+  } else {
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
 };
 
 export default ConversationsList;

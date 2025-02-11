@@ -1,13 +1,41 @@
 import { Box, Typography, Avatar } from '@mui/material';
 import { IMessage } from '../../types/social';
 import { AmplifyUser } from '../../types/auth';
+import { useRef, useEffect } from 'react';
 
 interface MessageListProps {
   messages: IMessage[];
   user: AmplifyUser | null;
 }
 
-export const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
+const isCurrentUser = (message: IMessage, user: AmplifyUser) => {
+  return message.userId === user.username;
+};
+
+const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  const renderMessage = (message: IMessage) => {
+    const isOwn = message.userId === user?.username;
+
+    return (
+      <Box
+        key={message.id}
+        display="flex"
+        justifyContent={isOwn ? 'flex-end' : 'flex-start'}
+        mb={2}
+      >
+        <MessageBubble message={message} isOwn={isOwn} />
+      </Box>
+    );
+  };
+
   if (!messages.length) {
     return (
       <Box p={4} textAlign="center">
@@ -17,47 +45,16 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
   }
 
   return (
-    <Box p={2}>
-      {messages.map((message) => (
-        <Box
-          key={message.id}
-          sx={{
-            display: 'flex',
-            flexDirection: message.userId === user?.username ? 'row-reverse' : 'row',
-            mb: 2,
-          }}
-        >
-          <Box sx={{ mr: 2, ml: message.userId === user?.username ? 2 : 0 }}>
-            <Avatar src={message.userAvatar} alt={message.userName} />
-          </Box>
-          <Box
-            sx={{
-              maxWidth: '70%',
-              p: 2,
-              borderRadius: 2,
-              backgroundColor: message.userId === user?.username ? 'primary.main' : 'grey.100',
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{
-                color: message.userId === user?.username ? 'primary.contrastText' : 'text.primary',
-              }}
-            >
-              {message.content}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                color: message.userId === user?.username ? 'primary.contrastText' : 'text.primary',
-                opacity: 0.7,
-              }}
-            >
-              {new Date(message.timestamp).toLocaleTimeString()}
-            </Typography>
-          </Box>
-        </Box>
-      ))}
+    <Box
+      sx={{
+        height: 'calc(100vh - 200px)',
+        overflowY: 'auto',
+        p: 2,
+        bgcolor: 'background.default'
+      }}
+    >
+      {messages.map(renderMessage)}
+      <div ref={messagesEndRef} />
     </Box>
   );
 };
