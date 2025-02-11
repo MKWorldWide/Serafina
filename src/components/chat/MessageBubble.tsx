@@ -16,7 +16,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMess
       }}
     >
       <Box sx={{ mr: 2, ml: isOwnMessage ? 2 : 0 }}>
-        <Avatar src={message.sender.avatar} alt={message.sender.username} />
+        <Avatar src={message.userAvatar} alt={message.userName} />
       </Box>
       <Box
         sx={{
@@ -41,7 +41,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMess
             opacity: 0.7,
           }}
         >
-          {new Date(message.createdAt).toLocaleTimeString()}
+          {new Date(message.timestamp).toLocaleTimeString()}
         </Typography>
       </Box>
     </Box>

@@ -43,6 +43,7 @@ aws-exports-*.js
 *.tsbuildinfo
 .next/
 out/
+BUILD.txt
 
 # Logs
 npm-debug.log*

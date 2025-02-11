@@ -5,7 +5,7 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import { IMessage, IConversation, WebSocketMessage } from '../types/social';
 import ConversationsList from './messaging/ConversationsList';
 import MessageList from './messaging/MessageList';
-import MessageInput from './chat/MessageInput';
+import MessageInput from './messaging/MessageInput';
 
 export const Messaging = () => {
   const { user } = useUser();
@@ -36,24 +36,27 @@ export const Messaging = () => {
     const newMessage: IMessage = {
       id: Date.now().toString(),
       content,
-      userId: user.username,
+      userId: user.id,
+      userName: user.username,
+      userAvatar: user.avatar,
+      timestamp: new Date().toISOString(),
       conversationId: selectedConversation.id,
-      createdAt: new Date().toISOString(),
       read: false,
       sender: {
-        id: user.username,
+        id: user.id,
         username: user.username,
-        avatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
+        avatar: user.avatar
       },
+      createdAt: new Date().toISOString()
     };
 
     setMessages((prev) => [...prev, newMessage]);
     send({
       type: 'MESSAGE_CREATE',
       data: {
-        message: newMessage,
+        message: newMessage
       },
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     });
   };
 

@@ -52,14 +52,17 @@ export interface IMessage {
   id: string;
   content: string;
   userId: string;
+  userName: string;
+  userAvatar?: string;
+  timestamp: string;
+  conversationId: string;
+  read: boolean;
   sender: {
     id: string;
     username: string;
     avatar: string;
   };
   createdAt: string;
-  read: boolean;
-  conversationId: string;
 }
 
 export interface IConversation {
@@ -143,15 +146,15 @@ export interface INotification {
 export interface FeedItem {
   id: string;
   type: 'post' | 'achievement' | 'game_activity';
-  content: string;
   author: {
     id: string;
     username: string;
     avatar: string;
   };
+  content: PostContent;
   createdAt: string;
   likes: number;
-  comments: number;
+  comments: Comment[];
   shares: number;
   game?: {
     id: string;
