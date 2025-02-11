@@ -3,26 +3,47 @@ import { Container, Box, Typography, TextField, Button, Paper, Link } from '@mui
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+interface RegisterFormData {
+  username: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+}
+
 const Register: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
-  const auth = useAuth();
+  const { register } = useAuth();
+  const [formData, setFormData] = useState<RegisterFormData>({
+    username: '',
+    email: '',
+    phoneNumber: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    setError(null);
+
+    if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
+
     try {
-      await auth.register({ username, email, password });
+      await register({
+        username: formData.username,
+        attributes: {
+          email: formData.email,
+          phone_number: formData.phoneNumber
+        },
+        password: formData.password
+      });
       navigate('/');
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      setError(err instanceof Error ? err.message : 'Registration failed');
     }
   };
 
@@ -63,8 +84,8 @@ const Register: React.FC = () => {
               name="username"
               autoComplete="username"
               autoFocus
-              value={username}
-              onChange={e => setUsername(e.target.value)}
+              value={formData.username}
+              onChange={e => setFormData(prev => ({ ...prev, username: e.target.value }))}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -84,8 +105,29 @@ const Register: React.FC = () => {
               label="Email Address"
               name="email"
               autoComplete="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.23)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                  },
+                },
+              }}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="phoneNumber"
+              label="Phone Number"
+              name="phoneNumber"
+              autoComplete="tel"
+              value={formData.phoneNumber}
+              onChange={e => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -106,8 +148,8 @@ const Register: React.FC = () => {
               type="password"
               id="password"
               autoComplete="new-password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={e => setFormData(prev => ({ ...prev, password: e.target.value }))}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -128,8 +170,8 @@ const Register: React.FC = () => {
               type="password"
               id="confirmPassword"
               autoComplete="new-password"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
+              value={formData.confirmPassword}
+              onChange={e => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {

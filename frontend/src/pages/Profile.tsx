@@ -38,6 +38,9 @@ import MessageIcon from '@mui/icons-material/Message';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import { AmplifyUser } from '@aws-amplify/ui';
+import { IUser } from '../types/social';
+import { useUser } from '../hooks/useUser';
 
 interface IUserProfile {
   id: string;
@@ -248,498 +251,45 @@ const TabPanel: React.FC<ITabPanelProps> = ({ children, value, index }) => {
 };
 
 const Profile: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState(0);
-  const [profile, setProfile] = useState<IUserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editFormData, setEditFormData] = useState({
-    bio: '',
-    currentGame: '',
-  });
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success' as 'success' | 'error',
-  });
-
-  const fetchProfile = async (username: string) => {
-    if (!username) {
-      setError('Username is required');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await authApi.getProfile(username);
-      setProfile(response.data);
-      setEditFormData({
-        bio: response.data.bio,
-        currentGame: response.data.currentGame || '',
-      });
-      setError(null);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      setError('Failed to load profile');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (username) {
-      fetchProfile(username);
-    }
-  }, [username]);
+  const { user } = useUser();
 
   if (!user) {
-    navigate('/login');
-    return null;
-  }
-
-  if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        sx={{ mt: -8 }} // Compensate for navbar
-      >
-        <CircularProgress />
-      </Box>
+      <div className="max-w-7xl mx-auto">
+        <p className="text-lg text-gray-700">Please sign in to view your profile.</p>
+      </div>
     );
   }
-
-  if (error) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        sx={{ mt: -8 }} // Compensate for navbar
-      >
-        <Typography color="error">{error}</Typography>
-      </Box>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        sx={{ mt: -8 }} // Compensate for navbar
-      >
-        <Typography>Profile not found</Typography>
-      </Box>
-    );
-  }
-
-  const isOwnProfile = user.username === profile.username;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online':
-        return '#44b700';
-      case 'in-game':
-        return '#ff9800';
-      default:
-        return '#bdbdbd';
-    }
-  };
-
-  const handleEditProfile = async () => {
-    try {
-      await authApi.updateProfile(username!, editFormData);
-      setProfile(prev => (prev ? { ...prev, ...editFormData } : null));
-      setEditDialogOpen(false);
-      setSnackbar({
-        open: true,
-        message: 'Profile updated successfully',
-        severity: 'success',
-      });
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: 'Failed to update profile',
-        severity: 'error',
-      });
-    }
-  };
-
-  const handleAddFriend = async () => {
-    try {
-      // Implement friend request logic
-      setSnackbar({
-        open: true,
-        message: 'Friend request sent',
-        severity: 'success',
-      });
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: 'Failed to send friend request',
-        severity: 'error',
-      });
-    }
-  };
-
-  const handleSendMessage = async () => {
-    try {
-      if (!profile) return;
-      const response = await messagesApi.createConversation(profile.id);
-      navigate(`/messages/${response.data.id}`);
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: 'Failed to start conversation',
-        severity: 'error',
-      });
-    }
-  };
-
-  const handleInviteToTeam = async () => {
-    try {
-      // Implement team invitation logic
-      setSnackbar({
-        open: true,
-        message: 'Team invitation sent',
-        severity: 'success',
-      });
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: 'Failed to send team invitation',
-        severity: 'error',
-      });
-    }
-  };
 
   return (
-    <Box sx={{ pt: 8 }}>
-      {' '}
-      {/* Add padding top to account for navbar */}
-      <CoverImage sx={{ backgroundImage: `url(${profile.coverUrl})` }}>
-        <StatusBadge
-          overlap="circular"
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          variant="dot"
-          sx={{
-            position: 'absolute',
-            bottom: '-20%',
-            left: theme => theme.spacing(3),
-            '& .MuiBadge-badge': {
-              backgroundColor: getStatusColor(profile.status),
-            },
-          }}
-        >
-          <ProfileAvatar src={profile.avatarUrl} alt={profile.username} />
-        </StatusBadge>
-      </CoverImage>
-      <Container maxWidth="lg">
-        <Box sx={{ mt: 10, mb: 4 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-            <Box>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Typography variant="h4" gutterBottom>
-                  {profile.username}
-                </Typography>
-                {profile.status === 'in-game' && (
-                  <Chip
-                    icon={<SportsEsportsIcon />}
-                    label={`Playing ${profile.currentGame}`}
-                    color="warning"
-                    size="small"
-                  />
-                )}
-              </Box>
-              <Typography variant="body1" color="textSecondary" sx={{ mb: 2 }}>
-                {profile.bio}
-              </Typography>
-              <Box display="flex" gap={1}>
-                <Chip
-                  icon={<StarIcon />}
-                  label={`${profile.reputation} Rating`}
-                  color="primary"
-                  size="small"
-                />
-                <Chip
-                  icon={<WhatshotIcon />}
-                  label={`${profile.stats.winRate}% Win Rate`}
-                  color="success"
-                  size="small"
-                />
-              </Box>
-            </Box>
-            <Box display="flex" gap={1}>
-              {!isOwnProfile && (
-                <>
-                  <Tooltip title="Add Friend">
-                    <IconButton color="primary" onClick={handleAddFriend}>
-                      <PersonAddIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Send Message">
-                    <IconButton color="primary" onClick={handleSendMessage}>
-                      <MessageIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Invite to Team">
-                    <IconButton color="primary" onClick={handleInviteToTeam}>
-                      <GroupAddIcon />
-                    </IconButton>
-                  </Tooltip>
-                </>
-              )}
-              {isOwnProfile && (
-                <Button
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                  sx={{ mt: 1 }}
-                  onClick={() => setEditDialogOpen(true)}
-                >
-                  Edit Profile
-                </Button>
-              )}
-            </Box>
-          </Box>
-
-          <Grid container spacing={3} sx={{ mb: 4, mt: 2 }}>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <GroupIcon />
-                  <Typography variant="h6">{profile.stats.gamesPlayed}</Typography>
-                </Box>
-                <Typography color="textSecondary">Games</Typography>
-              </StatsCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <SportsEsportsIcon />
-                  <Typography variant="h6">{profile.stats.totalMatches}</Typography>
-                </Box>
-                <Typography color="textSecondary">Total Matches</Typography>
-              </StatsCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <EmojiEventsIcon />
-                  <Typography variant="h6">{profile.achievements.total}</Typography>
-                </Box>
-                <Typography color="textSecondary">Achievements</Typography>
-              </StatsCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <TimelineIcon />
-                  <Typography variant="h6">{profile.stats.totalMatches}</Typography>
-                </Box>
-                <Typography color="textSecondary">Total Matches</Typography>
-              </StatsCard>
-            </Grid>
-          </Grid>
-
-          <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
-            <Tab label="Games" icon={<VideogameAssetIcon />} iconPosition="start" />
-            <Tab label="Achievements" icon={<EmojiEventsIcon />} iconPosition="start" />
-            <Tab label="Teams" icon={<GroupIcon />} iconPosition="start" />
-            <Tab label="Highlights" icon={<WhatshotIcon />} iconPosition="start" />
-          </Tabs>
-
-          <TabPanel value={activeTab} index={0}>
-            <Box>
-              {profile.topGames.map((game, index) => (
-                <GameCard key={index}>
-                  <SportsEsportsIcon sx={{ fontSize: 40 }} />
-                  <Box flex={1}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Typography variant="h6">{game.name}</Typography>
-                      <Box display="flex" gap={1}>
-                        <Chip label={game.platform} size="small" />
-                        {game.rank && <Chip label={game.rank} color="primary" size="small" />}
-                      </Box>
-                    </Box>
-                    <Box display="flex" alignItems="center" gap={2} mt={1}>
-                      <Typography variant="body2" color="textSecondary">
-                        Level {game.level}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {game.hoursPlayed} hours played
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {game.winRate}% Win Rate
-                      </Typography>
-                      {game.favoriteCharacter && (
-                        <Typography variant="body2" color="textSecondary">
-                          Favorite: {game.favoriteCharacter}
-                        </Typography>
-                      )}
-                    </Box>
-                    <LinearProgress variant="determinate" value={game.level % 100} sx={{ mt: 1 }} />
-                  </Box>
-                </GameCard>
-              ))}
-            </Box>
-          </TabPanel>
-
-          <TabPanel value={activeTab} index={1}>
-            <Box>
-              {profile.achievements.recent.map(achievement => (
-                <AchievementCard key={achievement.id}>
-                  <Typography variant="h4" component="span">
-                    {achievement.icon}
-                  </Typography>
-                  <Box flex={1}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Typography variant="h6">{achievement.name}</Typography>
-                      <Chip label={achievement.rarity} size="small" color="warning" />
-                    </Box>
-                    <Typography variant="body2" color="textSecondary">
-                      {achievement.description}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      Unlocked {new Date(achievement.earnedAt).toLocaleDateString()}
-                    </Typography>
-                  </Box>
-                </AchievementCard>
-              ))}
-            </Box>
-          </TabPanel>
-
-          <TabPanel value={activeTab} index={2}>
-            <Box>
-              {profile.teams.map(team => (
-                <TeamCard key={team.id}>
-                  <Avatar src={team.logo} alt={team.name} sx={{ width: 60, height: 60 }} />
-                  <Box flex={1}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Typography variant="h6">{team.name}</Typography>
-                      <Box display="flex" gap={1}>
-                        <Chip label={team.game} size="small" />
-                        {team.rank && <Chip label={team.rank} color="primary" size="small" />}
-                      </Box>
-                    </Box>
-                    <Box display="flex" alignItems="center" gap={2} mt={1}>
-                      <Typography variant="body2" color="textSecondary">
-                        Role: {team.role}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {team.members} Members
-                      </Typography>
-                    </Box>
-                  </Box>
-                </TeamCard>
-              ))}
-            </Box>
-          </TabPanel>
-
-          <TabPanel value={activeTab} index={3}>
-            <Grid container spacing={2}>
-              {profile.highlights.map(highlight => (
-                <Grid item xs={12} sm={6} md={4} key={highlight.id}>
-                  <HighlightCard sx={{ backgroundImage: `url(${highlight.thumbnailUrl})` }}>
-                    <HighlightOverlay>
-                      <Typography variant="h6">{highlight.title}</Typography>
-                      <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="caption">{highlight.game}</Typography>
-                        <Typography variant="caption">{highlight.views} views</Typography>
-                      </Box>
-                    </HighlightOverlay>
-                  </HighlightCard>
-                </Grid>
-              ))}
-            </Grid>
-          </TabPanel>
-
-          {/* Upcoming Schedule Section */}
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Upcoming Schedule
-            </Typography>
-            <Grid container spacing={2}>
-              {profile.schedule.map(event => (
-                <Grid item xs={12} sm={6} md={4} key={event.id}>
-                  <Paper sx={{ p: 2, backgroundColor: 'rgba(8, 95, 128, 0.1)' }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Typography variant="subtitle1">{event.title}</Typography>
-                      <Chip
-                        label={event.type}
-                        size="small"
-                        color={event.type === 'tournament' ? 'error' : 'primary'}
-                      />
-                    </Box>
-                    <Typography variant="body2" color="textSecondary">
-                      {event.game}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {new Date(event.date).toLocaleDateString()}
-                    </Typography>
-                    {event.participants > 0 && (
-                      <Typography variant="caption" color="textSecondary">
-                        {event.participants} participants
-                      </Typography>
-                    )}
-                  </Paper>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        </Box>
-      </Container>
-      {/* Add Edit Profile Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>Edit Profile</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Bio"
-            multiline
-            rows={4}
-            value={editFormData.bio}
-            onChange={e => setEditFormData(prev => ({ ...prev, bio: e.target.value }))}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Current Game"
-            value={editFormData.currentGame}
-            onChange={e => setEditFormData(prev => ({ ...prev, currentGame: e.target.value }))}
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleEditProfile} variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* Add Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
-      >
-        <Alert
-          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
-          severity={snackbar.severity}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+    <div className="max-w-7xl mx-auto">
+      <h1 className="text-4xl font-bold text-gray-900 mb-8">Profile</h1>
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-2xl font-semibold mb-4">Welcome, {user.username}</h2>
+        <div className="space-y-4">
+          <p className="text-gray-700">
+            <span className="font-medium">Email:</span> {user.email}
+          </p>
+          <p className="text-gray-700">
+            <span className="font-medium">Rank:</span> {user.rank}
+          </p>
+          <p className="text-gray-700">
+            <span className="font-medium">Level:</span> {user.level}
+          </p>
+          <p className="text-gray-700">
+            <span className="font-medium">Status:</span>{' '}
+            <span className="inline-flex items-center">
+              <span
+                className={`w-2 h-2 rounded-full mr-2 ${
+                  user.presence === 'online' ? 'bg-green-500' : 'bg-gray-500'
+                }`}
+              />
+              {user.presence}
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 

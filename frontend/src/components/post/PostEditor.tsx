@@ -34,6 +34,7 @@ import 'react-quill/dist/quill.snow.css';
 import { useDropzone } from 'react-dropzone';
 import { useAuth } from '../../context/AuthContext';
 import { IPostMedia } from '../../types/social';
+import { useUser } from '../../hooks/useUser';
 
 interface IPostEditorProps {
   initialContent?: string;
@@ -86,7 +87,7 @@ const PostEditor: React.FC<IPostEditorProps> = ({
   onCancel,
   loading = false,
 }) => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [content, setContent] = useState(initialContent);
   const [privacy, setPrivacy] = useState<PostPrivacy>(initialPrivacy);
   const [tags, setTags] = useState<string[]>(initialTags);
@@ -94,6 +95,14 @@ const PostEditor: React.FC<IPostEditorProps> = ({
   const [tagInput, setTagInput] = useState('');
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const tagInputRef = useRef<HTMLInputElement>(null);
+
+  if (!user) {
+    return (
+      <div className="text-center py-4">
+        <p className="text-gray-600">Please sign in to create a post</p>
+      </div>
+    );
+  }
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newMedia = acceptedFiles.map(file => ({
@@ -157,10 +166,10 @@ const PostEditor: React.FC<IPostEditorProps> = ({
   return (
     <Paper sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-        <Avatar src={user?.avatar} alt={user?.username} />
+        <Avatar src={user.avatar} alt={user.username} />
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
-            <Typography variant="subtitle1">{user?.username}</Typography>
+            <Typography variant="subtitle1">{user.username}</Typography>
             <Button
               size="small"
               startIcon={

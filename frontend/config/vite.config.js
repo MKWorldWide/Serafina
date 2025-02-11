@@ -34,31 +34,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: '../dist',
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: [
-            'react',
-            'react-dom',
-            'react-router-dom',
-            'aws-amplify',
-            '@aws-amplify/ui-react'
-          ],
-          ui: [
-            '@headlessui/react',
-            '@heroicons/react'
-          ]
-        }
-      }
-    },
-    target: 'esnext',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    }
+    target: 'esnext'
   },
   optimizeDeps: {
     include: [

@@ -34,6 +34,7 @@ import { IMessage, IAttachment } from '../../types/social';
 import { useAuth } from '../../context/AuthContext';
 import ReactionBar from '../post/ReactionBar';
 import useStore from '../../store/useStore';
+import { useUser } from '../../hooks/useUser';
 
 interface MessageListProps {
   messages: IMessage[];
@@ -53,6 +54,7 @@ const MessageList: React.FC<MessageListProps> = ({
   onReportMessage,
 }) => {
   const { user } = useAuth();
+  const { user: userFromUserHook } = useUser();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null);
@@ -159,7 +161,7 @@ const MessageList: React.FC<MessageListProps> = ({
   };
 
   const renderMessage = (message: IMessage) => {
-    const isOwn = message.sender.id === user?.id;
+    const isOwn = message.sender.id === user?.username;
 
     if (message.metadata?.isDeleted) {
       return (
@@ -240,6 +242,14 @@ const MessageList: React.FC<MessageListProps> = ({
     );
   };
 
+  if (!user) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-600">Please sign in to view messages</p>
+      </div>
+    );
+  }
+
   return (
     <Box
       sx={{
@@ -293,7 +303,7 @@ const MessageList: React.FC<MessageListProps> = ({
           </ListItemIcon>
           Copy Text
         </MenuItem>
-        {selectedMessage?.sender.id === user?.id && (
+        {selectedMessage?.sender.id === user?.username && (
           <>
             {typeof onEdit === 'function' && selectedMessage && (
               <MenuItem onClick={() => handleEditClick(selectedMessage)}>

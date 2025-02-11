@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cd frontend && vite",
-    "build": "cd frontend && tsc && vite build",
+    "build": "cd frontend && tsc -p config/tsconfig.json && vite build",
     "preview": "cd frontend && vite preview",
     "test": "jest --config frontend/config/jest.config.js",
     "test:watch": "jest --watch --config frontend/config/jest.config.js",
@@ -90,7 +90,7 @@
     "frontend/src/**/*.{css,md}": "prettier --write --config frontend/config/.prettierrc"
   },
   "engines": {
-    "node": ">=20",
+    "node": ">=18",
     "npm": ">=9"
   }
 }
