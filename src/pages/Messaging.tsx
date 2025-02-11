@@ -7,10 +7,6 @@ import ConversationsList from '../components/messaging/ConversationsList';
 import MessageList from '../components/messaging/MessageList';
 import MessageInput from '../components/messaging/MessageInput';
 
-interface MessageInputProps {
-  onSubmit: (content: string) => Promise<void>;
-}
-
 const Messaging = () => {
   const { user } = useUser();
   const { subscribe, send } = useWebSocket();
@@ -48,11 +44,6 @@ const Messaging = () => {
       timestamp: new Date().toISOString(),
       conversationId: selectedConversation.id,
       read: false,
-      sender: {
-        id: user.username,
-        username: user.username,
-        avatar: avatarUrl
-      },
       createdAt: new Date().toISOString()
     };
 

@@ -149,20 +149,16 @@ export interface INotification {
 export interface FeedItem {
   id: string;
   userId: string;
-  content: string;
+  content: PostContent;
   timestamp: string;
   likes: number;
-  comments: number;
+  comments: Comment[];
   liked: boolean;
+  author: User;
   media?: {
     type: 'image' | 'video';
     url: string;
   }[];
-  author: {
-    id: string;
-    username: string;
-    avatar: string;
-  };
 }
 
 export interface WebSocketMessage {

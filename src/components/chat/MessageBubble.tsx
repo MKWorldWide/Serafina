@@ -7,6 +7,8 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
+  const avatarUrl = message.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${message.userName}`;
+
   return (
     <Box
       display="flex"
@@ -15,8 +17,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
       gap={1}
     >
       <Avatar
-        src={message.sender.avatar}
-        alt={message.sender.username}
+        src={avatarUrl}
+        alt={message.userName}
         sx={{ width: 32, height: 32 }}
       />
       <Box
@@ -38,7 +40,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
             textAlign: isOwn ? 'right' : 'left',
           }}
         >
-          {new Date(message.createdAt).toLocaleTimeString([], {
+          {new Date(message.timestamp).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
           })}
