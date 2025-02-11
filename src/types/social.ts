@@ -67,10 +67,13 @@ export interface IMessage {
 
 export interface IConversation {
   id: string;
-  name: string;
-  avatar: string;
-  lastMessage: IMessage;
-  participants: User[];
+  name?: string;
+  participants: {
+    id: string;
+    username: string;
+    avatar: string;
+  }[];
+  lastMessage?: IMessage;
   isGroup: boolean;
   unreadCount: number;
   createdAt: string;

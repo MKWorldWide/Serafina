@@ -7,7 +7,7 @@ interface ConversationsListProps {
   onSelectConversation: (conversation: IConversation) => void;
 }
 
-export const ConversationsList: React.FC<ConversationsListProps> = ({
+const ConversationsList: React.FC<ConversationsListProps> = ({
   conversations,
   selectedConversation,
   onSelectConversation,
@@ -22,41 +22,38 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({
 
   return (
     <List sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
-      {conversations.map((conversation) => (
-        <ListItem
-          key={conversation.id}
-          button
-          selected={selectedConversation?.id === conversation.id}
-          onClick={() => onSelectConversation(conversation)}
-        >
-          <ListItemAvatar>
-            <Avatar
-              src={conversation.participants[0].avatar}
-              alt={conversation.participants[0].username}
+      {conversations.map((conversation) => {
+        const participant = conversation.participants[0];
+        const lastMessage = conversation.lastMessage;
+        
+        return (
+          <ListItem
+            key={conversation.id}
+            button
+            selected={selectedConversation?.id === conversation.id}
+            onClick={() => onSelectConversation(conversation)}
+          >
+            <ListItemAvatar>
+              <Avatar
+                src={participant.avatar}
+                alt={participant.username}
+              />
+            </ListItemAvatar>
+            <ListItemText
+              primary={conversation.name || participant.username}
+              secondary={
+                lastMessage
+                  ? `${lastMessage.content} · ${formatTimestamp(lastMessage.timestamp)}`
+                  : 'No messages yet'
+              }
+              secondaryTypographyProps={{
+                noWrap: true,
+                sx: { opacity: 0.7 }
+              }}
             />
-          </ListItemAvatar>
-          <ListItemText
-            primary={conversation.participants[0].username}
-            secondary={
-              conversation.lastMessage
-                ? `${conversation.lastMessage.content} · ${formatTimestamp(conversation.lastMessage.timestamp)}`
-                : 'No messages yet'
-            }
-            secondaryTypographyProps={{
-              noWrap: true,
-              sx: { opacity: 0.7 }
-            }}
-          />
-        </ListItem>
-      ))}
-      {conversations.length === 0 && (
-        <ListItem>
-          <ListItemText
-            primary="No conversations yet"
-            secondary="Start a new conversation to chat"
-          />
-        </ListItem>
-      )}
+          </ListItem>
+        );
+      })}
     </List>
   );
 };

@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import { useUser } from '../hooks/useUser';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { IMessage, IConversation, WebSocketMessage } from '../types/social';
-import ConversationsList from './messaging/ConversationsList';
-import MessageList from './messaging/MessageList';
-import MessageInput from './messaging/MessageInput';
+import ConversationsList from '../components/messaging/ConversationsList';
+import MessageList from '../components/messaging/MessageList';
+import MessageInput from '../components/messaging/MessageInput';
 
-export const Messaging = () => {
+const Messaging = () => {
   const { user } = useUser();
   const { subscribe, send } = useWebSocket();
   const [conversations, setConversations] = useState<IConversation[]>([]);
@@ -20,7 +20,7 @@ export const Messaging = () => {
     const handleWebSocketMessage = (event: WebSocketMessage) => {
       if (event.type === 'MESSAGE_CREATE' && event.data.message) {
         const { message } = event.data;
-        if (selectedConversation && message.conversationId === selectedConversation.id) {
+        if (message.conversationId === selectedConversation?.id) {
           setMessages((prev) => [...prev, message]);
         }
       }

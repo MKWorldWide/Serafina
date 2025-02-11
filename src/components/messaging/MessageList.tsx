@@ -1,16 +1,13 @@
-import { Box, Typography, Avatar } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { IMessage } from '../../types/social';
 import { AmplifyUser } from '../../types/auth';
 import { useRef, useEffect } from 'react';
+import MessageBubble from '../chat/MessageBubble';
 
 interface MessageListProps {
   messages: IMessage[];
   user: AmplifyUser | null;
 }
-
-const isCurrentUser = (message: IMessage, user: AmplifyUser) => {
-  return message.userId === user.username;
-};
 
 const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -20,21 +17,6 @@ const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
-
-  const renderMessage = (message: IMessage) => {
-    const isOwn = message.userId === user?.username;
-
-    return (
-      <Box
-        key={message.id}
-        display="flex"
-        justifyContent={isOwn ? 'flex-end' : 'flex-start'}
-        mb={2}
-      >
-        <MessageBubble message={message} isOwn={isOwn} />
-      </Box>
-    );
-  };
 
   if (!messages.length) {
     return (
@@ -53,7 +35,19 @@ const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
         bgcolor: 'background.default'
       }}
     >
-      {messages.map(renderMessage)}
+      {messages.map((message) => (
+        <Box
+          key={message.id}
+          display="flex"
+          justifyContent={message.userId === user?.username ? 'flex-end' : 'flex-start'}
+          mb={2}
+        >
+          <MessageBubble 
+            message={message} 
+            isOwn={message.userId === user?.username} 
+          />
+        </Box>
+      ))}
       <div ref={messagesEndRef} />
     </Box>
   );
