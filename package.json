@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cd frontend && vite",
-    "build": "cd frontend && tsc -p config/tsconfig.json && vite build",
+    "build": "cd frontend && npm install && tsc -p config/tsconfig.json && vite build",
     "preview": "cd frontend && vite preview",
     "test": "jest --config frontend/config/jest.config.js",
     "test:watch": "jest --watch --config frontend/config/jest.config.js",
