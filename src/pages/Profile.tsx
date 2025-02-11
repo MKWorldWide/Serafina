@@ -1,6 +1,6 @@
 import { Box, Typography, Avatar, Button, Grid, Paper } from '@mui/material';
 import { useUser } from '../hooks/useUser';
-import { IUser } from '../types/social';
+import { User } from '../types/social';
 
 export const Profile = () => {
   const { user } = useUser();
@@ -13,12 +13,14 @@ export const Profile = () => {
     );
   }
 
+  const avatarUrl = user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`;
+
   return (
     <Box p={4}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={4} textAlign="center">
           <Avatar
-            src={user.avatar}
+            src={avatarUrl}
             alt={user.username}
             sx={{ width: 200, height: 200, mx: 'auto', mb: 2 }}
           />
@@ -31,10 +33,10 @@ export const Profile = () => {
             {user.username}
           </Typography>
           <Typography variant="body1" color="textSecondary" gutterBottom>
-            {user.email}
+            {user.attributes?.email || user.email}
           </Typography>
           <Typography variant="body1" paragraph>
-            Bio coming soon...
+            {user.attributes?.bio || 'Bio coming soon...'}
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={6}>

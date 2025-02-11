@@ -7,6 +7,8 @@ interface MessageBubbleProps {
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMessage }) => {
+  const avatarUrl = message.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${message.userName}`;
+  
   return (
     <Box
       sx={{
@@ -16,7 +18,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMess
       }}
     >
       <Box sx={{ mr: 2, ml: isOwnMessage ? 2 : 0 }}>
-        <Avatar src={message.userAvatar} alt={message.userName} />
+        <Avatar src={avatarUrl} alt={message.userName} />
       </Box>
       <Box
         sx={{
@@ -39,6 +41,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMess
           sx={{
             color: isOwnMessage ? 'primary.contrastText' : 'text.primary',
             opacity: 0.7,
+            display: 'block',
+            mt: 0.5
           }}
         >
           {new Date(message.timestamp).toLocaleTimeString()}

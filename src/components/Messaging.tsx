@@ -36,16 +36,16 @@ export const Messaging = () => {
     const newMessage: IMessage = {
       id: Date.now().toString(),
       content,
-      userId: user.id,
+      userId: user.username,
       userName: user.username,
-      userAvatar: user.avatar,
+      userAvatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
       timestamp: new Date().toISOString(),
       conversationId: selectedConversation.id,
       read: false,
       sender: {
-        id: user.id,
+        id: user.username,
         username: user.username,
-        avatar: user.avatar
+        avatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`
       },
       createdAt: new Date().toISOString()
     };
