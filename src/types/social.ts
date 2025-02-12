@@ -57,11 +57,6 @@ export interface IMessage {
   timestamp: string;
   conversationId: string;
   read: boolean;
-  sender: {
-    id: string;
-    username: string;
-    avatar: string;
-  };
   createdAt: string;
 }
 
@@ -149,12 +144,16 @@ export interface INotification {
 export interface FeedItem {
   id: string;
   userId: string;
-  content: PostContent;
+  content: string;
   timestamp: string;
   likes: number;
-  comments: Comment[];
+  comments: number;
   liked: boolean;
-  author: User;
+  author: {
+    id: string;
+    username: string;
+    avatar: string;
+  };
   media?: {
     type: 'image' | 'video';
     url: string;
