@@ -6,6 +6,19 @@ import { IMessage, IConversation, WebSocketMessage } from '../types/social';
 import ConversationsList from '../components/messaging/ConversationsList';
 import MessageList from '../components/messaging/MessageList';
 import MessageInput from '../components/messaging/MessageInput';
+import { v4 as uuidv4 } from 'uuid';
+import { API } from 'aws-amplify';
+import { createMessageMutation } from '../graphql/mutations';
+
+interface IMessage {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  content: string;
+  timestamp: string;
+  conversationId: string;
+}
 
 const Messaging = () => {
   const { user } = useUser();
@@ -31,30 +44,30 @@ const Messaging = () => {
   }, [user, selectedConversation, subscribe]);
 
   const handleSendMessage = async (content: string) => {
-    if (!selectedConversation || !user) return;
+    if (!user || !selectedConversation) return;
 
     const avatarUrl = user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`;
 
     const newMessage: IMessage = {
-      id: Date.now().toString(),
-      content,
-      userId: user.username,
+      id: uuidv4(),
+      userId: user.attributes.sub,
       userName: user.username,
       userAvatar: avatarUrl,
+      content,
       timestamp: new Date().toISOString(),
-      conversationId: selectedConversation.id,
-      read: false,
-      createdAt: new Date().toISOString()
+      conversationId: selectedConversation.id
     };
 
-    setMessages((prev) => [...prev, newMessage]);
-    send({
-      type: 'MESSAGE_CREATE',
-      data: {
-        message: newMessage
-      },
-      timestamp: new Date().toISOString()
-    });
+    try {
+      await API.graphql({
+        query: createMessageMutation,
+        variables: { input: newMessage },
+      });
+
+      setMessages((prev) => [...prev, newMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   if (!user) {

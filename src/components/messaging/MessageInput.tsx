@@ -9,7 +9,7 @@ import {
   Send as SendIcon,
 } from '@mui/icons-material';
 
-interface MessageInputProps {
+export interface MessageInputProps {
   onSubmit: (content: string) => Promise<void>;
 }
 
