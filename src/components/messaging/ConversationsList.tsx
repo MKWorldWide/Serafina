@@ -12,67 +12,79 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
   selectedConversation,
   onSelectConversation,
 }) => {
-  if (!conversations.length) {
-    return (
-      <Box p={2}>
-        <Typography color="textSecondary">No conversations yet</Typography>
-      </Box>
-    );
-  }
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
-    <List sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
-      {conversations.map((conversation) => {
-        const participant = conversation.participants[0];
-        const lastMessage = conversation.lastMessage;
-        
-        return (
-          <ListItem
-            key={conversation.id}
-            button
-            selected={selectedConversation?.id === conversation.id}
-            onClick={() => onSelectConversation(conversation)}
-          >
-            <ListItemAvatar>
-              <Avatar
-                src={participant.avatar}
-                alt={participant.username}
-              />
-            </ListItemAvatar>
-            <ListItemText
-              primary={conversation.name || participant.username}
-              secondary={
-                lastMessage
-                  ? `${lastMessage.content} · ${formatTimestamp(lastMessage.timestamp)}`
-                  : 'No messages yet'
-              }
-              secondaryTypographyProps={{
-                noWrap: true,
-                sx: { opacity: 0.7 }
+    <Box
+      sx={{
+        height: '100%',
+        borderRight: 1,
+        borderColor: 'divider',
+      }}
+    >
+      <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+        {conversations.map((conversation) => {
+          const isSelected = selectedConversation?.id === conversation.id;
+          const otherParticipant = conversation.participants[0];
+
+          return (
+            <ListItem
+              key={conversation.id}
+              onClick={() => onSelectConversation(conversation)}
+              sx={{
+                cursor: 'pointer',
+                bgcolor: isSelected ? 'action.selected' : 'transparent',
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
               }}
-            />
-          </ListItem>
-        );
-      })}
-    </List>
+            >
+              <ListItemAvatar>
+                <Avatar
+                  src={otherParticipant.avatar}
+                  alt={conversation.name || otherParticipant.username}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={conversation.name || otherParticipant.username}
+                secondary={
+                  conversation.lastMessage && (
+                    <Box
+                      component="span"
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        component="span"
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          maxWidth: '70%',
+                        }}
+                      >
+                        {conversation.lastMessage.content}
+                      </Typography>
+                      <Typography variant="caption" component="span">
+                        {formatTimestamp(conversation.lastMessage.timestamp)}
+                      </Typography>
+                    </Box>
+                  )
+                }
+              />
+            </ListItem>
+          );
+        })}
+      </List>
+    </Box>
   );
-};
-
-const formatTimestamp = (timestamp: string) => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  if (days === 0) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  } else if (days === 1) {
-    return 'Yesterday';
-  } else if (days < 7) {
-    return date.toLocaleDateString([], { weekday: 'long' });
-  } else {
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-  }
 };
 
 export default ConversationsList;
