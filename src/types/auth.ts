@@ -1,12 +1,12 @@
 export interface AmplifyUser {
-  id: string;
   username: string;
   attributes: {
+    sub: string;
     email?: string;
     name?: string;
     picture?: string;
     bio?: string;
-    sub: string;
     [key: string]: any;
   };
+  getUsername(): string;
 } 
