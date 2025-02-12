@@ -10,16 +10,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { API } from 'aws-amplify';
 import { createMessageMutation } from '../graphql/mutations';
 
-interface IMessage {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
-  content: string;
-  timestamp: string;
-  conversationId: string;
-}
-
 const Messaging = () => {
   const { user } = useUser();
   const { subscribe, send } = useWebSocket();
@@ -50,12 +40,13 @@ const Messaging = () => {
 
     const newMessage: IMessage = {
       id: uuidv4(),
-      userId: user.attributes.sub,
+      content,
+      userId: user.username,
       userName: user.username,
       userAvatar: avatarUrl,
-      content,
       timestamp: new Date().toISOString(),
-      conversationId: selectedConversation.id
+      conversationId: selectedConversation.id,
+      read: false
     };
 
     try {

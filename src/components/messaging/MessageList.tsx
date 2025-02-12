@@ -5,10 +5,10 @@ import MessageBubble from '../chat/MessageBubble';
 
 interface MessageListProps {
   messages: IMessage[];
-  currentUser: AmplifyUser;
+  user: AmplifyUser;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, currentUser }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
   return (
     <Box
       sx={{
@@ -21,7 +21,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUser }) => {
       }}
     >
       {messages.map((message) => {
-        const isOwn = message.userId === currentUser.attributes.sub;
+        const isOwn = message.userId === user.username;
         return (
           <Box
             key={message.id}

@@ -57,7 +57,6 @@ export interface IMessage {
   timestamp: string;
   conversationId: string;
   read: boolean;
-  createdAt: string;
 }
 
 export interface IConversation {
