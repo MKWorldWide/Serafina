@@ -1,7 +1,7 @@
 export interface AmplifyUser {
   id: string;
   username: string;
-  attributes?: {
+  attributes: {
     email?: string;
     name?: string;
     picture?: string;

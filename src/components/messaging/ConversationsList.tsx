@@ -43,7 +43,7 @@ const ConversationsList: React.FC<ConversationsListProps> = ({
               primary={conversation.name || participant.username}
               secondary={
                 lastMessage
-                  ? `${lastMessage.content} · ${formatTimestamp(lastMessage.createdAt)}`
+                  ? `${lastMessage.content} · ${formatTimestamp(lastMessage.timestamp)}`
                   : 'No messages yet'
               }
               secondaryTypographyProps={{
