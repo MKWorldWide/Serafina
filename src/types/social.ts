@@ -1,169 +1,76 @@
-export interface User {
+export interface IUser {
   id: string;
   username: string;
+  email?: string;
   name?: string;
-  email: string;
-  avatar: string;
+  picture?: string;
   bio?: string;
-  followers: number;
-  following: number;
-  presence?: 'online' | 'offline' | 'away';
   rank?: string;
   level?: number;
-}
-
-export interface PostContent {
-  text: string;
-  media?: {
-    type: 'image' | 'video';
-    url: string;
-  }[];
-}
-
-export type PostPrivacy = 'public' | 'friends' | 'private';
-
-export interface Comment {
-  id: string;
-  content: string;
-  author: User;
-  createdAt: string;
-  likes: number;
-  replies: Comment[];
-}
-
-export interface Post {
-  id: string;
-  content: PostContent;
-  author: User;
-  createdAt: string;
-  privacy: PostPrivacy;
-  likes: number;
-  comments: Comment[];
-  shares: number;
-  game?: {
-    id: string;
-    name: string;
-    cover: string;
-  };
-  edited?: boolean;
-}
-
-export interface IMessage {
-  id: string;
-  content: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
-  timestamp: string;
-  conversationId: string;
-  read: boolean;
-}
-
-export interface IConversation {
-  id: string;
-  name?: string;
-  participants: {
-    id: string;
-    username: string;
-    avatar: string;
-  }[];
-  lastMessage?: IMessage;
-  isGroup: boolean;
-  unreadCount: number;
+  presence?: 'online' | 'offline' | 'away';
   createdAt: string;
   updatedAt: string;
 }
 
-export interface GameActivity {
-  id: string;
-  user: User;
-  game: {
-    id: string;
-    name: string;
-    cover: string;
-  };
-  type: 'achievement' | 'playtime' | 'score';
-  data: {
-    achievement?: {
-      name: string;
-      description: string;
-      icon: string;
-    };
-    playtime?: number;
-    score?: number;
-  };
-  timestamp: string;
+export interface IUserProfile {
+  name?: string;
+  bio?: string;
+  picture?: string;
 }
 
-export interface Notification {
+export interface IPost {
   id: string;
-  type: 'follow' | 'like' | 'comment' | 'mention' | 'achievement';
-  user: User;
-  data: {
-    post?: Post;
-    comment?: Comment;
-    achievement?: {
-      name: string;
-      description: string;
-      icon: string;
-    };
-  };
-  read: boolean;
+  content: string;
+  author: IUser;
+  likes: number;
+  comments: number;
   createdAt: string;
+  updatedAt: string;
 }
 
-export interface IAchievement {
+export interface IComment {
   id: string;
-  name: string;
-  description: string;
-  icon: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-  progress?: {
-    current: number;
-    required: number;
-  };
-  game?: string;
-  unlockedAt?: string;
+  content: string;
+  author: IUser;
+  postId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IConversation {
+  id: string;
+  title?: string;
+  description?: string;
+  type: 'PRIVATE' | 'GROUP';
+  participants: {
+    user: IUser;
+    role: 'ADMIN' | 'MEMBER';
+  }[];
+  lastMessage?: IMessage;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IMessage {
+  id: string;
+  conversationId: string;
+  content: string;
+  author: IUser;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface INotification {
   id: string;
+  type: 'MESSAGE' | 'FRIEND_REQUEST' | 'ACHIEVEMENT' | 'SYSTEM';
   title: string;
   description: string;
-  type: 'friend_request' | 'message' | 'achievement' | 'system';
-  timestamp: string;
   read: boolean;
-  metadata?: {
+  createdAt: string;
+  data?: {
+    conversationId?: string;
     userId?: string;
-    gameId?: string;
     achievementId?: string;
+    post?: IPost;
   };
-}
-
-export interface FeedItem {
-  id: string;
-  userId: string;
-  content: string;
-  timestamp: string;
-  likes: number;
-  comments: number;
-  liked: boolean;
-  author: {
-    id: string;
-    username: string;
-    avatar: string;
-  };
-  media?: {
-    type: 'image' | 'video';
-    url: string;
-  }[];
-}
-
-export interface WebSocketMessage {
-  type: 'ACTIVITY_CREATE' | 'ACTIVITY_UPDATE' | 'ACTIVITY_DELETE' | 'MESSAGE_CREATE' | 'MESSAGE_UPDATE' | 'MESSAGE_DELETE';
-  data: {
-    message?: IMessage;
-    messageId?: string;
-  };
-  timestamp: string;
 } 

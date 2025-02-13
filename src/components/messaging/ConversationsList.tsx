@@ -1,90 +1,87 @@
-import { Box, List, ListItem, ListItemAvatar, ListItemText, Avatar, Typography } from '@mui/material';
 import { IConversation } from '../../types/social';
+import { useUser } from '../../hooks/useUser';
+import { formatDistanceToNow } from 'date-fns';
 
 interface ConversationsListProps {
   conversations: IConversation[];
-  selectedConversation: IConversation | null;
-  onSelectConversation: (conversation: IConversation) => void;
+  selectedConversation: string | null;
+  onSelectConversation: (conversationId: string) => void;
+  loading?: boolean;
 }
 
-const ConversationsList: React.FC<ConversationsListProps> = ({
+export default function ConversationsList({
   conversations,
   selectedConversation,
   onSelectConversation,
-}) => {
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  loading = false,
+}: ConversationsListProps) {
+  const { user } = useUser();
+
+  const getOtherParticipant = (conversation: IConversation) => {
+    return conversation.participants.find(
+      (p) => p.user.id !== user?.id
+    )?.user;
   };
 
+  const getLastMessageTime = (timestamp: string) => {
+    return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
   return (
-    <Box
-      sx={{
-        height: '100%',
-        borderRight: 1,
-        borderColor: 'divider',
-      }}
-    >
-      <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        {conversations.map((conversation) => {
-          const isSelected = selectedConversation?.id === conversation.id;
-          const otherParticipant = conversation.participants[0];
+    <div className="h-full overflow-y-auto bg-white border-r border-gray-200">
+      {conversations.length === 0 ? (
+        <div className="p-4 text-center text-gray-500">
+          No conversations yet
+        </div>
+      ) : (
+        <div className="divide-y divide-gray-200">
+          {conversations.map((conversation) => {
+            const otherParticipant = getOtherParticipant(conversation);
+            const isSelected = selectedConversation === conversation.id;
 
-          return (
-            <ListItem
-              key={conversation.id}
-              onClick={() => onSelectConversation(conversation)}
-              sx={{
-                cursor: 'pointer',
-                bgcolor: isSelected ? 'action.selected' : 'transparent',
-                '&:hover': {
-                  bgcolor: 'action.hover',
-                },
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar
-                  src={otherParticipant.avatar}
-                  alt={conversation.name || otherParticipant.username}
+            return (
+              <button
+                key={conversation.id}
+                onClick={() => onSelectConversation(conversation.id)}
+                className={`w-full p-4 flex items-start space-x-3 hover:bg-gray-50 transition-colors ${
+                  isSelected ? 'bg-blue-50' : ''
+                }`}
+              >
+                <img
+                  src={otherParticipant?.picture || otherParticipant?.avatar || `/default-avatar.png`}
+                  alt={otherParticipant?.username}
+                  className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                 />
-              </ListItemAvatar>
-              <ListItemText
-                primary={conversation.name || otherParticipant.username}
-                secondary={
-                  conversation.lastMessage && (
-                    <Box
-                      component="span"
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        component="span"
-                        sx={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          maxWidth: '70%',
-                        }}
-                      >
-                        {conversation.lastMessage.content}
-                      </Typography>
-                      <Typography variant="caption" component="span">
-                        {formatTimestamp(conversation.lastMessage.timestamp)}
-                      </Typography>
-                    </Box>
-                  )
-                }
-              />
-            </ListItem>
-          );
-        })}
-      </List>
-    </Box>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-baseline">
+                    <h3 className="text-sm font-medium text-gray-900 truncate">
+                      {conversation.title || otherParticipant?.username}
+                    </h3>
+                    {conversation.lastMessage && (
+                      <span className="text-xs text-gray-500">
+                        {getLastMessageTime(conversation.lastMessage.createdAt)}
+                      </span>
+                    )}
+                  </div>
+                  {conversation.lastMessage && (
+                    <p className="text-sm text-gray-500 truncate">
+                      {conversation.lastMessage.content}
+                    </p>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
-};
-
-export default ConversationsList;
+} 

@@ -9,21 +9,13 @@ export interface User {
 
 export interface Post {
   id: string;
+  title: string;
   content: string;
-  richText: RichTextContent;
   author: User;
+  comments: Comment[];
+  likes: number;
   createdAt: string;
   updatedAt: string;
-  reactions: Reaction[];
-  comments: Comment[];
-  attachments: Attachment[];
-  visibility: 'public' | 'friends' | 'private';
-  tags: string[];
-  metadata: {
-    views: number;
-    shares: number;
-    score: number; // For algorithmic sorting
-  };
 }
 
 export interface RichTextContent {
@@ -45,10 +37,9 @@ export interface Comment {
   id: string;
   content: string;
   author: User;
+  post: Post;
   createdAt: string;
   updatedAt: string;
-  reactions: Reaction[];
-  replies: Comment[];
 }
 
 export interface Reaction {
@@ -66,16 +57,12 @@ export interface Attachment {
 
 export interface Notification {
   id: string;
-  type: 'reaction' | 'comment' | 'reply' | 'mention' | 'follow' | 'system';
+  type: 'follow' | 'like' | 'comment' | 'message';
+  sender: User;
   recipient: User;
-  actor: User;
-  target: {
-    type: 'post' | 'comment' | 'user';
-    id: string;
-  };
-  read: boolean;
+  post?: Post;
   createdAt: string;
-  metadata?: Record<string, any>;
+  updatedAt: string;
 }
 
 export interface FeedItem {
@@ -146,12 +133,14 @@ export interface CacheConfig {
 export interface IUser {
   id: string;
   username: string;
-  email: string;
-  avatar: string;
-  presence: 'online' | 'offline' | 'away';
+  email?: string;
+  name?: string;
+  picture?: string;
+  avatar?: string;
   bio?: string;
-  rank: string;
-  level: number;
+  presence?: 'online' | 'offline' | 'away';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IConversationParticipant {
@@ -174,11 +163,11 @@ export interface IAttachment {
 
 export interface IMessage {
   id: string;
+  conversationId: string;
   content: string;
-  timestamp: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
+  author: IUser;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IMessageInput {
@@ -189,9 +178,11 @@ export interface IMessageInput {
 
 export interface IConversation {
   id: string;
-  participants: IConversationParticipant[];
+  title: string;
+  description?: string;
+  type: 'private' | 'group';
+  participants: GroupParticipant[];
   lastMessage?: IMessage;
-  unreadCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -216,7 +207,8 @@ export interface IActivity {
 export interface IComment {
   id: string;
   content: string;
-  user: IUser;
+  author: IUser;
+  post: IPost;
   createdAt: string;
   updatedAt: string;
 }
@@ -226,13 +218,7 @@ export interface IAchievement {
   name: string;
   description: string;
   icon: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-  progress?: {
-    current: number;
-    required: number;
-  };
-  game?: string;
-  unlockedAt?: string;
+  unlockedAt: string;
 }
 
 export interface IGamePreference {
@@ -248,11 +234,14 @@ export interface ISocialLink {
   url: string;
 }
 
-export interface IUserProfile extends IUser {
-  gamePreferences: IGamePreference[];
-  socialLinks: ISocialLink[];
-  achievements: IAchievement[];
-  bannerUrl?: string;
+export interface IUserProfile {
+  id: string;
+  user: IUser;
+  posts: Post[];
+  followers: IUser[];
+  following: IUser[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IPostMedia {
@@ -262,35 +251,27 @@ export interface IPostMedia {
   url?: string;
 }
 
-export interface INotification {
+export interface IGameActivity {
   id: string;
-  title: string;
-  description: string;
-  type: 'friend_request' | 'message' | 'achievement' | 'system';
-  timestamp: string;
-  read: boolean;
-  metadata?: {
-    userId?: string;
-    gameId?: string;
-    achievementId?: string;
+  game: {
+    id: string;
+    title: string;
+    coverImage: string;
   };
+  user: IUser;
+  type: 'played' | 'reviewed' | 'rated' | 'achieved';
+  score?: number;
+  review?: string;
+  achievement?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface FeedItem {
+export interface GroupParticipant {
   id: string;
-  userId: string;
-  content: string;
-  timestamp: string;
-  likes: number;
-  comments: number;
-  liked: boolean;
-  author: {
-    id: string;
-    username: string;
-    avatar: string;
-  };
-  media?: {
-    type: 'image' | 'video';
-    url: string;
-  }[];
+  role: 'owner' | 'admin' | 'member';
+  user: IUser;
+  conversation: IConversation;
+  createdAt: string;
+  updatedAt: string;
 }

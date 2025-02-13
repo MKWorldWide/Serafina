@@ -1,53 +1,43 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  IconButton,
-  TextField,
-} from '@mui/material';
-import {
-  Send as SendIcon,
-} from '@mui/icons-material';
 
-export interface MessageInputProps {
+interface MessageInputProps {
   onSubmit: (content: string) => Promise<void>;
+  disabled?: boolean;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ onSubmit }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ onSubmit, disabled }) => {
   const [content, setContent] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
-
-    await onSubmit(content.trim());
-    setContent('');
+    const trimmedContent = content.trim();
+    if (trimmedContent) {
+      await onSubmit(trimmedContent);
+      setContent('');
+    }
   };
 
   return (
-    <Box
-      component="form"
+    <form 
       onSubmit={handleSubmit}
-      sx={{
-        p: 2,
-        display: 'flex',
-        gap: 1,
-        alignItems: 'center',
-        borderTop: 1,
-        borderColor: 'divider',
-      }}
+      className="p-4 border-t border-gray-200 flex gap-2 items-center"
     >
-      <TextField
-        fullWidth
+      <input
+        type="text"
+        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         placeholder="Type a message..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        variant="outlined"
-        size="small"
+        disabled={disabled}
       />
-      <IconButton type="submit" color="primary" disabled={!content.trim()}>
-        <SendIcon />
-      </IconButton>
-    </Box>
+      <button
+        type="submit"
+        disabled={!content.trim() || disabled}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Send
+      </button>
+    </form>
   );
 };
 

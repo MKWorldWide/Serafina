@@ -1,12 +1,27 @@
 export interface AmplifyUser {
   username: string;
-  attributes: {
-    sub: string;
+  attributes?: {
     email?: string;
     name?: string;
     picture?: string;
-    bio?: string;
+    sub?: string;
     [key: string]: any;
   };
-  getUsername(): string;
+}
+
+export interface CognitoAttributes {
+  email: string;
+  phone_number: string;
+  name?: string;
+  picture?: string;
+  [key: string]: string | undefined;
+}
+
+export interface AuthContextType {
+  user: AmplifyUser | null;
+  signIn: (username: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  signUp: (username: string, password: string, email: string) => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
 } 

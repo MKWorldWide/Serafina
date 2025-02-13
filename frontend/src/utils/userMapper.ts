@@ -1,16 +1,16 @@
-import { AmplifyUser } from '@aws-amplify/ui';
 import { IUser } from '../types/social';
+import { CognitoUser } from '@aws-amplify/auth';
 
-export function mapAmplifyUserToIUser(amplifyUser: AmplifyUser | undefined | null): IUser | null {
-  if (!amplifyUser || !amplifyUser.username) return null;
-
+export function mapCognitoUserToIUser(cognitoUser: CognitoUser): IUser {
+  const attributes = cognitoUser.attributes || {};
+  
   return {
-    id: amplifyUser.username,
-    username: amplifyUser.username,
-    email: amplifyUser.attributes?.email || '',
-    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${amplifyUser.username}`,
-    presence: 'online',
-    rank: 'Beginner',
-    level: 1
+    id: cognitoUser.username,
+    username: cognitoUser.username,
+    email: attributes.email,
+    name: attributes.name,
+    picture: attributes.picture,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 } 

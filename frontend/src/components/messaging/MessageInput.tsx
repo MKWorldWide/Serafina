@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import {
   Box,
   IconButton,
@@ -9,17 +9,17 @@ import {
 } from '@mui/icons-material';
 
 interface MessageInputProps {
-  onSendMessage: (message: string) => void;
+  onSubmit: (content: string) => void;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
-  const [message, setMessage] = useState('');
+export default function MessageInput({ onSubmit }: MessageInputProps) {
+  const [content, setContent] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      onSendMessage(message);
-      setMessage('');
+    if (content.trim()) {
+      onSubmit(content.trim());
+      setContent('');
     }
   };
 
@@ -28,26 +28,32 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        p: 2,
         display: 'flex',
         gap: 1,
-        alignItems: 'center',
-        borderTop: 1,
-        borderColor: 'divider',
       }}
     >
       <TextField
         fullWidth
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
         placeholder="Type a message..."
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
         size="small"
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 3,
+          },
+        }}
       />
-      <IconButton type="submit" color="primary" disabled={!message.trim()}>
+      <IconButton
+        type="submit"
+        color="primary"
+        disabled={!content.trim()}
+        sx={{
+          alignSelf: 'center',
+        }}
+      >
         <SendIcon />
       </IconButton>
     </Box>
   );
-};
-
-export default MessageInput;
+}

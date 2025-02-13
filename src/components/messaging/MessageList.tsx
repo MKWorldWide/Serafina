@@ -1,42 +1,33 @@
-import { Box } from '@mui/material';
-import { IMessage } from '../../types/social';
-import { AmplifyUser } from '../../types/auth';
+import { useEffect, useRef } from 'react';
+import { IMessage, IUser } from '../../types/social';
 import MessageBubble from '../chat/MessageBubble';
 
 interface MessageListProps {
   messages: IMessage[];
-  user: AmplifyUser;
+  currentUser: IUser;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, user }) => {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-        p: 2,
-        height: '100%',
-        overflowY: 'auto',
-      }}
-    >
-      {messages.map((message) => {
-        const isOwn = message.userId === user.username;
-        return (
-          <Box
-            key={message.id}
-            sx={{
-              display: 'flex',
-              justifyContent: isOwn ? 'flex-end' : 'flex-start',
-              width: '100%',
-            }}
-          >
-            <MessageBubble message={message} isOwn={isOwn} />
-          </Box>
-        );
-      })}
-    </Box>
-  );
-};
+export default function MessageList({ messages, currentUser }: MessageListProps) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-export default MessageList;
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  return (
+    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {messages.map((message) => (
+        <MessageBubble
+          key={message.id}
+          message={message}
+          isOwn={message.author.id === currentUser.id}
+        />
+      ))}
+      <div ref={messagesEndRef} />
+    </div>
+  );
+} 

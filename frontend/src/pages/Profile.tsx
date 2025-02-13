@@ -1,50 +1,71 @@
-import React from 'react';
-import {
-  Box,
-  Paper,
-  Avatar,
-  Typography,
-  Container,
-} from '@mui/material';
-import { useAuth } from '../context/AuthContext';
-import { IUser } from '../types/user';
+import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { IUser, IUserProfile } from '../types/social';
+import { Box, Avatar, Typography, Button, Grid, Paper } from '@mui/material';
+import EditProfileDialog from '../components/profile/EditProfileDialog';
 
-const Profile: React.FC = () => {
+interface ProfileProps {
+  // Add any props if needed
+}
+
+export default function Profile({}: ProfileProps) {
   const { user } = useAuth();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [profile, setProfile] = useState<IUserProfile | null>(null);
+
+  const handleEditProfile = () => {
+    setIsEditDialogOpen(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false);
+  };
 
   if (!user) {
     return (
-      <Box sx={{ p: 4 }}>
-        <Paper sx={{ p: 3, textAlign: 'center' }}>
-          <Typography variant="h6">
-            Please sign in to view your profile
-          </Typography>
-        </Paper>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <Typography>Please sign in to view your profile.</Typography>
       </Box>
     );
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ p: 4 }}>
-        <Paper sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Avatar
-              src={user.picture}
-              alt={user.name}
-              sx={{ width: 100, height: 100, mr: 3 }}
-            />
-            <Box>
-              <Typography variant="h4">{user.name}</Typography>
-              <Typography variant="body1" color="text.secondary">
-                {user.email}
+    <Box sx={{ p: 3 }}>
+      <Paper sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <Avatar
+                src={user.attributes?.picture || '/default-avatar.png'}
+                alt={user.username}
+                sx={{ width: 150, height: 150, mb: 2 }}
+              />
+              <Typography variant="h5" gutterBottom>
+                {user.attributes?.name || user.username}
               </Typography>
+              <Typography variant="body2" color="textSecondary" gutterBottom>
+                {user.attributes?.email}
+              </Typography>
+              <Button variant="contained" color="primary" onClick={handleEditProfile}>
+                Edit Profile
+              </Button>
             </Box>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
-  );
-};
+          </Grid>
+          <Grid item xs={12} md={8}>
+            {/* Add profile content here */}
+          </Grid>
+        </Grid>
+      </Paper>
 
-export default Profile;
+      <EditProfileDialog
+        open={isEditDialogOpen}
+        onClose={handleCloseEditDialog}
+        user={user}
+        onSave={(updatedProfile) => {
+          setProfile(updatedProfile);
+          handleCloseEditDialog();
+        }}
+      />
+    </Box>
+  );
+}
