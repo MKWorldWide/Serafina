@@ -8,25 +8,32 @@ env:
     AWS_REGION: us-east-1
     NODE_OPTIONS: --max-old-space-size=4096
     CI: true
+    NODE_ENV: production
 backend:
   phases:
     preBuild:
       commands:
-        - npm install -g @aws-amplify/cli@latest rimraf@latest glob@latest
+        - nvm install 20
+        - nvm use 20
+        - node --version
+        - npm install -g npm@latest
+        - npm install -g @aws-amplify/cli@latest
         - npm cache clean --force
         - amplify --version
+        - echo '{"main":{"configLevel":"project","useProfile":false,"awsConfigFilePath":"./aws-config.json"}}' > ./amplify/.config/local-aws-info.json
+        - echo '{"accessKeyId":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'","region":"'$AWS_REGION'"}' > ./aws-config.json
         - amplify configure project --yes
     build:
       commands:
-        - amplify env checkout main --restore
-        - amplify push --yes --allow-destructive-graphql-schema-updates
+        - amplify env checkout main
+        - amplify push --yes
 frontend:
   phases:
     preBuild:
       commands:
         - cd frontend
         - npm cache clean --force
-        - npm ci --prefer-offline --no-audit
+        - npm ci --production --prefer-offline --no-audit
         - npm run lint --max-warnings=0
         - npm run typecheck
     build:
@@ -45,11 +52,11 @@ test:
     preTest:
       commands:
         - cd frontend
-        - npm ci --prefer-offline --no-audit
+        - npm ci --production --prefer-offline --no-audit
     test:
       commands:
-        - npm run test:ci -- --maxWorkers=2
-        - npm run test:e2e:ci -- --maxWorkers=2
+        - npm run test:ci -- --maxWorkers=2 --ci
+        - npm run test:e2e:ci -- --maxWorkers=2 --ci
   artifacts:
     baseDirectory: frontend/coverage
     files:

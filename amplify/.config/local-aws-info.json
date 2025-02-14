@@ -3,6 +3,7 @@
     "configLevel": "project",
     "useProfile": false,
     "awsConfigFilePath": "./aws-config.json",
-    "region": "us-east-1"
+    "region": "us-east-1",
+    "profileName": "default"
   }
 } 
