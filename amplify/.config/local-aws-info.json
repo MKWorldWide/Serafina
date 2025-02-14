@@ -2,8 +2,11 @@
   "main": {
     "configLevel": "project",
     "useProfile": false,
-    "awsConfigFilePath": "./aws-config.json",
+    "awsConfigFilePath": "~/.aws/credentials",
     "region": "us-east-1",
-    "profileName": "default"
+    "profileName": "default",
+    "timeout": 300000,
+    "retryDelay": 5000,
+    "maxRetries": 3
   }
 } 

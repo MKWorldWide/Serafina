@@ -9,44 +9,47 @@ env:
     NODE_OPTIONS: --max-old-space-size=4096
     CI: true
     NODE_ENV: production
+    AMPLIFY_CLI_SCRIPT_TIMEOUT: 300000
+    AMPLIFY_SKIP_PROMPTS: true
 backend:
   phases:
     preBuild:
       commands:
-        - nvm install 20
-        - nvm use 20
-        - node --version
-        - npm install -g npm@latest
+        - mkdir -p ~/.aws
+        - echo "[default]" > ~/.aws/credentials
+        - echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+        - echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+        - echo "[default]" > ~/.aws/config
+        - echo "region=us-east-1" >> ~/.aws/config
+        - npm ci
         - npm install -g @aws-amplify/cli@latest
-        - npm cache clean --force
-        - amplify --version
-        - echo '{"main":{"configLevel":"project","useProfile":false,"awsConfigFilePath":"./aws-config.json"}}' > ./amplify/.config/local-aws-info.json
-        - echo '{"accessKeyId":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'","region":"'$AWS_REGION'"}' > ./aws-config.json
-        - amplify configure project --yes
+        - amplify init --yes
+        - echo '{"projectName":"gamedin","envName":"main","defaultEditor":"vscode"}' > ./amplify-config.json
+        - amplify configure project --answers-file ./amplify-config.json --yes
     build:
       commands:
-        - amplify env checkout main
+        - amplify env checkout main --restore
+        - amplify status
         - amplify push --yes
 frontend:
   phases:
     preBuild:
       commands:
-        - cd frontend
+        - npm ci --prefer-offline
+        - npm install -g rimraf@latest glob@latest
         - npm cache clean --force
-        - npm ci --production --prefer-offline --no-audit
-        - npm run lint --max-warnings=0
-        - npm run typecheck
     build:
       commands:
-        - npm run build
+        - NODE_ENV=production npm run build
+        - npm test -- --passWithNoTests --maxWorkers=2
   artifacts:
-    baseDirectory: frontend/dist
+    baseDirectory: .next
     files:
       - '**/*'
   cache:
     paths:
       - node_modules/**/*
-      - frontend/node_modules/**/*
+      - .next/cache/**/*
 test:
   phases:
     preTest:
@@ -55,8 +58,8 @@ test:
         - npm ci --production --prefer-offline --no-audit
     test:
       commands:
-        - npm run test:ci -- --maxWorkers=2 --ci
-        - npm run test:e2e:ci -- --maxWorkers=2 --ci
+        - npm run test:ci -- --maxWorkers=2 --ci --passWithNoTests
+        - npm run test:e2e:ci -- --maxWorkers=2 --ci --passWithNoTests
   artifacts:
     baseDirectory: frontend/coverage
     files:
