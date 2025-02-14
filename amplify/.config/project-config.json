@@ -11,5 +11,9 @@
       "StartCommand": "npm run dev"
     }
   },
-  "providers": ["awscloudformation"]
+  "providers": ["awscloudformation"],
+  "amplify": {
+    "defaultEditor": "code",
+    "envName": "main"
+  }
 } 
