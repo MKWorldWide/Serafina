@@ -6,23 +6,28 @@ env:
     AWS_ACCESS_KEY_ID: AKIA4VDBLV57KTSZBCMH
     AWS_SECRET_ACCESS_KEY: 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
     AWS_REGION: us-east-1
+    NODE_OPTIONS: --max-old-space-size=4096
+    CI: true
 backend:
   phases:
     preBuild:
       commands:
-        - npm install -g @aws-amplify/cli
+        - npm install -g @aws-amplify/cli@latest rimraf@latest glob@latest
+        - npm cache clean --force
         - amplify --version
         - amplify configure project --yes
     build:
       commands:
-        - amplify push --yes
+        - amplify env checkout main --restore
+        - amplify push --yes --allow-destructive-graphql-schema-updates
 frontend:
   phases:
     preBuild:
       commands:
         - cd frontend
-        - npm ci
-        - npm run lint
+        - npm cache clean --force
+        - npm ci --prefer-offline --no-audit
+        - npm run lint --max-warnings=0
         - npm run typecheck
     build:
       commands:
@@ -33,21 +38,23 @@ frontend:
       - '**/*'
   cache:
     paths:
+      - node_modules/**/*
       - frontend/node_modules/**/*
-      - frontend/.next/cache/**/*
 test:
   phases:
     preTest:
       commands:
         - cd frontend
-        - npm ci
-        - npm run lint
+        - npm ci --prefer-offline --no-audit
     test:
       commands:
-        - npm run test:ci
-        - npm run test:e2e:ci
+        - npm run test:ci -- --maxWorkers=2
+        - npm run test:e2e:ci -- --maxWorkers=2
   artifacts:
     baseDirectory: frontend/coverage
     files:
       - '**/*'
-    configFilePath: '**/jest-*.json' 
+    configFilePath: '**/jest-*.json'
+  cache:
+    paths:
+      - frontend/node_modules/.cache/**/* 

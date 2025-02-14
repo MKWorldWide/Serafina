@@ -2,6 +2,7 @@
   "main": {
     "configLevel": "project",
     "useProfile": false,
-    "awsConfigFilePath": "./aws-config.json"
+    "awsConfigFilePath": "./aws-config.json",
+    "region": "us-east-1"
   }
 } 
