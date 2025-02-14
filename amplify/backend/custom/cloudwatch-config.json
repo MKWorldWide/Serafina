@@ -1,0 +1,72 @@
+{
+  "logGroupName": "/aws/gamedin",
+  "logStreams": {
+    "api": {
+      "retentionInDays": 30,
+      "filterPattern": "[timestamp, requestId, level, message]"
+    },
+    "auth": {
+      "retentionInDays": 30,
+      "filterPattern": "[timestamp, requestId, level, message]"
+    },
+    "performance": {
+      "retentionInDays": 7,
+      "filterPattern": "[timestamp, component, metric, value]"
+    },
+    "security": {
+      "retentionInDays": 90,
+      "filterPattern": "[timestamp, requestId, level, message, sourceIp]"
+    }
+  },
+  "metricFilters": {
+    "errors": {
+      "filterPattern": "[timestamp, requestId, level = ERROR, message]",
+      "metricNamespace": "GameDin",
+      "metricName": "ErrorCount",
+      "metricValue": "1"
+    },
+    "apiLatency": {
+      "filterPattern": "[timestamp, requestId, level, message, latency]",
+      "metricNamespace": "GameDin",
+      "metricName": "APILatency",
+      "metricValue": "$latency"
+    },
+    "authFailures": {
+      "filterPattern": "[timestamp, requestId, level = ERROR, message = *AuthenticationError*]",
+      "metricNamespace": "GameDin",
+      "metricName": "AuthFailures",
+      "metricValue": "1"
+    }
+  },
+  "dashboards": {
+    "GameDinOperations": {
+      "widgets": [
+        {
+          "type": "metric",
+          "properties": {
+            "metrics": [
+              ["GameDin", "ErrorCount", "Service", "API"],
+              ["GameDin", "APILatency", "Service", "API"]
+            ],
+            "period": 300,
+            "stat": "Sum",
+            "region": "us-east-1",
+            "title": "API Performance"
+          }
+        },
+        {
+          "type": "metric",
+          "properties": {
+            "metrics": [
+              ["GameDin", "AuthFailures", "Service", "Cognito"]
+            ],
+            "period": 300,
+            "stat": "Sum",
+            "region": "us-east-1",
+            "title": "Authentication Issues"
+          }
+        }
+      ]
+    }
+  }
+} 

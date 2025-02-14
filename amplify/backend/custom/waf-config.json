@@ -1,0 +1,90 @@
+{
+  "Name": "GameDinWAFWebACL",
+  "Description": "WAF Web ACL for GameDin application",
+  "Rules": [
+    {
+      "Name": "RateLimit",
+      "Priority": 1,
+      "Statement": {
+        "RateBasedStatement": {
+          "Limit": 2000,
+          "AggregateKeyType": "IP"
+        }
+      },
+      "Action": {
+        "Block": {}
+      },
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "RateLimitRule"
+      }
+    },
+    {
+      "Name": "BlockSQLInjection",
+      "Priority": 2,
+      "Statement": {
+        "SqliMatchStatement": {
+          "FieldToMatch": {
+            "AllQueryArguments": {}
+          },
+          "TextTransformations": [
+            {
+              "Priority": 1,
+              "Type": "URL_DECODE"
+            },
+            {
+              "Priority": 2,
+              "Type": "HTML_ENTITY_DECODE"
+            }
+          ]
+        }
+      },
+      "Action": {
+        "Block": {}
+      },
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "SQLInjectionRule"
+      }
+    },
+    {
+      "Name": "BlockXSS",
+      "Priority": 3,
+      "Statement": {
+        "XssMatchStatement": {
+          "FieldToMatch": {
+            "AllQueryArguments": {}
+          },
+          "TextTransformations": [
+            {
+              "Priority": 1,
+              "Type": "URL_DECODE"
+            },
+            {
+              "Priority": 2,
+              "Type": "HTML_ENTITY_DECODE"
+            }
+          ]
+        }
+      },
+      "Action": {
+        "Block": {}
+      },
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "XSSRule"
+      }
+    }
+  ],
+  "DefaultAction": {
+    "Allow": {}
+  },
+  "VisibilityConfig": {
+    "SampledRequestsEnabled": true,
+    "CloudWatchMetricsEnabled": true,
+    "MetricName": "GameDinWebACL"
+  }
+} 

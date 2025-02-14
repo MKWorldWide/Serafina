@@ -1,0 +1,41 @@
+version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - amplifyPush --simple
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd frontend
+        - npm ci
+        - npm run lint
+        - npm run typecheck
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: frontend/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - frontend/node_modules/**/*
+      - frontend/.next/cache/**/*
+test:
+  phases:
+    preTest:
+      commands:
+        - cd frontend
+        - npm ci
+        - npm run lint
+    test:
+      commands:
+        - npm run test:ci
+        - npm run test:e2e:ci
+  artifacts:
+    baseDirectory: frontend/coverage
+    files:
+      - '**/*'
+    configFilePath: '**/jest-*.json' 
