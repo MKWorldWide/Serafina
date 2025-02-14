@@ -9,11 +9,13 @@ backend:
       commands:
         - npm install -g @aws-amplify/cli
         - amplify --version
+        - echo '{"main":{"configLevel":"project","useProfile":false,"awsConfigFilePath":"./aws-config.json"}}' > ./amplify/.config/local-aws-info.json
+        - echo '{"accessKeyId":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'","region":"'$AWS_REGION'"}' > ./aws-config.json
         - amplify configure project
     build:
       commands:
         - '# Execute Amplify CLI with the helper script'
-        - amplifyPush --simple
+        - amplify push --yes
 frontend:
   phases:
     preBuild:
