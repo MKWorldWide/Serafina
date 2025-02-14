@@ -3,18 +3,18 @@ env:
   variables:
     AMPLIFY_MONOREPO_APP_ROOT: .
     AMPLIFY_DIFF_BACKEND: false
+    AWS_ACCESS_KEY_ID: AKIA4VDBLV57KTSZBCMH
+    AWS_SECRET_ACCESS_KEY: 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
+    AWS_REGION: us-east-1
 backend:
   phases:
     preBuild:
       commands:
         - npm install -g @aws-amplify/cli
         - amplify --version
-        - echo '{"main":{"configLevel":"project","useProfile":false,"awsConfigFilePath":"./aws-config.json"}}' > ./amplify/.config/local-aws-info.json
-        - echo '{"accessKeyId":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'","region":"'$AWS_REGION'"}' > ./aws-config.json
-        - amplify configure project
+        - amplify configure project --yes
     build:
       commands:
-        - '# Execute Amplify CLI with the helper script'
         - amplify push --yes
 frontend:
   phases:
