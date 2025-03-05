@@ -19,16 +19,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { 
     user, 
     setUser, 
-    logout: storeLogout, 
+    logout, 
     loading, 
     error, 
     login, 
-    isAuthenticated, 
-    settings, 
-    updateSettings,
-    setIsAuthenticated,
+    register,
+    resetPassword,
+    confirmResetPassword,
+    resendConfirmationCode,
     setLoading,
-    setError
+    setError,
+    darkMode,
+    toggleDarkMode
   } = store<Store>(state => ({
     user: state.user,
     setUser: state.setUser,
@@ -36,29 +38,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading: state.loading,
     error: state.error,
     login: state.login,
-    isAuthenticated: state.isAuthenticated,
-    settings: state.settings,
-    updateSettings: state.updateSettings,
-    setIsAuthenticated: state.setIsAuthenticated,
+    register: state.register,
+    resetPassword: state.resetPassword,
+    confirmResetPassword: state.confirmResetPassword,
+    resendConfirmationCode: state.resendConfirmationCode,
     setLoading: state.setLoading,
-    setError: state.setError
+    setError: state.setError,
+    darkMode: state.darkMode,
+    toggleDarkMode: state.toggleDarkMode
   }));
-
-  const register = async (userData: Partial<AmplifyUser> & { password: string }) => {
-    try {
-      // Implementation will be handled by Amplify
-      throw new Error('Not implemented');
-    } catch (error) {
-      throw new Error('Registration failed');
-    }
-  };
 
   const value = {
     isAuthenticated: !!user,
     user: user as AmplifyUser | null,
     login,
     register,
-    logout: storeLogout,
+    logout,
     loading,
     error,
   };

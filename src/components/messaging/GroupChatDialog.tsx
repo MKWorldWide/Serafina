@@ -1,113 +1,91 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Avatar,
-  Checkbox,
-  Box,
-  Typography,
-} from '@mui/material';
 import { useState } from 'react';
-
-interface IUser {
-  id: string;
-  name: string;
-  avatar?: string;
-}
+import { IUser } from '../../types/social';
 
 interface GroupChatDialogProps {
-  open: boolean;
+  users: IUser[];
+  onCreateGroup: (groupName: string, participants: string[]) => void;
   onClose: () => void;
-  onCreateGroup: (name: string, participants: string[]) => void;
-  availableUsers: IUser[];
 }
 
-export default function GroupChatDialog({
-  open,
-  onClose,
+export const GroupChatDialog = ({
+  users,
   onCreateGroup,
-  availableUsers,
-}: GroupChatDialogProps) {
+  onClose
+}: GroupChatDialogProps) => {
   const [groupName, setGroupName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
-  const handleToggleUser = (userId: string) => {
-    setSelectedUsers((prev) =>
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (groupName.trim() && selectedUsers.length > 0) {
+      onCreateGroup(groupName, selectedUsers);
+      onClose();
+    }
+  };
+
+  const toggleUser = (userId: string) => {
+    setSelectedUsers(prev =>
       prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
+        ? prev.filter(id => id !== userId)
         : [...prev, userId]
     );
   };
 
-  const handleSubmit = () => {
-    if (groupName.trim() && selectedUsers.length > 0) {
-      onCreateGroup(groupName.trim(), selectedUsers);
-      handleClose();
-    }
-  };
-
-  const handleClose = () => {
-    setGroupName('');
-    setSelectedUsers([]);
-    onClose();
-  };
-
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Create Group Chat</DialogTitle>
-      <DialogContent>
-        <Box sx={{ mb: 3 }}>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Group Name"
-            fullWidth
+    <div className="group-chat-dialog">
+      <h2>Create Group Chat</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="groupName">Group Name</label>
+          <input
+            type="text"
+            id="groupName"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
+            placeholder="Enter group name"
+            required
           />
-        </Box>
-        <Typography variant="subtitle1" gutterBottom>
-          Select Participants
-        </Typography>
-        <List sx={{ width: '100%', maxHeight: 300, overflow: 'auto' }}>
-          {availableUsers.map((user) => (
-            <ListItem
-              key={user.id}
-              dense
-              button
-              onClick={() => handleToggleUser(user.id)}
-            >
-              <Checkbox
-                edge="start"
-                checked={selectedUsers.includes(user.id)}
-                tabIndex={-1}
-                disableRipple
-              />
-              <ListItemAvatar>
-                <Avatar src={user.avatar} alt={user.name} />
-              </ListItemAvatar>
-              <ListItemText primary={user.name} />
-            </ListItem>
-          ))}
-        </List>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={!groupName.trim() || selectedUsers.length === 0}
-          color="primary"
-        >
-          Create Group
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </div>
+
+        <div className="form-group">
+          <label>Select Participants</label>
+          <div className="users-list">
+            {users.map(user => (
+              <div key={user.id} className="user-item">
+                <label className="user-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.includes(user.id)}
+                    onChange={() => toggleUser(user.id)}
+                  />
+                  <div className="user-info">
+                    <img
+                      src={user.picture || user.avatar}
+                      alt={user.username}
+                      className="user-avatar"
+                    />
+                    <span className="user-name">
+                      {user.name || user.username}
+                    </span>
+                  </div>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="dialog-actions">
+          <button type="button" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={!groupName.trim() || selectedUsers.length === 0}
+          >
+            Create Group
+          </button>
+        </div>
+      </form>
+    </div>
   );
-} 
+}; 

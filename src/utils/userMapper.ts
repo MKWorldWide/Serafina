@@ -1,33 +1,32 @@
 import { CognitoUser } from '@aws-amplify/auth';
-import type { IUser } from '../types/social';
+import { IUser } from '../types/social';
+import { defaultSettings } from '../constants/settings';
 
-interface CognitoAttributes {
-  email?: string;
-  name?: string;
-  picture?: string;
-  rank?: string;
-  level?: string;
-  [key: string]: string | undefined;
-}
-
-interface ExtendedCognitoUser extends Omit<CognitoUser, 'attributes'> {
-  attributes?: CognitoAttributes;
-  getUsername(): string;
-}
-
-export function mapCognitoUserToIUser(cognitoUser: ExtendedCognitoUser): IUser {
-  const username = cognitoUser.getUsername();
+export const userMapper = (cognitoUser: CognitoUser): IUser => {
   const attributes = cognitoUser.attributes || {};
-  
+  const defaultAvatar = `https://api.dicebear.com/7.x/initials/svg?seed=${attributes.preferred_username || attributes.email || cognitoUser.username}`;
+
+  // Ensure required string fields have default values
+  const email = attributes.email || cognitoUser.username;
+  const username = attributes.preferred_username || email.split('@')[0] || cognitoUser.username;
+  const name = attributes.name || username;
+
   return {
-    id: username,
+    id: cognitoUser.username,
+    email,
     username,
-    email: attributes.email,
-    name: attributes.name,
-    picture: attributes.picture || '/default-avatar.png',
-    rank: attributes.rank || 'Beginner',
-    level: attributes.level ? parseInt(attributes.level, 10) : 1,
+    name,
+    picture: attributes.picture || defaultAvatar,
+    avatar: attributes.picture || defaultAvatar,
+    bio: attributes['custom:bio'] || '',
+    rank: attributes['custom:rank'] || 'Rookie',
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
+    attributes: {
+      email: attributes.email,
+      name: attributes.name,
+      picture: attributes.picture,
+      rank: attributes['custom:rank'] || 'Rookie'
+    }
   };
-}
+};

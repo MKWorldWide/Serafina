@@ -4,13 +4,14 @@ env:
     AMPLIFY_MONOREPO_APP_ROOT: frontend
     AMPLIFY_DIFF_DEPLOY: false
     AMPLIFY_DIFF_BACKEND: false
-    NODE_OPTIONS: --max-old-space-size=4096
-    AWS_APP_ID: d3pld36iocd243
-    AWS_BRANCH: main
-    AWS_REGION: us-east-1
-    AWS_ACCESS_KEY_ID: AKIAQKZQVFHEJY5NXVWL
-    AWS_SECRET_ACCESS_KEY: 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
-    NODE_VERSION: 20
+    NODE_OPTIONS: ${NODE_OPTIONS}
+    AWS_APP_ID: ${AWS_APP_ID}
+    AWS_BRANCH: ${AWS_BRANCH}
+    AWS_REGION: ${AWS_REGION}
+    NODE_VERSION: ${NODE_VERSION}
+    REDIS_URL: ${REDIS_URL}
+    REDIS_PORT: ${REDIS_PORT}
+    REDIS_PASSWORD: ${REDIS_PASSWORD}
 
 frontend:
   phases:
@@ -30,6 +31,7 @@ frontend:
     postBuild:
       commands:
         - npm run generate-sitemap
+        - npm run build:redis-config
   artifacts:
     baseDirectory: build
     files:
@@ -41,7 +43,7 @@ frontend:
     - pattern: '**/*'
       headers:
         - key: 'Strict-Transport-Security'
-          value: 'max-age=31536000; includeSubDomains'
+          value: 'max-age=31536000; includeSubDomains; preload'
         - key: 'X-Frame-Options'
           value: 'DENY'
         - key: 'X-Content-Type-Options'
@@ -50,8 +52,10 @@ frontend:
           value: '1; mode=block'
         - key: 'Referrer-Policy'
           value: 'strict-origin-when-cross-origin'
+        - key: 'Permissions-Policy'
+          value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
         - key: 'Content-Security-Policy'
-          value: "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
+          value: "default-src 'self'; connect-src 'self' https://*.amazonaws.com https://*.amazoncognito.com; img-src 'self' data: https: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.amazonaws.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
 
 backend:
   phases:
@@ -62,15 +66,38 @@ backend:
         - npm install -g npm@latest
         - npm install -g @aws-amplify/cli@latest
         - npm install -g rimraf@5.0.5 glob@10.3.10
-        - amplify configure --json --provider aws --accessKeyId AKIAQKZQVFHEJY5NXVWL --secretAccessKey 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 --region us-east-1 --yes
+        - aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+        - aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+        - aws configure set region ${AWS_REGION}
+        - aws configure set output json
     build:
       commands:
-        - amplify init --json --amplify "{\"envName\":\"main\",\"defaultEditor\":\"code\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":false,\"profileName\":\"default\",\"accessKeyId\":\"AKIAQKZQVFHEJY5NXVWL\",\"secretAccessKey\":\"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\",\"region\":\"us-east-1\"}}" --yes
-        - amplify pull --appId d3pld36iocd243 --envName main --yes
+        - amplify init --json --amplify "{\"envName\":\"${AWS_BRANCH}\",\"defaultEditor\":\"code\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":false,\"profileName\":\"default\",\"region\":\"${AWS_REGION}\"}}" --yes
+        - amplify pull --appId ${AWS_APP_ID} --envName ${AWS_BRANCH} --yes
+        - amplify push --yes
   artifacts:
     baseDirectory: amplify/backend
     files:
       - '**/*'
   cache:
     paths:
-      - node_modules/**/* 
+      - node_modules/**/*
+
+test:
+  phases:
+    preTest:
+      commands:
+        - npm ci --production --no-audit
+        - npm run test:setup
+    test:
+      commands:
+        - npm run test:ci -- --maxWorkers=2 --ci --coverage
+        - npm run test:e2e:ci -- --maxWorkers=2 --ci
+  artifacts:
+    baseDirectory: coverage
+    files:
+      - '**/*'
+    configFilePath: '**/jest-*.json'
+  cache:
+    paths:
+      - node_modules/.cache/**/* 

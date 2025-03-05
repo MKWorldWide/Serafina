@@ -108,7 +108,9 @@ const Settings = () => {
     setLoading,
     setError,
     login,
-    logout
+    logout,
+    darkMode,
+    toggleDarkMode,
   } = store<Store>(state => ({
     user: state.user,
     settings: state.settings,
@@ -121,18 +123,38 @@ const Settings = () => {
     setLoading: state.setLoading,
     setError: state.setError,
     login: state.login,
-    logout: state.logout
+    logout: state.logout,
+    darkMode: state.darkMode,
+    toggleDarkMode: state.toggleDarkMode
   }));
 
   const handleSettingChange = (setting: keyof ISettings, value: any) => {
     updateSettings({ [setting]: value });
   };
 
-  const handleNotificationChange = (key: keyof ISettings['emailNotifications'], value: any) => {
+  const handleNotificationChange = (key: keyof ISettings['notifications']['emailNotifications']['types'], value: any) => {
     updateSettings({
-      emailNotifications: {
-        ...settings.emailNotifications,
-        [key]: value,
+      notifications: {
+        ...settings.notifications,
+        emailNotifications: {
+          ...settings.notifications.emailNotifications,
+          types: {
+            ...settings.notifications.emailNotifications.types,
+            [key]: value,
+          }
+        }
+      }
+    });
+  };
+
+  const handleFrequencyChange = (value: 'daily' | 'weekly' | 'real-time' | 'none') => {
+    updateSettings({
+      notifications: {
+        ...settings.notifications,
+        emailNotifications: {
+          ...settings.notifications.emailNotifications,
+          frequency: value
+        }
       }
     });
   };
@@ -208,8 +230,11 @@ const Settings = () => {
           <FormControlLabel
             control={
               <Switch
-                checked={settings.showOnlineStatus}
-                onChange={(e) => handleSettingChange('showOnlineStatus', e.target.checked)}
+                checked={settings.privacy.showOnlineStatus}
+                onChange={(e) => handleSettingChange('privacy', {
+                  ...settings.privacy,
+                  showOnlineStatus: e.target.checked
+                })}
               />
             }
             label=""
@@ -223,8 +248,11 @@ const Settings = () => {
           <FormControlLabel
             control={
               <Switch
-                checked={settings.showGameActivity}
-                onChange={(e) => handleSettingChange('showGameActivity', e.target.checked)}
+                checked={settings.privacy.showGameStats}
+                onChange={(e) => handleSettingChange('privacy', {
+                  ...settings.privacy,
+                  showGameStats: e.target.checked
+                })}
               />
             }
             label=""
@@ -242,8 +270,8 @@ const Settings = () => {
       <FormControl component="fieldset" sx={{ mb: 4, width: '100%' }}>
         <FormLabel component="legend" sx={{ mb: 2 }}>Email Digest Frequency</FormLabel>
         <RadioGroup
-          value={settings.emailNotifications.frequency}
-          onChange={(e) => handleNotificationChange('frequency', e.target.value)}
+          value={settings.notifications.emailNotifications.frequency}
+          onChange={(e) => handleFrequencyChange(e.target.value as 'daily' | 'weekly' | 'real-time' | 'none')}
         >
           <FormControlLabel 
             value="none" 
@@ -268,10 +296,10 @@ const Settings = () => {
         </RadioGroup>
       </FormControl>
 
-      {settings.emailNotifications.frequency !== 'none' && (
+      {settings.notifications.emailNotifications.frequency !== 'none' && (
         <>
           {/* Digest Time Selection */}
-          {settings.emailNotifications.frequency !== 'real-time' && (
+          {settings.notifications.emailNotifications.frequency !== 'real-time' && (
             <FormControl fullWidth sx={{ mb: 4 }}>
               <FormLabel>Digest Delivery Time</FormLabel>
               <TextField
@@ -298,8 +326,8 @@ const Settings = () => {
                   secondary="Login attempts, password changes, etc."
                 />
                 <Switch
-                  checked={settings.emailNotifications.security}
-                  onChange={(e) => handleNotificationChange('security', e.target.checked)}
+                  checked={false}
+                  onChange={(e) => {/* Security notifications not in current types */}}
                 />
               </AccordionSummary>
               <AccordionDetails>
@@ -320,7 +348,7 @@ const Settings = () => {
                   secondary="Notifications about new messages"
                 />
                 <Switch
-                  checked={settings.emailNotifications.messages}
+                  checked={settings.notifications.emailNotifications.types.messages}
                   onChange={(e) => handleNotificationChange('messages', e.target.checked)}
                 />
               </AccordionSummary>
@@ -342,7 +370,7 @@ const Settings = () => {
                   secondary="Friend requests and team invites"
                 />
                 <Switch
-                  checked={settings.emailNotifications.friendRequests}
+                  checked={settings.notifications.emailNotifications.types.friendRequests}
                   onChange={(e) => handleNotificationChange('friendRequests', e.target.checked)}
                 />
               </AccordionSummary>
@@ -351,7 +379,7 @@ const Settings = () => {
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={settings.emailNotifications.friendRequests}
+                        checked={settings.notifications.emailNotifications.types.friendRequests}
                         onChange={(e) => handleNotificationChange('friendRequests', e.target.checked)}
                       />
                     }
@@ -360,8 +388,8 @@ const Settings = () => {
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={settings.emailNotifications.teamInvites}
-                        onChange={(e) => handleNotificationChange('teamInvites', e.target.checked)}
+                        checked={false}
+                        onChange={(e) => {/* Team invites notifications not in current types */}}
                       />
                     }
                     label="Team Invites"
@@ -380,7 +408,7 @@ const Settings = () => {
                   secondary="Game invites and matchmaking"
                 />
                 <Switch
-                  checked={settings.emailNotifications.gameInvites || settings.emailNotifications.matchmaking}
+                  checked={settings.notifications.emailNotifications.types.gameInvites || settings.notifications.emailNotifications.types.matchmaking}
                   onChange={(e) => handleNotificationChange('gameInvites', e.target.checked)}
                 />
               </AccordionSummary>
@@ -389,7 +417,7 @@ const Settings = () => {
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={settings.emailNotifications.gameInvites}
+                        checked={settings.notifications.emailNotifications.types.gameInvites}
                         onChange={(e) => handleNotificationChange('gameInvites', e.target.checked)}
                       />
                     }
@@ -398,7 +426,7 @@ const Settings = () => {
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={settings.emailNotifications.matchmaking}
+                        checked={settings.notifications.emailNotifications.types.matchmaking}
                         onChange={(e) => handleNotificationChange('matchmaking', e.target.checked)}
                       />
                     }
@@ -418,7 +446,7 @@ const Settings = () => {
                   secondary="Progress and unlocks"
                 />
                 <Switch
-                  checked={settings.emailNotifications.achievements}
+                  checked={settings.notifications.emailNotifications.types.achievements}
                   onChange={(e) => handleNotificationChange('achievements', e.target.checked)}
                 />
               </AccordionSummary>
@@ -439,7 +467,7 @@ const Settings = () => {
                   secondary="News, updates, and promotions"
                 />
                 <Switch
-                  checked={settings.emailNotifications.marketing}
+                  checked={settings.notifications.emailNotifications.types.marketing}
                   onChange={(e) => handleNotificationChange('marketing', e.target.checked)}
                 />
               </AccordionSummary>
@@ -469,8 +497,11 @@ const Settings = () => {
           secondary="Receive notifications while browsing"
         />
         <Switch
-          checked={settings.pushNotifications}
-          onChange={(e) => handleSettingChange('pushNotifications', e.target.checked)}
+          checked={settings.notifications.push}
+          onChange={(e) => handleSettingChange('notifications', {
+            ...settings.notifications,
+            push: e.target.checked
+          })}
         />
       </ListItem>
     </Box>
@@ -486,8 +517,11 @@ const Settings = () => {
             secondary="Allow automatic matchmaking with other players"
           />
           <Switch
-            checked={settings.matchmakingEnabled}
-            onChange={(e) => handleSettingChange('matchmakingEnabled', e.target.checked)}
+            checked={settings.privacy.showGameStats}
+            onChange={(e) => handleSettingChange('privacy', {
+              ...settings.privacy,
+              showGameStats: e.target.checked
+            })}
           />
         </ListItem>
         <ListItem>
@@ -496,8 +530,11 @@ const Settings = () => {
             secondary="Allow other players to send you friend requests"
           />
           <Switch
-            checked={settings.allowFriendRequests}
-            onChange={(e) => handleSettingChange('allowFriendRequests', e.target.checked)}
+            checked={settings.privacy.allowFriendRequests}
+            onChange={(e) => handleSettingChange('privacy', {
+              ...settings.privacy,
+              allowFriendRequests: e.target.checked
+            })}
           />
         </ListItem>
         <ListItem>
@@ -506,8 +543,11 @@ const Settings = () => {
             secondary="Allow messages from other players"
           />
           <Switch
-            checked={settings.allowMessages}
-            onChange={(e) => handleSettingChange('allowMessages', e.target.checked)}
+            checked={settings.privacy.allowMessages}
+            onChange={(e) => handleSettingChange('privacy', {
+              ...settings.privacy,
+              allowMessages: e.target.checked
+            })}
           />
         </ListItem>
       </List>
@@ -555,8 +595,11 @@ const Settings = () => {
         <FormControlLabel
           control={
             <Switch
-              checked={settings.darkMode}
-              onChange={(e) => handleSettingChange('darkMode', e.target.checked)}
+              checked={settings.theme.darkMode}
+              onChange={(e) => handleSettingChange('theme', {
+                ...settings.theme,
+                darkMode: e.target.checked
+              })}
             />
           }
           label="Dark Mode"
