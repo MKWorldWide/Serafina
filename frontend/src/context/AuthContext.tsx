@@ -1,16 +1,18 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { AmplifyUser } from '@aws-amplify/ui';
 import store from '../store/useStore';
-import { Store } from '../types/store';
+import { Store, ISettings } from '../types/store';
+import { IUser } from '../types/social';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: AmplifyUser | null;
+  user: IUser | null;
   login: (credentials: { email: string; password: string }) => Promise<void>;
-  register: (userData: Partial<AmplifyUser> & { password: string }) => Promise<void>;
   logout: () => void;
   loading: boolean;
   error: string | null;
+  settings: ISettings;
+  updateSettings: (settings: Partial<ISettings>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -22,15 +24,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout, 
     loading, 
     error, 
-    login, 
-    register,
-    resetPassword,
-    confirmResetPassword,
-    resendConfirmationCode,
+    login,
     setLoading,
     setError,
     darkMode,
-    toggleDarkMode
+    toggleDarkMode,
+    isAuthenticated,
+    settings,
+    setIsAuthenticated,
+    updateSettings
   } = store<Store>(state => ({
     user: state.user,
     setUser: state.setUser,
@@ -38,24 +40,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading: state.loading,
     error: state.error,
     login: state.login,
-    register: state.register,
-    resetPassword: state.resetPassword,
-    confirmResetPassword: state.confirmResetPassword,
-    resendConfirmationCode: state.resendConfirmationCode,
     setLoading: state.setLoading,
     setError: state.setError,
     darkMode: state.darkMode,
-    toggleDarkMode: state.toggleDarkMode
+    toggleDarkMode: state.toggleDarkMode,
+    isAuthenticated: state.isAuthenticated,
+    settings: state.settings,
+    setIsAuthenticated: state.setIsAuthenticated,
+    updateSettings: state.updateSettings
   }));
 
   const value = {
     isAuthenticated: !!user,
-    user: user as AmplifyUser | null,
+    user: user as IUser | null,
     login,
-    register,
     logout,
     loading,
     error,
+    settings,
+    updateSettings
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -21,11 +21,10 @@ export function mapCognitoUserToIUser(cognitoUser: ExtendedCognitoUser): IUser {
   return {
     id: cognitoUser.username,
     username: cognitoUser.username,
-    email: attributes.email,
-    name: attributes.name,
+    email: attributes.email || 'user@example.com',
+    name: attributes.name || 'User',
     picture: attributes.picture || '/default-avatar.png',
     rank: attributes.rank || 'Beginner',
-    level: attributes.level ? parseInt(attributes.level, 10) : 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     attributes: {

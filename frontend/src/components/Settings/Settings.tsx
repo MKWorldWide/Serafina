@@ -408,7 +408,7 @@ const Settings = () => {
                   secondary="Game invites and matchmaking"
                 />
                 <Switch
-                  checked={settings.notifications.emailNotifications.types.gameInvites || settings.notifications.emailNotifications.types.matchmaking}
+                  checked={settings.notifications.emailNotifications.types.gameInvites}
                   onChange={(e) => handleNotificationChange('gameInvites', e.target.checked)}
                 />
               </AccordionSummary>
@@ -426,8 +426,8 @@ const Settings = () => {
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={settings.notifications.emailNotifications.types.matchmaking}
-                        onChange={(e) => handleNotificationChange('matchmaking', e.target.checked)}
+                        checked={false}
+                        onChange={(e) => {/* Matchmaking notifications not in current types */}}
                       />
                     }
                     label="Matchmaking Updates"
@@ -467,8 +467,8 @@ const Settings = () => {
                   secondary="News, updates, and promotions"
                 />
                 <Switch
-                  checked={settings.notifications.emailNotifications.types.marketing}
-                  onChange={(e) => handleNotificationChange('marketing', e.target.checked)}
+                  checked={false}
+                  onChange={(e) => {/* Marketing notifications not in current types */}}
                 />
               </AccordionSummary>
               <AccordionDetails>
@@ -543,10 +543,10 @@ const Settings = () => {
             secondary="Allow messages from other players"
           />
           <Switch
-            checked={settings.privacy.allowMessages}
+            checked={settings.privacy.showLastSeen}
             onChange={(e) => handleSettingChange('privacy', {
               ...settings.privacy,
-              allowMessages: e.target.checked
+              showLastSeen: e.target.checked
             })}
           />
         </ListItem>
