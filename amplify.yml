@@ -9,9 +9,13 @@ frontend:
     preBuild:
       commands:
         - cd frontend
-        - npm ci
+        - npm ci --prefer-offline --no-audit
+        - npm cache clean --force
     build:
       commands:
+        - echo "VITE_API_URL=$VITE_API_URL" >> .env
+        - echo "VITE_WS_URL=$VITE_WS_URL" >> .env
+        - echo "VITE_APP_ENV=$VITE_APP_ENV" >> .env
         - npm run build
   artifacts:
     baseDirectory: frontend/dist
@@ -20,4 +24,19 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-      - frontend/node_modules/**/* 
+      - frontend/node_modules/**/*
+      - .npm-cache/**/*
+      - frontend/.npm-cache/**/*
+  customHeaders:
+    - pattern: '**/*.js'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.css'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.html'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=0, must-revalidate' 

@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 import tailwindcss from 'tailwindcss';
@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: 3000,
+    strictPort: true,
     host: true,
     cors: true,
     proxy: {
@@ -36,19 +37,19 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production'
+        drop_console: true,
+        drop_debugger: true
       }
     },
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@mui/material', '@emotion/react', '@emotion/styled'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
           aws: ['aws-amplify', '@aws-amplify/ui-react'],
           utils: ['date-fns', 'zustand', 'zod']
         },
