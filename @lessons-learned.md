@@ -138,6 +138,10 @@
 
 [2024-06-12] Error Handling: Runtime JavaScript errors in production → Implement comprehensive error boundary and telemetry to capture production errors → Critical for identifying and resolving issues that occur in the production environment but not during development or testing.
 
+[2024-06-13] Deployment: AWS Amplify Gen1 vs Gen2 configuration differences → Create dedicated Gen2 configuration with environment-specific settings → Critical for leveraging Gen2 features including enhanced security, performance, and monitoring. The migration from Gen1 to Gen2 requires careful planning, understanding the differences in configuration syntax, and taking advantage of new features like enhanced build settings, multi-stage deployments, and improved caching strategies.
+
+[2024-06-14] Platform Migration: AWS Amplify to Shopify → Plan comprehensive migration strategy with architectural restructuring → Critical for successfully transitioning the application while preserving functionality and user experience. The migration from a React/Vite/AWS application to Shopify requires careful consideration of Shopify's development patterns, Liquid templating, theme architecture, and API integration strategies to ensure feature parity and optimal performance in the new environment.
+
 # KEY TAKEAWAYS AND RECOMMENDATIONS
 
 ## 🛡️ Security Best Practices

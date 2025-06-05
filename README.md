@@ -12,6 +12,34 @@ GameDin is a modern gaming platform built with React, Vite, and AWS Amplify, off
 - Real-time chat and notifications
 - Secure authentication with AWS Cognito
 
+## 🚀 AWS Amplify Gen2 Deployment
+
+GameDin is optimized for deployment on AWS Amplify Gen2, offering advanced features and performance optimizations:
+
+### 🔑 Key Optimizations
+
+- **Enhanced Build Process**:
+  - Optimized code splitting with smart chunk naming
+  - Brotli and Gzip compression for faster load times
+  - Environment-specific builds with proper cache headers
+
+- **Progressive Web App (PWA)**:
+  - Full offline support with strategic cache management
+  - Installable on mobile and desktop devices
+  - Push notification capability
+
+- **Security Enhancements**:
+  - Comprehensive Content Security Policy (CSP)
+  - Advanced header protection against common vulnerabilities
+  - AWS WAF integration for traffic filtering
+
+- **Performance Improvements**:
+  - Smart asset organization and loading
+  - Efficient caching strategies for different resource types
+  - Optimized JS bundles with proper code splitting
+
+For detailed deployment instructions, see our [Amplify Gen2 Deployment Guide](docs/AMPLIFY_GEN2_DEPLOYMENT.md).
+
 ## 🛠 Tech Stack
 
 - **Frontend:**
