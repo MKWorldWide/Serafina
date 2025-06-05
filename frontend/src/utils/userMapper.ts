@@ -1,5 +1,5 @@
-import { CognitoUser } from '@aws-amplify/auth';
-import type { IUser } from '../types/social';
+import { AuthUser } from '@aws-amplify/auth';
+import { IUser } from '../types/social';
 
 interface CognitoAttributes {
   email?: string;
@@ -10,25 +10,19 @@ interface CognitoAttributes {
   [key: string]: string | undefined;
 }
 
-interface ExtendedCognitoUser extends Omit<CognitoUser, 'attributes'> {
+interface ExtendedCognitoUser extends Omit<AuthUser, 'attributes'> {
   attributes?: CognitoAttributes;
   username: string;
 }
 
-export function mapCognitoUserToIUser(cognitoUser: ExtendedCognitoUser): IUser {
-  const attributes = cognitoUser.attributes || {};
-  
+export const mapCognitoUserToIUser = (user: AuthUser): IUser => {
   return {
-    id: cognitoUser.username,
-    username: cognitoUser.username,
-    email: attributes.email || 'user@example.com',
-    name: attributes.name || 'User',
-    picture: attributes.picture || '/default-avatar.png',
-    rank: attributes.rank || 'Beginner',
+    id: user.userId,
+    username: user.username,
+    email: user.signInDetails?.loginId || '',
+    name: user.username,
+    picture: '/default-avatar.png',
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    attributes: {
-      ...attributes
-    }
+    updatedAt: new Date().toISOString()
   };
-} 
+}; 

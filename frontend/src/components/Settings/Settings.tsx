@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import {
   Box,
   Container,
@@ -47,11 +47,19 @@ import {
 } from '@mui/icons-material';
 import store from '../../store/useStore';
 import { Store, ISettings } from '../../types/store';
+import { useAuth } from '../../context/AuthContext';
+
+interface SettingsItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactElement;
+}
 
 interface SettingSection {
   id: string;
   title: string;
-  icon: JSX.Element;
+  icon: React.ReactElement;
   description: string;
 }
 
@@ -94,10 +102,10 @@ const settingsSections: SettingSection[] = [
   },
 ];
 
-const Settings = () => {
-  const [selectedSection, setSelectedSection] = useState('account');
+const Settings: React.FC = () => {
+  const { user } = useAuth();
+  const [selectedSection, setSelectedSection] = React.useState('account');
   const {
-    user,
     settings,
     updateSettings,
     isAuthenticated,
