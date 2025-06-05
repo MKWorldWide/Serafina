@@ -149,85 +149,23 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
-      sourcemap: !isProd,
-      minify: isProd ? 'terser' : false,
+      sourcemap: false,
+      minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: isProd,
-          drop_debugger: isProd
+          drop_console: true,
+          drop_debugger: true
         }
       },
       rollupOptions: {
         output: {
-          manualChunks: (id) => {
-            if (id.includes('node_modules')) {
-              if (id.includes('react') || id.includes('scheduler')) {
-                return 'vendor-react';
-              }
-              if (id.includes('@mui') || id.includes('@emotion')) {
-                return 'vendor-mui';
-              }
-              if (id.includes('aws-amplify') || id.includes('@aws-amplify')) {
-                return 'vendor-aws';
-              }
-              if (id.includes('workbox') || id.includes('register-service-worker')) {
-                return 'vendor-pwa';
-              }
-              return 'vendor';
-            }
-          },
-          chunkFileNames: (chunkInfo) => {
-            const name = chunkInfo.name === 'index' ? 'main' : chunkInfo.name;
-            return isProd
-              ? `assets/js/${name}.[hash].js`
-              : `assets/js/${name}.js`;
-          },
-          assetFileNames: (assetInfo) => {
-            const extType = assetInfo.name.split('.').at(1);
-            if (/\.(png|jpe?g|svg|gif|webp|ico)$/.test(assetInfo.name)) {
-              return 'assets/images/[name].[hash][extname]';
-            }
-            if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
-              return 'assets/fonts/[name].[hash][extname]';
-            }
-            if (/\.css$/.test(assetInfo.name)) {
-              return 'assets/css/[name].[hash][extname]';
-            }
-            return 'assets/[name].[hash][extname]';
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+            aws: ['aws-amplify', '@aws-amplify/ui-react'],
+            utils: ['date-fns', 'zustand', 'zod']
           }
         }
-      },
-      target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
-      assetsDir: 'assets',
-      cssCodeSplit: true,
-      modulePreload: true,
-      reportCompressedSize: true,
-      chunkSizeWarningLimit: 1000
-    },
-    optimizeDeps: {
-      include: [
-        'react',
-        'react-dom',
-        'react-router-dom',
-        '@mui/material',
-        '@emotion/react',
-        '@emotion/styled',
-        'aws-amplify',
-        '@aws-amplify/ui-react',
-        'date-fns',
-        'zustand',
-        'zod'
-      ]
-    },
-    css: {
-      modules: {
-        localsConvention: 'camelCase'
-      },
-      postcss: {
-        plugins: [
-          tailwindcss,
-          autoprefixer
-        ]
       }
     }
   };
