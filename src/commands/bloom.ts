@@ -55,7 +55,8 @@ export const command: Command = {
       const memory = interaction.options.getString('memory');
       const plant = interaction.options.getString('plant');
 
-      const emotionData = emotions[`${emotions[emotion].emoji} ${emotion}`];
+      const emotionKey = Object.keys(emotions).find(key => key.includes(emotion));
+      const emotionData = emotionKey ? emotions[emotionKey as keyof typeof emotions] : emotions['🌸 Joy'];
       
       const embed = new EmbedBuilder()
         .setColor(emotionData.color)

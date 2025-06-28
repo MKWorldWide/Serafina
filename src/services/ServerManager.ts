@@ -86,7 +86,7 @@ export class ServerManager {
         });
 
         // Set channel permissions
-        if (channelConfig.permissions) {
+        if ('permissions' in channelConfig && channelConfig.permissions) {
           await this.setChannelPermissions(channel, channelConfig.permissions);
         }
 
