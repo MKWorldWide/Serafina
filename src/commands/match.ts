@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction } from 'discord.js';
-import { Command } from '../types/Command';
+import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, PermissionFlagsBits } from 'discord.js';
+import type { Command } from '../types/Command';
+import { logger } from '../utils/logger';
 
 const games = [
   { name: 'Fortnite', emoji: '🎮', maxPlayers: 4 },

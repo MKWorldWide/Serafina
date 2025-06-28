@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
-import { Command } from '../types/Command';
+import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
 const wisdomQuotes = [

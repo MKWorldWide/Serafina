@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, CommandInteraction, PermissionFlagsBits, ChannelType, GuildChannel, Role } from 'discord.js';
-import { Command } from '../types/Command';
+import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
 const categories = {

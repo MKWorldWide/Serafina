@@ -14,9 +14,15 @@ const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js
 // Load all commands
 for (const file of commandFiles) {
   const filePath = join(commandsPath, file);
-  const command = require(filePath);
-  
-  if ('data' in command && 'execute' in command) {
+  let commandExport;
+  try {
+    commandExport = require(filePath);
+  } catch (e) {
+    logger.warn(`Failed to require ${filePath}: ${e}`);
+    continue;
+  }
+  const command = commandExport?.command;
+  if (command && 'data' in command && 'execute' in command) {
     commands.push(command.data);
     logger.info(`Loaded command: ${command.data.name}`);
   } else {

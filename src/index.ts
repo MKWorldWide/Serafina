@@ -44,17 +44,23 @@ let xpManager: XPManager;
 
 // Load commands
 const commandsPath = join(__dirname, 'commands');
-const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
+const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
   const filePath = join(commandsPath, file);
-  const command = require(filePath).command as Command;
-  
-  if ('data' in command && 'execute' in command) {
+  let commandExport;
+  try {
+    commandExport = require(filePath);
+  } catch (e) {
+    logger.warn(`Failed to require ${filePath}: ${e}`);
+    continue;
+  }
+  const command = commandExport?.command;
+  if (command && 'data' in command && 'execute' in command) {
     client.commands.set(command.data.name, command);
     logger.info(`Loaded command: ${command.data.name}`);
   } else {
-    logger.warn(`Command at ${filePath} is missing required properties`);
+    logger.warn(`Command at ${filePath} is missing required properties or is undefined`);
   }
 }
 

@@ -1,0 +1,140 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'SeraFina Discord Bot - 24/7 AWS Deployment'
+
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: S3 bucket containing the deployment package
+
+Resources:
+  # IAM Role for Lambda
+  SeraFinaLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: SeraFinaLambdaRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: SeraFinaS3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub 'arn:aws:s3:::${S3BucketName}/*'
+
+  # Lambda Function
+  SeraFinaLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: SeraFinaDiscordBot
+      Runtime: nodejs18.x
+      Handler: index.handler
+      Role: !GetAtt SeraFinaLambdaRole.Arn
+      Code:
+        S3Bucket: !Ref S3BucketName
+        S3Key: dist/index.js
+      Environment:
+        Variables:
+          DISCORD_TOKEN: !Ref DiscordToken
+          CLIENT_ID: !Ref ClientId
+          NODE_ENV: production
+      Timeout: 300
+      MemorySize: 512
+      ReservedConcurrencyLimit: 1
+
+  # EventBridge Rule for periodic execution
+  SeraFinaScheduleRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: SeraFinaKeepAlive
+      Description: Keep SeraFina alive with periodic invocations
+      ScheduleExpression: rate(5 minutes)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt SeraFinaLambda.Arn
+          Id: SeraFinaTarget
+
+  # Permission for EventBridge to invoke Lambda
+  SeraFinaLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref SeraFinaLambda
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt SeraFinaScheduleRule.Arn
+
+  # CloudWatch Log Group
+  SeraFinaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/SeraFinaDiscordBot
+      RetentionInDays: 30
+
+  # S3 Bucket for logs
+  SeraFinaLogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'serafina-logs-${AWS::AccountId}'
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldLogs
+            Status: Enabled
+            ExpirationInDays: 90
+
+  # CloudWatch Dashboard
+  SeraFinaDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: SeraFinaDiscordBot
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/Lambda", "Invocations", "FunctionName", "${SeraFinaLambda}" ],
+                  [ ".", "Errors", ".", "." ],
+                  [ ".", "Duration", ".", "." ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "title": "SeraFina Lambda Metrics"
+              }
+            }
+          ]
+        }
+
+Outputs:
+  LambdaFunctionArn:
+    Description: ARN of the SeraFina Lambda function
+    Value: !GetAtt SeraFinaLambda.Arn
+    Export:
+      Name: SeraFinaLambdaArn
+
+  LogGroupName:
+    Description: CloudWatch Log Group for SeraFina
+    Value: !Ref SeraFinaLogGroup
+
+  DashboardUrl:
+    Description: CloudWatch Dashboard URL
+    Value: !Sub 'https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=SeraFinaDiscordBot' 

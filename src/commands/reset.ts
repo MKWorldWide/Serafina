@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, CommandInteraction, PermissionFlagsBits } from 'discord.js';
-import { Command } from '../types/Command';
+import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
 export const command: Command = {
@@ -9,7 +9,7 @@ export const command: Command = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .toJSON(),
 
-  async execute(interaction: CommandInteraction) {
+  async execute(interaction: ChatInputCommandInteraction) {
     try {
       await interaction.deferReply({ ephemeral: true });
 

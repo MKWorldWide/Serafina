@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { Command } from '../types/Command';
+import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, ChatInputCommandInteraction, PermissionFlagsBits } from 'discord.js';
+import type { Command } from '../types/Command';
+import { logger } from '../utils/logger';
 
 const affirmations = [
   "May your gaming journey be filled with joy and victory! 🌟",
