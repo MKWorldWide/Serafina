@@ -9,15 +9,27 @@
     "build": "tsc",
     "deploy-commands": "ts-node src/deploy-commands.ts",
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\""
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist coverage",
+    "prebuild": "npm run clean",
+    "postbuild": "npm run type-check",
+    "docker:build": "docker build -t gamedin-bot .",
+    "docker:run": "docker run -d --name gamedin-bot gamedin-bot",
+    "docker:stop": "docker stop gamedin-bot && docker rm gamedin-bot"
   },
   "keywords": [
     "discord",
     "bot",
     "gaming",
     "community",
-    "automation"
+    "automation",
+    "typescript",
+    "discord.js"
   ],
   "author": "NovaSanctum",
   "license": "MIT",
@@ -29,7 +41,8 @@
     "mongoose": "^8.1.1",
     "openai": "^4.26.0",
     "winston": "^3.11.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "tsconfig-paths": "^4.2.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -42,6 +55,20 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.3.3"
-  }
+    "typescript": "^5.3.3",
+    "@types/supertest": "^2.0.16",
+    "supertest": "^6.3.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NovaSanctum/GameDinDiscord.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NovaSanctum/GameDinDiscord/issues"
+  },
+  "homepage": "https://github.com/NovaSanctum/GameDinDiscord#readme"
 }
