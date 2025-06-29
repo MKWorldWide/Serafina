@@ -1,33 +1,31 @@
-<<<<<<< HEAD
-import { AuthUser } from '@aws-amplify/auth';
-import { IUser } from '../types/social';
+/**
+ * userMapper Utility - Cognito User to App User
+ *
+ * This function maps a CognitoUser object from AWS Amplify Auth to the app's IUser type.
+ *
+ * Feature Context:
+ * - Ensures all user attributes are normalized and available for the app
+ * - Provides sensible defaults for missing fields
+ * - Supports avatar, bio, rank, and extensible attributes
+ *
+ * Usage Example:
+ *   const appUser = userMapper(cognitoUser);
+ *
+ * Dependency Listing:
+ * - CognitoUser from @aws-amplify/auth
+ * - IUser type (frontend/src/types/social.ts)
+ * - defaultSettings (frontend/src/constants/settings.ts)
+ *
+ * Performance Considerations:
+ * - Lightweight, synchronous mapping
+ *
+ * Security Implications:
+ * - No sensitive data is exposed; only normalized user profile fields
+ *
+ * Changelog:
+ * - [v3.2.2] Merged conflicting implementations, standardized on extensible userMapper, added quantum documentation
+ */
 
-interface CognitoAttributes {
-  email?: string;
-  name?: string;
-  picture?: string;
-  rank?: string;
-  level?: string;
-  [key: string]: string | undefined;
-}
-
-interface ExtendedCognitoUser extends Omit<AuthUser, 'attributes'> {
-  attributes?: CognitoAttributes;
-  username: string;
-}
-
-export const mapCognitoUserToIUser = (user: AuthUser): IUser => {
-  return {
-    id: user.userId,
-    username: user.username,
-    email: user.signInDetails?.loginId || '',
-    name: user.username,
-    picture: '/default-avatar.png',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-}; 
-=======
 import { CognitoUser } from '@aws-amplify/auth';
 import { IUser } from '../types/social';
 import { defaultSettings } from '../constants/settings';
@@ -60,4 +58,3 @@ export const userMapper = (cognitoUser: CognitoUser): IUser => {
     }
   };
 };
->>>>>>> 2471f6c48a55d40216017bf626f34df3290ed4b9

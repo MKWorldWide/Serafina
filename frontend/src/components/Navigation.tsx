@@ -32,6 +32,16 @@ const Navigation: React.FC<NavigationProps> = ({ signOut }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle sign out with fallback
+  const handleSignOut = () => {
+    if (signOut) {
+      signOut();
+    } else {
+      // Fallback: just reload the page for now
+      window.location.reload();
+    }
+  };
+
   // Navigation items
   const navItems = [
     { path: '/', label: 'Home', icon: '🏠' },
@@ -102,7 +112,7 @@ const Navigation: React.FC<NavigationProps> = ({ signOut }) => {
 
                 {/* Sign Out Button */}
                 <button
-                  onClick={signOut}
+                  onClick={handleSignOut}
                   className="px-6 py-2 bg-gradient-to-r from-status-error to-red-600 text-white font-sf-text font-medium rounded-xl hover:shadow-glow transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500/30"
                   aria-label="Sign out"
                 >

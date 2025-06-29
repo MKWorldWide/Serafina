@@ -32,6 +32,7 @@
     "@heroicons/react": "^2.1.1",
     "@mui/icons-material": "^5.15.13",
     "@mui/material": "^5.15.13",
+    "@tanstack/react-virtual": "^3.0.0",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.1",
     "@testing-library/user-event": "^14.5.2",
@@ -47,7 +48,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
-    "@tanstack/react-virtual": "^3.0.0",
     "swr": "^2.3.2",
     "typescript": "^4.9.5",
     "vite": "^5.0.0",
@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "@aws-amplify/cli": "^12.10.1",
+    "@faker-js/faker": "^9.8.0",
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",

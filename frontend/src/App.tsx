@@ -1,17 +1,14 @@
-import React, { lazy, Suspense, useMemo } from 'react';
+import React, { lazy, Suspense, useMemo, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Amplify } from 'aws-amplify';
-import { Authenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
-
-// Import configuration and utilities
-import awsconfig from './aws-exports';
-import config from './config';
 
 // Import core components
 import Navigation from './components/Navigation';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
+
+// Import development tools
+import { isDevelopment, isMockModeEnabled } from './config/development';
+import { mockService } from './services/mockService';
 
 // Lazy load pages for code splitting and performance optimization
 const Home = lazy(() => import('./pages/Home'));
@@ -20,8 +17,8 @@ const GameDetails = lazy(() => import('./pages/GameDetails'));
 const Profile = lazy(() => import('./pages/Profile'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-// Configure Amplify with the appropriate configuration
-Amplify.configure(awsconfig || config);
+// Lazy load development components
+const TestRunner = lazy(() => import('./components/TestRunner'));
 
 /**
  * Main App component that serves as the root of the application
@@ -34,8 +31,51 @@ Amplify.configure(awsconfig || config);
  * - Premium typography with SF Pro fonts
  * - Responsive design optimized for all devices
  * - Accessibility-first approach with ARIA labels
+ * 
+ * Development Features:
+ * - Mock data integration for local development
+ * - Test runner interface for automated testing
+ * - Development tools and debugging utilities
  */
 const App: React.FC = () => {
+  const [showDevTools, setShowDevTools] = useState(false);
+  const [devStats, setDevStats] = useState<any>(null);
+
+  // Initialize development environment
+  useEffect(() => {
+    if (isDevelopment() && isMockModeEnabled()) {
+      const initializeDev = async () => {
+        try {
+          await mockService.initialize();
+          const stats = mockService.getStats();
+          setDevStats(stats);
+          console.log('🎮 GameDin Development Mode Active');
+          console.log('📊 Mock Data Loaded:', stats);
+        } catch (error) {
+          console.error('Failed to initialize development environment:', error);
+        }
+      };
+
+      initializeDev();
+    }
+  }, []);
+
+  // Development keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Ctrl/Cmd + Shift + D to toggle dev tools
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'D') {
+        event.preventDefault();
+        setShowDevTools(prev => !prev);
+      }
+    };
+
+    if (isDevelopment()) {
+      document.addEventListener('keydown', handleKeyPress);
+      return () => document.removeEventListener('keydown', handleKeyPress);
+    }
+  }, []);
+
   // Memoize the fallback component for Suspense to prevent re-creation
   const fallback = useMemo(() => <LoadingSpinner />, []);
 
@@ -85,56 +125,93 @@ const App: React.FC = () => {
   return (
     <ErrorBoundary fallback={errorFallback}>
       <Router>
-        <Authenticator>
-          {({ signOut }) => (
-            <div className="min-h-screen bg-cosmic-primary relative overflow-hidden font-sf-pro">
-              {/* Animated cosmic background */}
-              <div className="fixed inset-0 bg-gradient-to-br from-cosmic-primary via-cosmic-secondary to-cosmic-tertiary"></div>
-              <div className="fixed inset-0 bg-galaxy-radial animate-nebula-drift opacity-30"></div>
-              
-              {/* Floating stars background */}
-              <div className="fixed inset-0 pointer-events-none">
-                {[...Array(20)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-1 h-1 bg-accent-gold rounded-full animate-star-twinkle"
-                    style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                      animationDelay: `${Math.random() * 2}s`,
-                      animationDuration: `${1 + Math.random()}s`
-                    }}
-                  ></div>
-                ))}
-                {[...Array(15)].map((_, i) => (
-                  <div
-                    key={`cyan-${i}`}
-                    className="absolute w-0.5 h-0.5 bg-accent-cyan rounded-full animate-star-twinkle"
-                    style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                      animationDelay: `${Math.random() * 2}s`,
-                      animationDuration: `${1.5 + Math.random()}s`
-                    }}
-                  ></div>
-                ))}
+        <div className="min-h-screen bg-cosmic-primary relative overflow-hidden font-sf-pro">
+          {/* Animated cosmic background */}
+          <div className="fixed inset-0 bg-gradient-to-br from-cosmic-primary via-cosmic-secondary to-cosmic-tertiary"></div>
+          <div className="fixed inset-0 bg-galaxy-radial animate-nebula-drift opacity-30"></div>
+          
+          {/* Floating stars background */}
+          <div className="fixed inset-0 pointer-events-none">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-accent-gold rounded-full animate-star-twinkle"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  animationDuration: `${1 + Math.random()}s`
+                }}
+              ></div>
+            ))}
+            {[...Array(15)].map((_, i) => (
+              <div
+                key={`cyan-${i}`}
+                className="absolute w-0.5 h-0.5 bg-accent-cyan rounded-full animate-star-twinkle"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  animationDuration: `${1.5 + Math.random()}s`
+                }}
+              ></div>
+            ))}
+          </div>
+          
+          {/* Development Mode Indicator */}
+          {isDevelopment() && isMockModeEnabled() && (
+            <div className="fixed top-4 left-4 z-50">
+              <div className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
+                <span>🧪 DEV MODE</span>
+                <button
+                  onClick={() => setShowDevTools(prev => !prev)}
+                  className="bg-black text-yellow-500 px-2 py-0.5 rounded text-xs hover:bg-gray-800 transition-colors"
+                >
+                  {showDevTools ? 'Hide' : 'Show'} Tools
+                </button>
               </div>
-              
-              {/* Main content */}
-              <div className="relative z-10">
-                {/* Navigation component with sign out functionality */}
-                <Navigation signOut={signOut} />
-                
-                {/* Main content area with lazy loading */}
-                <main className="container mx-auto px-4 py-8 relative">
-                  <Suspense fallback={fallback}>
-                    {routes}
-                  </Suspense>
-                </main>
+              {devStats && (
+                <div className="mt-2 bg-black/80 text-white p-2 rounded text-xs">
+                  <div>Users: {devStats.users}</div>
+                  <div>Posts: {devStats.posts}</div>
+                  <div>Games: {devStats.games}</div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Development Tools Panel */}
+          {isDevelopment() && showDevTools && (
+            <div className="fixed top-0 left-0 w-full h-full z-40 bg-black/50 backdrop-blur-sm">
+              <div className="absolute top-4 right-4 z-50">
+                <button
+                  onClick={() => setShowDevTools(false)}
+                  className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold hover:bg-red-600 transition-colors"
+                >
+                  ✕ Close Dev Tools
+                </button>
+              </div>
+              <div className="w-full h-full overflow-auto p-4">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <TestRunner />
+                </Suspense>
               </div>
             </div>
           )}
-        </Authenticator>
+          
+          {/* Main content */}
+          <div className="relative z-10">
+            {/* Navigation component */}
+            <Navigation />
+            
+            {/* Main content area with lazy loading */}
+            <main className="container mx-auto px-4 py-8 relative">
+              <Suspense fallback={fallback}>
+                {routes}
+              </Suspense>
+            </main>
+          </div>
+        </div>
       </Router>
     </ErrorBoundary>
   );
