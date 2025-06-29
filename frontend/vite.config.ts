@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from 'vite';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 import tailwindcss from 'tailwindcss';
@@ -161,7 +161,7 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
-            ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+            ui: ['@headlessui/react', '@heroicons/react'],
             aws: ['aws-amplify', '@aws-amplify/ui-react'],
             utils: ['date-fns', 'zustand', 'zod']
           }

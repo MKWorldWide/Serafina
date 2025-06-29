@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
-import { useVirtual } from 'react-virtual';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import useStore from '../store/useStore';
 import { useMessaging } from '../hooks/useMessaging'; 
 import type { IConversation, IMessage, IUser } from '../types/social';
@@ -99,9 +99,9 @@ export default function Messaging() {
   // Setup message virtualization
   const parentRef = React.useRef<HTMLDivElement>(null);
   
-  const rowVirtualizer = useVirtual({
-    size: messages.length,
-    parentRef,
+  const rowVirtualizer = useVirtualizer({
+    count: messages.length,
+    getScrollElement: () => parentRef.current,
     estimateSize: useCallback(() => 80, []), // Estimated height of each message
     overscan: 10, // Number of items to render outside the visible area
   });

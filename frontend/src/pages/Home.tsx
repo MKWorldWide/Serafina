@@ -1,157 +1,153 @@
-<<<<<<< HEAD
 import React from 'react';
-import { Box, Container, Typography, Button, Grid, Paper } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
-import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
-import TokenIcon from '@mui/icons-material/Token';
-import GamesIcon from '@mui/icons-material/Games';
-
-const VideoBackground = styled('video')({
-  position: 'fixed',
-  right: 0,
-  bottom: 0,
-  minWidth: '100%',
-  minHeight: '100%',
-  width: 'auto',
-  height: 'auto',
-  zIndex: -1,
-  objectFit: 'cover',
-});
-
-const ContentOverlay = styled(Box)(({ theme }) => ({
-  position: 'relative',
-  minHeight: '100vh',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  color: '#fff',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-}));
-
-const Section = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(10, 0),
-  backgroundColor: 'rgba(0, 0, 0, 0.8)',
-}));
-
-const FeatureCard = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),
-  height: '100%',
-  backgroundColor: 'rgba(8, 95, 128, 0.1)',
-  borderRadius: '20px',
-  transition: 'transform 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-10px)',
-  },
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(4),
-  padding: theme.spacing(1.5, 4),
-  fontSize: '1.2rem',
-  borderRadius: '30px',
-  textTransform: 'none',
-  '&:hover': {
-    backgroundColor: theme.palette.primary.dark,
-  },
-}));
-
-const Home: React.FC = () => {
-  const navigate = useNavigate();
-
-  return (
-    <div className="max-w-7xl mx-auto">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Welcome to GameDin</h1>
-      <p className="text-lg text-gray-700">
-        Your personal gaming companion. Track your games, connect with friends, and discover new adventures.
-      </p>
-    </div>
-  );
-};
-
-export default Home;
-=======
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../hooks/useUser';
 
+/**
+ * Galaxy Home Page Component
+ * 
+ * Features Apple-inspired design with:
+ * - Hero section with cosmic gradients
+ * - Animated feature cards
+ * - Glassmorphism effects
+ * - Smooth scroll animations
+ * - Premium typography and spacing
+ */
 export default function Home() {
   const navigate = useNavigate();
   const { user } = useUser();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen pt-20">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-blue-600 to-indigo-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Welcome to GameDin
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cosmic-primary via-cosmic-secondary to-cosmic-tertiary"></div>
+        <div className="absolute inset-0 bg-galaxy-radial animate-nebula-drift opacity-40"></div>
+        
+        {/* Floating nebula elements */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-primary-500/20 to-secondary-500/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-br from-accent-magenta/20 to-accent-cyan/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-gradient-to-br from-accent-gold/20 to-accent-orange/20 rounded-full blur-2xl animate-float" style={{ animationDelay: '2s' }}></div>
+        
+        {/* Hero Content */}
+        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
+          <div className="animate-fade-in">
+            {/* Main Title */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-sf-pro font-black mb-8 leading-tight">
+              <span className="bg-gradient-to-r from-primary-400 via-secondary-400 to-accent-cyan bg-clip-text text-transparent">
+                Welcome to
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-accent-gold via-accent-orange to-accent-magenta bg-clip-text text-transparent">
+                GameDin
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100">
-              Your personal gaming companion. Connect with fellow gamers, track your achievements, and discover new adventures.
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl lg:text-3xl text-text-secondary mb-12 font-sf-text font-medium max-w-4xl mx-auto leading-relaxed">
+              Your cosmic gaming companion. Connect with fellow space explorers, 
+              track your achievements across the galaxy, and discover new adventures 
+              in the vast universe of gaming.
             </p>
+            
+            {/* CTA Buttons */}
             {!user && (
-              <div className="flex justify-center gap-4">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-slide-in-up">
                 <button
                   onClick={() => navigate('/register')}
-                  className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                  className="group px-8 py-4 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-sf-text font-semibold text-lg rounded-2xl hover:shadow-glow transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-500/30"
+                  aria-label="Get started with GameDin"
                 >
-                  Get Started
+                  <span className="flex items-center space-x-2">
+                    <span>🚀</span>
+                    <span>Start Your Journey</span>
+                  </span>
                 </button>
                 <button
                   onClick={() => navigate('/login')}
-                  className="px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition-colors"
+                  className="group px-8 py-4 bg-cosmic-glass backdrop-blur-md border border-white/20 text-text-primary font-sf-text font-semibold text-lg rounded-2xl hover:bg-cosmic-glassHover hover:shadow-glass transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white/30"
+                  aria-label="Sign in to your account"
                 >
-                  Sign In
+                  <span className="flex items-center space-x-2">
+                    <span>⭐</span>
+                    <span>Sign In</span>
+                  </span>
                 </button>
               </div>
             )}
           </div>
         </div>
-      </div>
+        
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-text-secondary rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-text-secondary rounded-full mt-2 animate-pulse"></div>
+          </div>
+        </div>
+      </section>
 
       {/* Features Section */}
-      <div className="py-24 bg-gray-50">
+      <section className="relative py-24 bg-cosmic-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Why Choose GameDin?
+          {/* Section Header */}
+          <div className="text-center mb-20 animate-fade-in">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-sf-pro font-bold mb-6">
+              <span className="bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">
+                Why Choose
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-accent-gold to-accent-orange bg-clip-text text-transparent">
+                GameDin?
+              </span>
             </h2>
+            <p className="text-xl text-text-secondary font-sf-text font-medium max-w-3xl mx-auto">
+              Experience gaming like never before with our cosmic features designed for the modern gamer
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+          
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Connect with Gamers */}
+            <div className="group bg-cosmic-glass backdrop-blur-md border border-white/10 rounded-3xl p-8 hover:shadow-glass transition-all duration-500 transform hover:-translate-y-2 animate-scale-in">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-cosmic transition-all duration-300">
+                <span className="text-2xl">👥</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Connect with Gamers</h3>
-              <p className="text-gray-600">Find and connect with fellow gamers who share your interests and gaming style.</p>
+              <h3 className="text-2xl font-sf-pro font-bold text-text-primary mb-4">
+                Connect with Gamers
+              </h3>
+              <p className="text-text-secondary font-sf-text leading-relaxed">
+                Find and connect with fellow space explorers who share your interests and gaming style across the galaxy.
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            
+            {/* Track Progress */}
+            <div className="group bg-cosmic-glass backdrop-blur-md border border-white/10 rounded-3xl p-8 hover:shadow-glass transition-all duration-500 transform hover:-translate-y-2 animate-scale-in" style={{ animationDelay: '0.2s' }}>
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-gold to-accent-orange rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-star transition-all duration-300">
+                <span className="text-2xl">📊</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Track Progress</h3>
-              <p className="text-gray-600">Keep track of your gaming achievements and progress across different games.</p>
+              <h3 className="text-2xl font-sf-pro font-bold text-text-primary mb-4">
+                Track Progress
+              </h3>
+              <p className="text-text-secondary font-sf-text leading-relaxed">
+                Keep track of your cosmic achievements and progress across different galaxies and gaming universes.
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                </svg>
+            
+            {/* Join Tournaments */}
+            <div className="group bg-cosmic-glass backdrop-blur-md border border-white/10 rounded-3xl p-8 hover:shadow-glass transition-all duration-500 transform hover:-translate-y-2 animate-scale-in" style={{ animationDelay: '0.4s' }}>
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-magenta to-accent-cyan rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-nebula transition-all duration-300">
+                <span className="text-2xl">🏆</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Join Tournaments</h3>
-              <p className="text-gray-600">Participate in gaming tournaments and compete with players worldwide.</p>
+              <h3 className="text-2xl font-sf-pro font-bold text-text-primary mb-4">
+                Join Tournaments
+              </h3>
+              <p className="text-text-secondary font-sf-text leading-relaxed">
+                Participate in intergalactic gaming tournaments and compete with players from across the universe.
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
-} 
->>>>>>> 2471f6c48a55d40216017bf626f34df3290ed4b9
+}
