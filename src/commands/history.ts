@@ -58,7 +58,7 @@ export const command: Command = {
         const content = msg.content.toLowerCase();
         return content.includes(targetUser.id) || 
                (msg.embeds.length > 0 && 
-                msg.embeds[0].description?.includes(targetUser.id));
+                msg.embeds[0]?.description?.includes(targetUser.id));
       });
 
       if (relevantLogs.size === 0) {

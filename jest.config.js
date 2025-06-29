@@ -13,23 +13,12 @@ module.exports = {
   // Test environment
   preset: 'ts-jest',
   testEnvironment: 'node',
-  
-  // Module resolution
-  moduleNameMapping: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^@/types/(.*)$': '<rootDir>/src/types/$1',
-    '^@/services/(.*)$': '<rootDir>/src/services/$1',
-    '^@/commands/(.*)$': '<rootDir>/src/commands/$1',
-    '^@/events/(.*)$': '<rootDir>/src/events/$1',
-    '^@/utils/(.*)$': '<rootDir>/src/utils/$1',
-    '^@/config/(.*)$': '<rootDir>/src/config/$1'
-  },
+  roots: ['<rootDir>/src'],
   
   // Test file patterns
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.ts',
-    '<rootDir>/src/**/*.test.ts',
-    '<rootDir>/src/**/*.spec.ts'
+    '**/__tests__/**/*.test.ts',
+    '**/?(*.)+(spec|test).ts'
   ],
   
   // Files to ignore
@@ -43,19 +32,14 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/**/*.test.ts',
-    '!src/**/*.spec.ts',
-    '!src/**/__tests__/**',
-    '!src/index.ts',
-    '!src/deploy-commands.ts'
+    '!src/__tests__/**/*'
   ],
   
   coverageDirectory: 'coverage',
   coverageReporters: [
     'text',
     'lcov',
-    'html',
-    'json'
+    'html'
   ],
   
   // Coverage thresholds
@@ -68,21 +52,11 @@ module.exports = {
     }
   },
   
-  // Setup files
-  setupFilesAfterEnv: [
-    '<rootDir>/src/__tests__/setup.ts'
-  ],
-  
   // Transform configuration
   transform: {
-    '^.+\\.ts$': 'ts-jest'
-  },
-  
-  // TypeScript configuration
-  globals: {
-    'ts-jest': {
+    '^.+\\.ts$': ['ts-jest', {
       tsconfig: 'tsconfig.json'
-    }
+    }]
   },
   
   // Module file extensions
@@ -113,8 +87,13 @@ module.exports = {
   // Detect open handles
   detectOpenHandles: true,
   
-  // Environment variables for tests
-  setupFiles: [
-    '<rootDir>/src/__tests__/env.ts'
-  ]
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/commands/(.*)$': '<rootDir>/src/commands/$1',
+    '^@/config/(.*)$': '<rootDir>/src/config/$1',
+    '^@/events/(.*)$': '<rootDir>/src/events/$1',
+    '^@/services/(.*)$': '<rootDir>/src/services/$1',
+    '^@/types/(.*)$': '<rootDir>/src/types/$1',
+    '^@/utils/(.*)$': '<rootDir>/src/utils/$1'
+  }
 }; 

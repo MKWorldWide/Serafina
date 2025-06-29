@@ -172,7 +172,7 @@ Click the reactions below to get your roles!`,
 
   async getWelcomeMessage(): Promise<string> {
     const messages = SERVER_CONFIG.autoMod.welcomeMessages;
-    return messages[Math.floor(Math.random() * messages.length)];
+    return messages[Math.floor(Math.random() * messages.length)] || 'Welcome to the server!';
   }
 
   async assignDefaultRole(memberId: string): Promise<void> {

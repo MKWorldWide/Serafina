@@ -16,8 +16,7 @@ export const event: Event = {
   async execute(member: GuildMember) {
     try {
       // Get a random welcome message
-      const message = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)]
-        .replace('{user}', member.toString());
+      const message = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)] || 'Welcome to the server!';
 
       // Send welcome message to the default channel
       const defaultChannel = member.guild.systemChannel;
