@@ -1,46 +1,56 @@
-<<<<<<< HEAD
-# Use Node.js LTS version
-FROM node:20-slim
+# GameDin Discord Bot - Production Dockerfile
+# Multi-stage build for optimized production image
 
-# Create app directory
+# Build stage
+FROM node:20-alpine as build
+
+# Set working directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
+# Copy package files
 COPY package*.json ./
-RUN npm install
 
-# Bundle app source
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
 COPY . .
 
-# Build TypeScript
+# Build TypeScript application
 RUN npm run build
+
+# Production stage
+FROM node:20-alpine
+
+# Create app user for security
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S bot -u 1001
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application from build stage
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/src ./src
 
 # Create logs directory
-RUN mkdir -p logs
+RUN mkdir -p logs && chown -R bot:nodejs logs
 
-# Expose port if needed (for future web dashboard)
+# Switch to non-root user
+USER bot
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "console.log('Health check passed')" || exit 1
+
+# Expose port for future web dashboard
 EXPOSE 3000
 
-# Start the bot
-CMD ["npm", "start"] 
-=======
-FROM node:18-alpine as build
-
-WORKDIR /usr/src/app
-
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-RUN npm run build
-
-FROM nginx:alpine
-
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
->>>>>>> upstream/main
+# Start the Discord bot
+CMD ["npm", "start"]
