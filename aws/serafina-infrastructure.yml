@@ -1,0 +1,523 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Serafina Discord Bot - 24/7 AWS Infrastructure with Auto-Scaling'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Environment name
+
+  DiscordToken:
+    Type: String
+    NoEcho: true
+    Description: Discord bot token
+
+  ClientId:
+    Type: String
+    Description: Discord client ID
+
+  AlertEmail:
+    Type: String
+    Description: Email address for alerts
+    Default: admin@novasanctum.com
+
+  DomainName:
+    Type: String
+    Description: Domain name for the application
+    Default: serafina.novasanctum.com
+
+Resources:
+  # VPC Configuration
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-vpc-${Environment}
+
+  # Internet Gateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-igw-${Environment}
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Public Subnets
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-public-1-${Environment}
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-public-2-${Environment}
+
+  # Private Subnets
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-private-1-${Environment}
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.4.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-private-2-${Environment}
+
+  # Route Tables
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-public-rt-${Environment}
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+
+  # NAT Gateway for private subnets
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt ElasticIP.AllocationId
+      SubnetId: !Ref PublicSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-nat-${Environment}
+
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-private-rt-${Environment}
+
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable
+
+  # Security Groups
+  SerafinaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for Serafina Discord bot
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: SSH access
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: HTTP access
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: HTTPS access
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+          Description: Serafina bot port
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+          Description: All outbound traffic
+
+  # IAM Role for EC2 instances
+  SerafinaEC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub SerafinaEC2Role-${Environment}
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: SerafinaBotPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:DescribeLogStreams
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref SerafinaSecrets
+
+  SerafinaInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Sub SerafinaInstanceProfile-${Environment}
+      Roles:
+        - !Ref SerafinaEC2Role
+
+  # Secrets Manager
+  SerafinaSecrets:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub serafina/${Environment}/secrets
+      Description: Serafina Discord bot secrets
+      GenerateSecretString:
+        SecretStringTemplate: '{"DISCORD_TOKEN":"","CLIENT_ID":"","OPENAI_API_KEY":"","MISTRAL_API_KEY":"","ATHENAMIST_API_KEY":""}'
+        GenerateStringKey: DISCORD_TOKEN
+        PasswordLength: 32
+        ExcludeCharacters: '"@/\'
+
+  # Application Load Balancer
+  SerafinaALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub serafina-alb-${Environment}
+      Scheme: internet-facing
+      Type: application
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      SecurityGroups:
+        - !Ref SerafinaSecurityGroup
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+        - Key: access_logs.s3.enabled
+          Value: 'true'
+        - Key: access_logs.s3.bucket
+          Value: !Ref SerafinaLogsBucket
+        - Key: access_logs.s3.prefix
+          Value: 'alb-logs'
+
+  # ALB Target Group
+  SerafinaTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub serafina-tg-${Environment}
+      Port: 3000
+      Protocol: HTTP
+      VpcId: !Ref VPC
+      TargetType: instance
+      HealthCheckPath: /health
+      HealthCheckPort: '3000'
+      HealthCheckProtocol: HTTP
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      HealthCheckTimeoutSeconds: 5
+      HealthCheckIntervalSeconds: 30
+
+  # ALB Listener
+  SerafinaALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref SerafinaALB
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref SerafinaTargetGroup
+
+  # Auto Scaling Group
+  SerafinaLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Sub serafina-lt-${Environment}
+      LaunchTemplateData:
+        ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2 AMI
+        InstanceType: t3.medium
+        KeyName: serafina-key
+        SecurityGroupIds:
+          - !Ref SerafinaSecurityGroup
+        IamInstanceProfile:
+          Name: !Ref SerafinaInstanceProfile
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            yum update -y
+            yum install -y git nodejs npm
+            npm install -g pm2
+            
+            # Clone Serafina repository
+            git clone https://github.com/NovaSanctum/GameDinDiscord.git /opt/serafina
+            cd /opt/serafina
+            
+            # Install dependencies
+            npm install
+            
+            # Build the application
+            npm run build
+            
+            # Create PM2 ecosystem file
+            cat > ecosystem.config.js << 'EOF'
+            module.exports = {
+              apps: [{
+                name: 'serafina',
+                script: 'dist/bot-new.js',
+                instances: 1,
+                autorestart: true,
+                watch: false,
+                max_memory_restart: '1G',
+                env: {
+                  NODE_ENV: 'production',
+                  DISCORD_TOKEN: '${DiscordToken}',
+                  CLIENT_ID: '${ClientId}'
+                }
+              }]
+            };
+            EOF
+            
+            # Start Serafina with PM2
+            pm2 start ecosystem.config.js
+            pm2 startup
+            pm2 save
+
+  SerafinaAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub serafina-asg-${Environment}
+      LaunchTemplate:
+        LaunchTemplateId: !Ref SerafinaLaunchTemplate
+        Version: !GetAtt SerafinaLaunchTemplate.LatestVersionNumber
+      MinSize: 2
+      MaxSize: 10
+      DesiredCapacity: 2
+      VPCZoneIdentifier:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      TargetGroupARNs:
+        - !Ref SerafinaTargetGroup
+      HealthCheckType: ELB
+      HealthCheckGracePeriod: 300
+      Cooldown: 300
+      Tags:
+        - Key: Name
+          Value: !Sub serafina-instance-${Environment}
+          PropagateAtLaunch: true
+
+  # Auto Scaling Policies
+  SerafinaScaleUpPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref SerafinaAutoScalingGroup
+      PolicyName: !Sub serafina-scale-up-${Environment}
+      PolicyType: TargetTrackingScaling
+      TargetTrackingConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ASGAverageCPUUtilization
+        TargetValue: 70.0
+
+  SerafinaScaleDownPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref SerafinaAutoScalingGroup
+      PolicyName: !Sub serafina-scale-down-${Environment}
+      PolicyType: TargetTrackingScaling
+      TargetTrackingConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ASGAverageCPUUtilization
+        TargetValue: 30.0
+
+  # CloudWatch Alarms
+  SerafinaCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub serafina-cpu-alarm-${Environment}
+      AlarmDescription: CPU utilization alarm for Serafina
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref SerafinaAutoScalingGroup
+
+  SerafinaHealthAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub serafina-health-alarm-${Environment}
+      AlarmDescription: Health check alarm for Serafina
+      MetricName: HealthyHostCount
+      Namespace: AWS/ApplicationELB
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 2
+      Threshold: 1
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: TargetGroup
+          Value: !GetAtt SerafinaTargetGroup.TargetGroupFullName
+        - Name: LoadBalancer
+          Value: !GetAtt SerafinaALB.LoadBalancerFullName
+
+  # S3 Bucket for logs
+  SerafinaLogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub serafina-logs-${Environment}-${AWS::AccountId}
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # SNS Topic for alerts
+  SerafinaAlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Serafina-Alerts-${Environment}
+      TopicName: !Sub serafina-alerts-${Environment}
+
+  SerafinaAlertSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref SerafinaAlertTopic
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+
+  # Route53 Hosted Zone (if domain provided)
+  SerafinaHostedZone:
+    Type: AWS::Route53::HostedZone
+    Condition: HasDomain
+    Properties:
+      Name: !Ref DomainName
+
+  SerafinaDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: HasDomain
+    Properties:
+      HostedZoneId: !Ref SerafinaHostedZone
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt SerafinaALB.DNSName
+        HostedZoneId: !GetAtt SerafinaALB.CanonicalHostedZoneID
+
+Conditions:
+  HasDomain: !Not [!Equals [!Ref DomainName, '']]
+
+Outputs:
+  LoadBalancerDNS:
+    Description: DNS name of the load balancer
+    Value: !GetAtt SerafinaALB.DNSName
+
+  LoadBalancerURL:
+    Description: URL of the load balancer
+    Value: !Sub http://${SerafinaALB.DNSName}
+
+  AutoScalingGroupName:
+    Description: Name of the Auto Scaling Group
+    Value: !Ref SerafinaAutoScalingGroup
+
+  SecretsARN:
+    Description: ARN of the secrets in Secrets Manager
+    Value: !Ref SerafinaSecrets
+
+  AlertTopicARN:
+    Description: ARN of the SNS topic for alerts
+    Value: !Ref SerafinaAlertTopic
+
+  VPCId:
+    Description: VPC ID
+    Value: !Ref VPC
+
+  DomainName:
+    Description: Domain name (if provided)
+    Value: !If [HasDomain, !Ref DomainName, 'No domain configured']
+    Condition: HasDomain 
