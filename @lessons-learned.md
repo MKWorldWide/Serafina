@@ -298,6 +298,8 @@
 
 [2025-07-08 02:15] Deployment Infrastructure Setup: Issue: Need comprehensive deployment pipeline for Discord bot with AWS infrastructure and GitHub Actions CI/CD → Solution: Created complete deployment ecosystem including GitHub Actions workflow with multi-environment support, Docker containerization with health checks, CloudFormation templates for AWS infrastructure, deployment scripts for automation, and comprehensive documentation → Why: Essential for production reliability - automated deployment pipeline ensures consistent deployments, proper monitoring, and easy rollback capabilities while maintaining 24/7 bot availability across multiple environments.
 
+[2025-07-08 03:10] Discord Bot Deployment: Issue: TypeScript declaration files (.d.ts) causing module loading conflicts and performance warnings in production Discord bot → Solution: Implemented selective compilation strategy, removed unnecessary .d.ts files from dist/, converted event files to ES modules, and optimized build process to exclude frontend files → Why: Critical for preventing runtime module resolution errors, improving bot startup performance, and ensuring clean production deployments with proper separation of concerns between bot and web application components.
+
 ---
 *Last Updated: 2024-12-19*
 *Session: Major Refactoring & Perfection* 
