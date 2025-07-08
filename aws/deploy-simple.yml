@@ -1,0 +1,257 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'GameDin Discord Bot - Simple EC2 Deployment'
+
+Parameters:
+  DiscordToken:
+    Type: String
+    NoEcho: true
+    Description: Discord bot token
+
+  ClientId:
+    Type: String
+    Description: Discord client ID
+
+  Environment:
+    Type: String
+    Default: staging
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Environment name
+
+Resources:
+  # VPC
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub gamedin-vpc-${Environment}
+
+  # Internet Gateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub gamedin-igw-${Environment}
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Public Subnet
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub gamedin-public-${Environment}
+
+  # Route Table
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub gamedin-public-rt-${Environment}
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # Security Group
+  BotSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for GameDin Discord bot
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: SSH access
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: HTTP access
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: HTTPS access
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+          Description: Bot health check
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+          Description: All outbound traffic
+      Tags:
+        - Key: Name
+          Value: !Sub gamedin-sg-${Environment}
+
+  # IAM Role for EC2
+  BotInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+      Policies:
+        - PolicyName: BotPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:DescribeLogStreams
+                Resource: '*'
+
+  BotInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref BotInstanceRole
+
+  # EC2 Instance
+  BotInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0c02fb55956c7d316  # Amazon Linux 2023
+      InstanceType: t3.micro
+      KeyName: !Ref BotKeyPair
+      SecurityGroupIds:
+        - !Ref BotSecurityGroup
+      SubnetId: !Ref PublicSubnet
+      IamInstanceProfile: !Ref BotInstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y git nodejs npm
+          
+          # Create bot directory
+          mkdir -p /opt/gamedin-bot
+          cd /opt/gamedin-bot
+          
+          # Clone repository (you'll need to set up GitHub access)
+          # git clone https://github.com/your-repo/GameDinDiscord.git .
+          
+          # Install dependencies
+          npm install
+          
+          # Create environment file
+          cat > .env << EOF
+          DISCORD_TOKEN=${DiscordToken}
+          DISCORD_CLIENT_ID=${ClientId}
+          NODE_ENV=production
+          EOF
+          
+          # Build application
+          npm run build:new
+          
+          # Start bot
+          nohup node dist/bot-new.js > bot.log 2>&1 &
+          
+          # Setup health check
+          cat > /etc/systemd/system/gamedin-bot.service << EOF
+          [Unit]
+          Description=GameDin Discord Bot
+          After=network.target
+          
+          [Service]
+          Type=simple
+          User=ec2-user
+          WorkingDirectory=/opt/gamedin-bot
+          ExecStart=/usr/bin/node dist/bot-new.js
+          Restart=always
+          RestartSec=10
+          
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+          
+          systemctl enable gamedin-bot
+          systemctl start gamedin-bot
+          
+          # Setup health check endpoint
+          yum install -y httpd
+          systemctl enable httpd
+          systemctl start httpd
+          
+          cat > /var/www/html/health.html << EOF
+          <html>
+          <head><title>GameDin Bot Health</title></head>
+          <body>
+          <h1>GameDin Discord Bot</h1>
+          <p>Status: Running</p>
+          <p>Environment: ${Environment}</p>
+          <p>Timestamp: $(date)</p>
+          </body>
+          </html>
+          EOF
+      Tags:
+        - Key: Name
+          Value: !Sub gamedin-bot-${Environment}
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Key Pair
+  BotKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: !Sub gamedin-key-${Environment}
+
+Outputs:
+  BotInstanceId:
+    Description: ID of the bot instance
+    Value: !Ref BotInstance
+    Export:
+      Name: !Sub gamedin-bot-instance-${Environment}
+
+  BotPublicIP:
+    Description: Public IP of the bot instance
+    Value: !GetAtt BotInstance.PublicIp
+    Export:
+      Name: !Sub gamedin-bot-ip-${Environment}
+
+  BotHealthUrl:
+    Description: Health check URL
+    Value: !Sub http://${BotInstance.PublicIp}/health.html
+    Export:
+      Name: !Sub gamedin-bot-health-${Environment} 
