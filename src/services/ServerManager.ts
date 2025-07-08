@@ -1,5 +1,5 @@
 import { Guild, ChannelType, PermissionFlagsBits, Role, TextChannel, VoiceChannel, CategoryChannel } from 'discord.js';
-import { SERVER_CONFIG } from '../config/serverConfig';
+import { SERVER_CONFIG, RoleConfig, CategoryConfig, ChannelConfig, PermissionConfig } from '../config/serverConfig';
 import { logger } from '../utils/logger';
 
 export class ServerManager {
@@ -35,13 +35,13 @@ export class ServerManager {
   private async createRoles(): Promise<void> {
     const existingRoles = this.guild.roles.cache;
     
-    for (const [roleName, roleConfig] of Object.entries(SERVER_CONFIG.roles)) {
+    for (const [roleName, roleConfig] of Object.entries(SERVER_CONFIG.roles) as [string, RoleConfig][]) {
       if (existingRoles.find(r => r.name === roleName)) {
         logger.info(`Role ${roleName} already exists`);
         continue;
       }
 
-      const permissions = roleConfig.permissions.map(perm => PermissionFlagsBits[perm as keyof typeof PermissionFlagsBits]);
+      const permissions = roleConfig.permissions;
       
       const role = await this.guild.roles.create({
         name: roleName,
@@ -56,7 +56,7 @@ export class ServerManager {
   }
 
   private async createCategoriesAndChannels(): Promise<void> {
-    for (const [categoryName, categoryConfig] of Object.entries(SERVER_CONFIG.categories)) {
+    for (const [categoryName, categoryConfig] of Object.entries(SERVER_CONFIG.categories) as [string, CategoryConfig][]) {
       // Create category
       let category = this.guild.channels.cache.find(c => c.name === categoryName) as CategoryChannel;
       
@@ -65,12 +65,12 @@ export class ServerManager {
           name: categoryName,
           type: ChannelType.GuildCategory,
           reason: 'GameDin server initialization'
-        });
+        }) as CategoryChannel;
         logger.info(`Created category: ${categoryName}`);
       }
 
       // Create channels in category
-      for (const channelConfig of categoryConfig.channels) {
+      for (const channelConfig of categoryConfig.channels as ChannelConfig[]) {
         const existingChannel = this.guild.channels.cache.find(c => c.name === channelConfig.name);
         
         if (existingChannel) {
@@ -78,12 +78,22 @@ export class ServerManager {
           continue;
         }
 
-        const channel = await this.guild.channels.create({
-          name: channelConfig.name,
-          type: channelConfig.type === 'voice' ? ChannelType.GuildVoice : ChannelType.GuildText,
-          parent: category.id,
-          reason: 'GameDin server initialization'
-        });
+        let channel;
+        if (channelConfig.type === ChannelType.GuildVoice) {
+          channel = await this.guild.channels.create({
+            name: channelConfig.name,
+            type: ChannelType.GuildVoice,
+            parent: category.id,
+            reason: 'GameDin server initialization'
+          }) as VoiceChannel;
+        } else {
+          channel = await this.guild.channels.create({
+            name: channelConfig.name,
+            type: ChannelType.GuildText,
+            parent: category.id,
+            reason: 'GameDin server initialization'
+          }) as TextChannel;
+        }
 
         // Set channel permissions
         if ('permissions' in channelConfig && channelConfig.permissions) {
@@ -95,7 +105,7 @@ export class ServerManager {
     }
   }
 
-  private async setChannelPermissions(channel: TextChannel | VoiceChannel, permissions: any): Promise<void> {
+  private async setChannelPermissions(channel: any, permissions: Record<string, PermissionConfig>): Promise<void> {
     const everyoneRole = this.guild.roles.everyone;
     
     if (permissions.everyone) {
@@ -171,8 +181,8 @@ Click the reactions below to get your roles!`,
   }
 
   async getWelcomeMessage(): Promise<string> {
-    const messages = SERVER_CONFIG.autoMod.welcomeMessages;
-    return messages[Math.floor(Math.random() * messages.length)] || 'Welcome to the server!';
+    // SERVER_CONFIG.autoMod.welcomeMessages does not exist; return a static message
+    return 'Welcome to the server!';
   }
 
   async assignDefaultRole(memberId: string): Promise<void> {

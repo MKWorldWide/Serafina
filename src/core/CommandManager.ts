@@ -110,7 +110,8 @@ export class CommandManager {
   private async loadCommand(filePath: string): Promise<void> {
     try {
       const commandModule = await import(filePath);
-      const command = commandModule.default || commandModule;
+      // Support named export (command), default export, or module itself
+      const command = commandModule.command || commandModule.default || commandModule;
 
       // Handle slash commands
       if (command.data && command.execute) {

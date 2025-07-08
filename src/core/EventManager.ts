@@ -85,7 +85,21 @@ export class EventManager {
   private async loadEvent(filePath: string): Promise<void> {
     try {
       const eventModule = await import(filePath);
-      const event = eventModule.default || eventModule;
+      
+      // Handle both default exports and named exports
+      let event = eventModule.default || eventModule.event || eventModule;
+      
+      // If it's an array of events, load each one
+      if (Array.isArray(event)) {
+        for (const evt of event) {
+          if (evt.name && evt.execute) {
+            this.events.set(evt.name, evt);
+            this.initializeEventStats(evt.name);
+            this.logger.info(`Loaded event: ${evt.name}`);
+          }
+        }
+        return;
+      }
 
       if (event.name && event.execute) {
         this.events.set(event.name, event);

@@ -233,7 +233,7 @@ export class AIManager {
     if (scoredProviders.length === 0) {
       throw new AIProviderError('No available providers', AIErrorType.MODEL_UNAVAILABLE);
     }
-    return scoredProviders[0].provider;
+    return scoredProviders[0]!.provider;
   }
 
   /**

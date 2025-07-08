@@ -512,4 +512,35 @@ export const xpSettings = {
   levelMultiplier: 100,
   bonusXpChannels: ['gaming-chat', 'memes-and-chaos'],
   excludedChannels: ['mod-logs', 'mod-chat', 'reports']
+};
+
+// Type definitions for strong typing
+export type PermissionConfig = Record<string, boolean>;
+export interface ChannelConfig {
+  name: string;
+  type: ChannelType;
+  description: string;
+  permissions: Record<string, PermissionConfig>;
+}
+export interface CategoryConfig {
+  description: string;
+  channels: ChannelConfig[];
+}
+export interface RoleConfig {
+  color: number;
+  permissions: bigint;
+  description: string;
+  position: number;
+  mentionable: boolean;
+  hoist: boolean;
+}
+
+// Unified server config export
+export const SERVER_CONFIG = {
+  categories: serverCategories,
+  roles: serverRoles,
+  welcomeMessage,
+  serverSettings,
+  autoMod: autoModSettings,
+  xp: xpSettings,
 }; 
