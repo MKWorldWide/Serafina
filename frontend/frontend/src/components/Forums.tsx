@@ -328,15 +328,15 @@ const Forums: React.FC = () => {
   });
 
   const renderCategories = () => (
-    <Container maxWidth="lg">
+    <Container maxWidth='lg'>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Forums & Discussions
         </Typography>
         <TextField
           fullWidth
-          size="small"
-          placeholder="Search forums..."
+          size='small'
+          placeholder='Search forums...'
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           InputProps={{
@@ -347,7 +347,7 @@ const Forums: React.FC = () => {
       </Box>
 
       {loading ? (
-        <Box display="flex" justifyContent="center" my={4}>
+        <Box display='flex' justifyContent='center' my={4}>
           <CircularProgress />
         </Box>
       ) : (
@@ -356,7 +356,7 @@ const Forums: React.FC = () => {
             .filter(
               category =>
                 category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                category.description.toLowerCase().includes(searchQuery.toLowerCase())
+                category.description.toLowerCase().includes(searchQuery.toLowerCase()),
             )
             .map(category => (
               <Grid item xs={12} key={category.id}>
@@ -364,33 +364,33 @@ const Forums: React.FC = () => {
                   onClick={() => navigate(`/forums/category/${category.id}`)}
                   sx={{ cursor: 'pointer' }}
                 >
-                  <Grid container spacing={2} alignItems="center">
+                  <Grid container spacing={2} alignItems='center'>
                     <Grid item>
                       <Avatar sx={{ width: 56, height: 56, bgcolor: 'primary.main' }}>
                         <ForumIcon />
                       </Avatar>
                     </Grid>
                     <Grid item xs>
-                      <Typography variant="h6">{category.name}</Typography>
-                      <Typography variant="body2" color="textSecondary">
+                      <Typography variant='h6'>{category.name}</Typography>
+                      <Typography variant='body2' color='textSecondary'>
                         {category.description}
                       </Typography>
-                      <Box display="flex" gap={2} mt={1}>
-                        <Typography variant="caption" color="textSecondary">
+                      <Box display='flex' gap={2} mt={1}>
+                        <Typography variant='caption' color='textSecondary'>
                           {category.threadsCount} threads
                         </Typography>
-                        <Typography variant="caption" color="textSecondary">
+                        <Typography variant='caption' color='textSecondary'>
                           {category.postsCount} posts
                         </Typography>
                       </Box>
                     </Grid>
                     {category.lastPost && (
-                      <Grid item xs={12} sm="auto">
-                        <Box textAlign="right">
-                          <Typography variant="caption" color="textSecondary">
+                      <Grid item xs={12} sm='auto'>
+                        <Box textAlign='right'>
+                          <Typography variant='caption' color='textSecondary'>
                             Latest post by {category.lastPost.author.username}
                           </Typography>
-                          <Typography variant="caption" display="block" color="textSecondary">
+                          <Typography variant='caption' display='block' color='textSecondary'>
                             {new Date(category.lastPost.createdAt).toLocaleDateString()}
                           </Typography>
                         </Box>
@@ -406,14 +406,14 @@ const Forums: React.FC = () => {
   );
 
   const renderThreads = () => (
-    <Container maxWidth="lg">
+    <Container maxWidth='lg'>
       <Box sx={{ mb: 4 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4">
+        <Box display='flex' justifyContent='space-between' alignItems='center' mb={3}>
+          <Typography variant='h4'>
             {categories.find(c => c.id === categoryId)?.name || 'Threads'}
           </Typography>
           <Button
-            variant="contained"
+            variant='contained'
             startIcon={<AddIcon />}
             onClick={() => setCreateThreadDialog(true)}
           >
@@ -422,8 +422,8 @@ const Forums: React.FC = () => {
         </Box>
         <TextField
           fullWidth
-          size="small"
-          placeholder="Search threads..."
+          size='small'
+          placeholder='Search threads...'
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           InputProps={{
@@ -434,7 +434,7 @@ const Forums: React.FC = () => {
       </Box>
 
       {loading ? (
-        <Box display="flex" justifyContent="center" my={4}>
+        <Box display='flex' justifyContent='center' my={4}>
           <CircularProgress />
         </Box>
       ) : (
@@ -442,58 +442,58 @@ const Forums: React.FC = () => {
           {filteredThreads.map(thread => (
             <Card key={thread.id}>
               <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                <Box display='flex' justifyContent='space-between' alignItems='flex-start'>
                   <Box>
-                    <Typography variant="h6">{thread.title}</Typography>
-                    <Box display="flex" gap={1} mb={1}>
+                    <Typography variant='h6'>{thread.title}</Typography>
+                    <Box display='flex' gap={1} mb={1}>
                       {thread.game && (
-                        <Chip label={thread.game.name} size="small" color="primary" />
+                        <Chip label={thread.game.name} size='small' color='primary' />
                       )}
-                      <Chip label={thread.category.name} size="small" variant="outlined" />
+                      <Chip label={thread.category.name} size='small' variant='outlined' />
                     </Box>
                   </Box>
-                  <Box display="flex" alignItems="center">
+                  <Box display='flex' alignItems='center'>
                     <Avatar src={thread.author.avatarUrl} />
                     <Box ml={1}>
-                      <Typography variant="subtitle2">
+                      <Typography variant='subtitle2'>
                         {thread.author.username}
                         {thread.author.verified && (
-                          <Tooltip title="Verified User">
-                            <VerifiedIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
+                          <Tooltip title='Verified User'>
+                            <VerifiedIcon fontSize='small' color='primary' sx={{ ml: 0.5 }} />
                           </Tooltip>
                         )}
                       </Typography>
-                      <Typography variant="caption" color="textSecondary">
+                      <Typography variant='caption' color='textSecondary'>
                         Posted on {new Date(thread.createdAt).toLocaleDateString()}
                       </Typography>
                     </Box>
                   </Box>
                 </Box>
 
-                <Typography variant="body2" color="textSecondary" paragraph>
+                <Typography variant='body2' color='textSecondary' paragraph>
                   {thread.content}
                 </Typography>
 
-                <Box display="flex" gap={1} mt={2}>
+                <Box display='flex' gap={1} mt={2}>
                   {thread.isPinned && (
-                    <Chip icon={<PushPinIcon />} label="Pinned" size="small" color="primary" />
+                    <Chip icon={<PushPinIcon />} label='Pinned' size='small' color='primary' />
                   )}
                   {thread.isLocked && (
-                    <Chip icon={<LockIcon />} label="Locked" size="small" color="error" />
+                    <Chip icon={<LockIcon />} label='Locked' size='small' color='error' />
                   )}
                   {thread.tags.map(tag => (
-                    <Chip key={tag} label={tag} size="small" />
+                    <Chip key={tag} label={tag} size='small' />
                   ))}
                 </Box>
 
-                <Box display="flex" gap={2} mt={2}>
-                  <Typography variant="body2" color="textSecondary">
+                <Box display='flex' gap={2} mt={2}>
+                  <Typography variant='body2' color='textSecondary'>
                     {thread.views} views
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography variant='body2' color='textSecondary'>
                     {thread.replies} replies
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography variant='body2' color='textSecondary'>
                     {thread.likes} likes
                   </Typography>
                 </Box>
@@ -506,32 +506,32 @@ const Forums: React.FC = () => {
       <Dialog
         open={createThreadDialog}
         onClose={() => setCreateThreadDialog(false)}
-        maxWidth="md"
+        maxWidth='md'
         fullWidth
       >
         <DialogTitle>Create New Thread</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
-            label="Title"
+            label='Title'
             value={newThread.title}
             onChange={e => setNewThread(prev => ({ ...prev, title: e.target.value }))}
-            margin="normal"
+            margin='normal'
           />
           <TextField
             fullWidth
-            label="Content"
+            label='Content'
             multiline
             rows={6}
             value={newThread.content}
             onChange={e => setNewThread(prev => ({ ...prev, content: e.target.value }))}
-            margin="normal"
+            margin='normal'
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setCreateThreadDialog(false)}>Cancel</Button>
           <Button
-            variant="contained"
+            variant='contained'
             onClick={handleCreateThread}
             disabled={!newThread.title || !newThread.content}
           >
@@ -545,8 +545,8 @@ const Forums: React.FC = () => {
   return (
     <Box>
       <Routes>
-        <Route path="/" element={renderCategories()} />
-        <Route path="/category/:categoryId" element={renderThreads()} />
+        <Route path='/' element={renderCategories()} />
+        <Route path='/category/:categoryId' element={renderThreads()} />
       </Routes>
 
       <Snackbar

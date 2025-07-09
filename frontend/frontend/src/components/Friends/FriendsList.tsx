@@ -54,15 +54,15 @@ const FriendsList: React.FC = () => {
   return (
     <Box sx={{ bgcolor: 'background.paper', borderRadius: 1, overflow: 'hidden' }}>
       <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant='h6' gutterBottom>
           Friends
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant='body2' color='text.secondary'>
             {friends.filter(f => f.isOnline).length} online
           </Typography>
-          <Tooltip title="Add Friend">
-            <IconButton size="small">
+          <Tooltip title='Add Friend'>
+            <IconButton size='small'>
               <AddFriendIcon />
             </IconButton>
           </Tooltip>
@@ -73,8 +73,8 @@ const FriendsList: React.FC = () => {
         {friends.length === 0 ? (
           <ListItem>
             <ListItemText
-              primary="No friends yet"
-              secondary="Add friends to see them here"
+              primary='No friends yet'
+              secondary='Add friends to see them here'
               secondaryTypographyProps={{ color: 'text.secondary' }}
             />
           </ListItem>
@@ -84,13 +84,13 @@ const FriendsList: React.FC = () => {
               key={friend.id}
               secondaryAction={
                 <Box>
-                  <Tooltip title="Send Message">
-                    <IconButton edge="end" onClick={() => handleMessage(friend.id)}>
+                  <Tooltip title='Send Message'>
+                    <IconButton edge='end' onClick={() => handleMessage(friend.id)}>
                       <ChatIcon />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Invite to Game">
-                    <IconButton edge="end" onClick={() => handleInviteToGame(friend.id)}>
+                  <Tooltip title='Invite to Game'>
+                    <IconButton edge='end' onClick={() => handleInviteToGame(friend.id)}>
                       <GameIcon />
                     </IconButton>
                   </Tooltip>
@@ -99,9 +99,9 @@ const FriendsList: React.FC = () => {
             >
               <ListItemAvatar>
                 <Badge
-                  overlap="circular"
+                  overlap='circular'
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                  variant="dot"
+                  variant='dot'
                   color={friend.isOnline ? 'success' : 'default'}
                 >
                   <Avatar src={friend.avatar} alt={friend.username} />
@@ -122,4 +122,4 @@ const FriendsList: React.FC = () => {
   );
 };
 
-export default FriendsList; 
+export default FriendsList;

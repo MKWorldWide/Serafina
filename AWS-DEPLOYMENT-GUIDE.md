@@ -9,6 +9,7 @@ This guide provides comprehensive instructions for upgrading Serafina Discord Bo
 ### Prerequisites
 
 1. **AWS CLI Installed**
+
    ```bash
    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
    unzip awscliv2.zip
@@ -16,11 +17,13 @@ This guide provides comprehensive instructions for upgrading Serafina Discord Bo
    ```
 
 2. **AWS Credentials Configured**
+
    ```bash
    aws configure
    ```
 
 3. **Node.js 18+ and npm**
+
    ```bash
    node --version
    npm --version
@@ -45,6 +48,7 @@ npm run aws:deploy:dev
 ## 🏗️ Infrastructure Components
 
 ### 1. **VPC and Networking**
+
 - **VPC**: Custom VPC with public and private subnets
 - **Internet Gateway**: For public subnet access
 - **NAT Gateway**: For private subnet internet access
@@ -52,6 +56,7 @@ npm run aws:deploy:dev
 - **Security Groups**: Firewall rules for bot instances
 
 ### 2. **Auto Scaling Group**
+
 - **Minimum Instances**: 2 (for high availability)
 - **Maximum Instances**: 10 (for scalability)
 - **Desired Capacity**: 2 (initial deployment)
@@ -59,12 +64,14 @@ npm run aws:deploy:dev
 - **Scaling Policies**: CPU-based auto-scaling (70% scale up, 30% scale down)
 
 ### 3. **Load Balancer**
+
 - **Application Load Balancer**: Distributes traffic across instances
 - **Target Group**: Health checks on port 3000
 - **Health Check Path**: `/health` endpoint
 - **Sticky Sessions**: Enabled for consistent user experience
 
 ### 4. **Monitoring and Alerting**
+
 - **CloudWatch Dashboard**: Real-time metrics visualization
 - **CloudWatch Alarms**: CPU, memory, and health monitoring
 - **SNS Topics**: Email and Discord notifications
@@ -72,6 +79,7 @@ npm run aws:deploy:dev
 - **Security Hub**: Security compliance monitoring
 
 ### 5. **Security Features**
+
 - **Secrets Manager**: Secure storage of Discord tokens and API keys
 - **IAM Roles**: Least privilege access for instances
 - **WAF Rules**: Web application firewall protection
@@ -176,6 +184,7 @@ aws elbv2 describe-target-health \
 ### CloudWatch Dashboard
 
 Access the CloudWatch dashboard to monitor:
+
 - **EC2 Metrics**: CPU, memory, network usage
 - **Load Balancer Metrics**: Request count, response time, healthy hosts
 - **Auto Scaling Metrics**: Instance count, scaling events
@@ -183,6 +192,7 @@ Access the CloudWatch dashboard to monitor:
 ### Health Checks
 
 The bot provides health check endpoints:
+
 - **Basic Health**: `http://<load-balancer>/health`
 - **Detailed Status**: `http://<load-balancer>/status`
 - **Metrics**: `http://<load-balancer>/metrics`
@@ -190,6 +200,7 @@ The bot provides health check endpoints:
 ### Alerts and Notifications
 
 Configured alerts for:
+
 - **High CPU Usage**: >80% for 5 minutes
 - **Low Healthy Hosts**: <1 healthy instance
 - **High Memory Usage**: >80% for 5 minutes
@@ -198,16 +209,19 @@ Configured alerts for:
 ## 🔄 Auto-Scaling Behavior
 
 ### Scale Up Triggers
+
 - **CPU Utilization**: >70% for 2 minutes
 - **Memory Usage**: >80% for 2 minutes
 - **Request Count**: High traffic volume
 
 ### Scale Down Triggers
+
 - **CPU Utilization**: <30% for 10 minutes
 - **Memory Usage**: <50% for 10 minutes
 - **Low Traffic**: Sustained low request count
 
 ### Scaling Limits
+
 - **Minimum Instances**: 2 (ensures high availability)
 - **Maximum Instances**: 10 (cost control)
 - **Cooldown Period**: 5 minutes between scaling events
@@ -215,18 +229,21 @@ Configured alerts for:
 ## 🛡️ Security Features
 
 ### Network Security
+
 - **VPC Isolation**: Private subnets for bot instances
 - **Security Groups**: Restrictive firewall rules
 - **NAT Gateway**: Controlled internet access
 - **WAF Protection**: Web application firewall
 
 ### Data Security
+
 - **Secrets Manager**: Encrypted storage of sensitive data
 - **IAM Roles**: Least privilege access
 - **Encryption**: AES-256 encryption at rest
 - **TLS**: HTTPS for all communications
 
 ### Monitoring Security
+
 - **GuardDuty**: Threat detection
 - **Security Hub**: Compliance monitoring
 - **CloudTrail**: API call logging
@@ -235,17 +252,20 @@ Configured alerts for:
 ## 💰 Cost Optimization
 
 ### Instance Types
+
 - **Development**: t3.micro (2 vCPU, 1 GB RAM)
 - **Staging**: t3.small (2 vCPU, 2 GB RAM)
 - **Production**: t3.medium (2 vCPU, 4 GB RAM)
 
 ### Cost Control
+
 - **Auto Scaling**: Scale down during low usage
 - **Reserved Instances**: For predictable workloads
 - **Spot Instances**: For non-critical workloads
 - **Cost Alerts**: Monitor spending
 
 ### Estimated Monthly Costs (Production)
+
 - **EC2 Instances**: $50-150 (depending on usage)
 - **Load Balancer**: $20-30
 - **NAT Gateway**: $45
@@ -257,6 +277,7 @@ Configured alerts for:
 ### Common Issues
 
 #### 1. Bot Not Responding
+
 ```bash
 # Check instance health
 aws autoscaling describe-auto-scaling-groups \
@@ -271,6 +292,7 @@ aws logs describe-log-groups --log-group-name-prefix serafina
 ```
 
 #### 2. High CPU Usage
+
 ```bash
 # Check scaling policies
 aws autoscaling describe-policies \
@@ -282,6 +304,7 @@ aws cloudwatch describe-alarms \
 ```
 
 #### 3. Security Issues
+
 ```bash
 # Check GuardDuty findings
 aws guardduty list-findings --detector-id <detector-id>
@@ -293,16 +316,19 @@ aws securityhub get-findings --filters '{"RecordState":[{"Value":"ACTIVE","Compa
 ### Recovery Procedures
 
 #### 1. Instance Failure
+
 - Auto Scaling Group automatically replaces failed instances
 - Health checks ensure only healthy instances receive traffic
 - CloudWatch alarms notify of issues
 
 #### 2. Load Balancer Issues
+
 - Check target group health
 - Verify security group rules
 - Review CloudWatch metrics
 
 #### 3. Scaling Issues
+
 - Check Auto Scaling Group configuration
 - Verify CloudWatch alarms
 - Review scaling policies
@@ -310,17 +336,20 @@ aws securityhub get-findings --filters '{"RecordState":[{"Value":"ACTIVE","Compa
 ## 📞 Support and Maintenance
 
 ### Regular Maintenance
+
 - **Weekly**: Review CloudWatch metrics and logs
 - **Monthly**: Update security patches and dependencies
 - **Quarterly**: Review and optimize costs
 - **Annually**: Security audit and compliance review
 
 ### Emergency Contacts
+
 - **AWS Support**: For infrastructure issues
 - **Discord Developer Support**: For bot-specific issues
 - **Development Team**: For code and configuration issues
 
 ### Documentation
+
 - **Infrastructure**: AWS CloudFormation templates
 - **Application**: Source code and README
 - **Monitoring**: CloudWatch dashboards and alarms
@@ -329,18 +358,21 @@ aws securityhub get-findings --filters '{"RecordState":[{"Value":"ACTIVE","Compa
 ## 🎯 Success Metrics
 
 ### Performance Targets
+
 - **Uptime**: 99.9% availability
 - **Response Time**: <2 seconds for Discord commands
 - **Auto Scaling**: Respond within 5 minutes to traffic changes
 - **Error Rate**: <1% of requests
 
 ### Monitoring KPIs
+
 - **CPU Utilization**: Average <50%
 - **Memory Usage**: Average <70%
 - **Request Latency**: P95 <1 second
 - **Error Rate**: <0.1%
 
 ### Cost Targets
+
 - **Monthly Cost**: <$250 for production
 - **Cost per Request**: <$0.001
 - **Scaling Efficiency**: 80%+ resource utilization
@@ -360,5 +392,5 @@ For additional support or questions, refer to the project documentation or conta
 
 ---
 
-*Last Updated: 2024-12-19*
-*Version: 1.0.0* 
+_Last Updated: 2024-12-19_
+_Version: 1.0.0_

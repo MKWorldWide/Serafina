@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  PermissionFlagsBits,
+  EmbedBuilder,
+} from 'discord.js';
 import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
@@ -21,7 +26,7 @@ export const command: Command = {
 
       // Get all channels
       const channels = guild.channels.cache;
-      
+
       // Delete all channels
       for (const channel of channels.values()) {
         try {
@@ -32,14 +37,17 @@ export const command: Command = {
         }
       }
 
-      await interaction.editReply('✅ All channels have been cleared. You can now use /setup to initialize the server.');
+      await interaction.editReply(
+        '✅ All channels have been cleared. You can now use /setup to initialize the server.',
+      );
       logger.info(`Server reset completed for guild: ${guild.name} (${guild.id})`);
-
     } catch (error) {
       logger.error('Error in reset command:', error);
-      await interaction.editReply('❌ An error occurred while resetting the server. Please check the logs for details.');
+      await interaction.editReply(
+        '❌ An error occurred while resetting the server. Please check the logs for details.',
+      );
     }
   },
 
-  cooldown: 300 // 5 minutes cooldown
-}; 
+  cooldown: 300, // 5 minutes cooldown
+};

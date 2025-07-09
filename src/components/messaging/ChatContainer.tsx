@@ -36,9 +36,9 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   onLeaveGroup,
   onEditGroup,
   onMuteConversation,
-  onBlockUser
+  onBlockUser,
 }) => {
-  const darkMode = useStore((state) => state.darkMode);
+  const darkMode = useStore(state => state.darkMode);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
@@ -95,19 +95,22 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   }, [messages, shouldAutoScroll]);
 
   // Handle typing indicators
-  const handleTyping = useCallback((isTyping: boolean) => {
-    if (isTyping) {
-      setTypingUsers(prev => new Set(prev).add(currentUser.id));
-      // Clear typing indicator after 3 seconds of inactivity
-      setTimeout(() => {
-        setTypingUsers(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(currentUser.id);
-          return newSet;
-        });
-      }, 3000);
-    }
-  }, [currentUser.id]);
+  const handleTyping = useCallback(
+    (isTyping: boolean) => {
+      if (isTyping) {
+        setTypingUsers(prev => new Set(prev).add(currentUser.id));
+        // Clear typing indicator after 3 seconds of inactivity
+        setTimeout(() => {
+          setTypingUsers(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(currentUser.id);
+            return newSet;
+          });
+        }, 3000);
+      }
+    },
+    [currentUser.id],
+  );
 
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
@@ -119,19 +122,24 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
     setIsEditingGroup(false);
   }, []);
 
-  const handleUpdateGroup = useCallback(async (name: string, participants: string[]) => {
-    if (onEditGroup) {
-      await onEditGroup();
-      setIsEditingGroup(false);
-    }
-  }, [onEditGroup]);
+  const handleUpdateGroup = useCallback(
+    async (name: string, participants: string[]) => {
+      if (onEditGroup) {
+        await onEditGroup();
+        setIsEditingGroup(false);
+      }
+    },
+    [onEditGroup],
+  );
 
   return (
-    <div className={`
+    <div
+      className={`
       flex h-full overflow-hidden
       ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}
-    `}>
-      <div className="flex flex-col flex-grow min-w-0">
+    `}
+    >
+      <div className='flex flex-col flex-grow min-w-0'>
         <ChatHeader
           conversation={conversation}
           currentUser={currentUser}
@@ -146,22 +154,18 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
 
         <div
           ref={containerRef}
-          className="flex-grow overflow-y-auto"
-          role="log"
-          aria-live="polite"
-          aria-label="Message history"
+          className='flex-grow overflow-y-auto'
+          role='log'
+          aria-live='polite'
+          aria-label='Message history'
         >
           {hasMore && (
-            <div ref={loadMoreRef} className="h-8 flex items-center justify-center">
+            <div ref={loadMoreRef} className='h-8 flex items-center justify-center'>
               {loading && <span>Loading more messages...</span>}
             </div>
           )}
 
-          <MessageList
-            messages={messages}
-            currentUser={currentUser}
-            virtualizer={virtualizer}
-          />
+          <MessageList messages={messages} currentUser={currentUser} virtualizer={virtualizer} />
 
           {typingUsers.size > 0 && (
             <div
@@ -169,12 +173,14 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
                 px-4 py-2 text-sm
                 ${darkMode ? 'text-gray-400' : 'text-gray-600'}
               `}
-              aria-live="polite"
+              aria-live='polite'
             >
-              {Array.from(typingUsers).map(userId => {
-                const user = conversation.participants.find(p => p.user.id === userId)?.user;
-                return user?.name || user?.username;
-              }).join(', ')}
+              {Array.from(typingUsers)
+                .map(userId => {
+                  const user = conversation.participants.find(p => p.user.id === userId)?.user;
+                  return user?.name || user?.username;
+                })
+                .join(', ')}
               {' is typing...'}
             </div>
           )}
@@ -199,10 +205,21 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
               fixed bottom-20 right-8 p-2 rounded-full shadow-lg
               ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
             `}
-            aria-label="Scroll to latest messages"
+            aria-label='Scroll to latest messages'
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              className='h-6 w-6'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M19 14l-7 7m0 0l-7-7m7 7V3'
+              />
             </svg>
           </button>
         )}
@@ -231,4 +248,4 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   );
 };
 
-ChatContainer.displayName = 'ChatContainer'; 
+ChatContainer.displayName = 'ChatContainer';

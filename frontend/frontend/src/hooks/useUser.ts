@@ -30,4 +30,4 @@ export function useUser() {
   }, []);
 
   return { user, isAuthenticated, loading, error };
-} 
+}

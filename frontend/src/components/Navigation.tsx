@@ -8,7 +8,7 @@ interface NavigationProps {
 
 /**
  * Galaxy Navigation Component
- * 
+ *
  * Features Apple-inspired design with:
  * - Glassmorphism navigation bar
  * - Smooth hover animations
@@ -50,33 +50,31 @@ const Navigation: React.FC<NavigationProps> = ({ signOut }) => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-cosmic-glass/80 backdrop-blur-xl border-b border-white/10 shadow-glass' 
-        : 'bg-transparent'
-    }`}>
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16 lg:h-20">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-cosmic-glass/80 backdrop-blur-xl border-b border-white/10 shadow-glass'
+          : 'bg-transparent'
+      }`}
+    >
+      <div className='container mx-auto px-4'>
+        <div className='flex justify-between items-center h-16 lg:h-20'>
           {/* Logo */}
-          <Link 
-            to="/" 
-            className="flex items-center space-x-3 group"
-            aria-label="GameDin Home"
-          >
-            <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-cosmic group-hover:shadow-glow transition-all duration-300 transform group-hover:scale-105">
-                <span className="text-xl">🚀</span>
+          <Link to='/' className='flex items-center space-x-3 group' aria-label='GameDin Home'>
+            <div className='relative'>
+              <div className='w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-cosmic group-hover:shadow-glow transition-all duration-300 transform group-hover:scale-105'>
+                <span className='text-xl'>🚀</span>
               </div>
-              <div className="absolute -inset-1 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm"></div>
+              <div className='absolute -inset-1 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm'></div>
             </div>
-            <span className="text-2xl lg:text-3xl font-sf-pro font-bold bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">
+            <span className='text-2xl lg:text-3xl font-sf-pro font-bold bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent'>
               GameDin
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
-            {navItems.map((item) => (
+          <div className='hidden lg:flex items-center space-x-8'>
+            {navItems.map(item => (
               <Link
                 key={item.path}
                 to={item.path}
@@ -87,40 +85,40 @@ const Navigation: React.FC<NavigationProps> = ({ signOut }) => {
                 }`}
                 aria-label={`Navigate to ${item.label}`}
               >
-                <span className="text-lg">{item.icon}</span>
+                <span className='text-lg'>{item.icon}</span>
                 <span>{item.label}</span>
                 {location.pathname === item.path && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full"></div>
+                  <div className='absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full'></div>
                 )}
               </Link>
             ))}
           </div>
 
           {/* User Actions */}
-          <div className="flex items-center space-x-4">
+          <div className='flex items-center space-x-4'>
             {user ? (
               <>
                 {/* User Avatar */}
-                <div className="relative group">
-                  <div className="w-10 h-10 bg-gradient-to-br from-accent-gold to-accent-orange rounded-full flex items-center justify-center shadow-star hover:shadow-glow transition-all duration-300 transform hover:scale-105">
-                    <span className="text-white font-sf-text font-semibold text-sm">
+                <div className='relative group'>
+                  <div className='w-10 h-10 bg-gradient-to-br from-accent-gold to-accent-orange rounded-full flex items-center justify-center shadow-star hover:shadow-glow transition-all duration-300 transform hover:scale-105'>
+                    <span className='text-white font-sf-text font-semibold text-sm'>
                       {user.username?.charAt(0).toUpperCase() || 'U'}
                     </span>
                   </div>
-                  <div className="absolute -inset-1 bg-gradient-to-br from-accent-gold to-accent-orange rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm"></div>
+                  <div className='absolute -inset-1 bg-gradient-to-br from-accent-gold to-accent-orange rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm'></div>
                 </div>
 
                 {/* Sign Out Button */}
                 <button
                   onClick={handleSignOut}
-                  className="px-6 py-2 bg-gradient-to-r from-status-error to-red-600 text-white font-sf-text font-medium rounded-xl hover:shadow-glow transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500/30"
-                  aria-label="Sign out"
+                  className='px-6 py-2 bg-gradient-to-r from-status-error to-red-600 text-white font-sf-text font-medium rounded-xl hover:shadow-glow transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500/30'
+                  aria-label='Sign out'
                 >
                   Sign Out
                 </button>
               </>
             ) : (
-              <div className="px-6 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-sf-text font-medium rounded-xl animate-pulse-glow">
+              <div className='px-6 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-sf-text font-medium rounded-xl animate-pulse-glow'>
                 Sign In
               </div>
             )}
@@ -128,14 +126,29 @@ const Navigation: React.FC<NavigationProps> = ({ signOut }) => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl bg-cosmic-glass/50 backdrop-blur-sm border border-white/10 hover:bg-cosmic-glass/70 transition-all duration-300"
-              aria-label="Toggle mobile menu"
+              className='lg:hidden p-2 rounded-xl bg-cosmic-glass/50 backdrop-blur-sm border border-white/10 hover:bg-cosmic-glass/70 transition-all duration-300'
+              aria-label='Toggle mobile menu'
             >
-              <svg className="w-6 h-6 text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className='w-6 h-6 text-text-primary'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
                 {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M6 18L18 6M6 6l12 12'
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M4 6h16M4 12h16M4 18h16'
+                  />
                 )}
               </svg>
             </button>
@@ -144,9 +157,9 @@ const Navigation: React.FC<NavigationProps> = ({ signOut }) => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-white/10 animate-slide-in-down">
-            <div className="space-y-2">
-              {navItems.map((item) => (
+          <div className='lg:hidden py-4 border-t border-white/10 animate-slide-in-down'>
+            <div className='space-y-2'>
+              {navItems.map(item => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -158,7 +171,7 @@ const Navigation: React.FC<NavigationProps> = ({ signOut }) => {
                   }`}
                   aria-label={`Navigate to ${item.label}`}
                 >
-                  <span className="text-xl">{item.icon}</span>
+                  <span className='text-xl'>{item.icon}</span>
                   <span>{item.label}</span>
                 </Link>
               ))}
@@ -170,4 +183,4 @@ const Navigation: React.FC<NavigationProps> = ({ signOut }) => {
   );
 };
 
-export default Navigation; 
+export default Navigation;

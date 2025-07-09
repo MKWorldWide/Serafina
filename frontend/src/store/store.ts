@@ -1,6 +1,6 @@
 /**
  * Root Store
- * 
+ *
  * This module combines all domain-specific store slices into a single Zustand store.
  * It provides a unified interface for accessing and manipulating application state.
  */
@@ -29,7 +29,7 @@ export const useStore = create<RootStore>()(
     {
       name: 'gamedin-store',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
+      partialize: state => ({
         // Only persist non-sensitive data
         settings: state.settings,
         darkMode: state.darkMode,
@@ -37,8 +37,8 @@ export const useStore = create<RootStore>()(
         isAuthenticated: state.isAuthenticated,
         // Don't persist messages or conversations (will be fetched from API)
       }),
-    }
-  )
+    },
+  ),
 );
 
 /**
@@ -110,4 +110,4 @@ export const useMessagingStore = () => {
     createConversation: store.createConversation,
     leaveConversation: store.leaveConversation,
   };
-}; 
+};

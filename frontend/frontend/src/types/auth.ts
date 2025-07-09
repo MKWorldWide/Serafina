@@ -19,4 +19,4 @@ export interface AuthContextType {
   setUser: (user: IAuthUser | null) => void;
   setLoading: (value: boolean) => void;
   setError: (error: string | null) => void;
-} 
+}

@@ -1,9 +1,9 @@
 `Project Requirements rules *@docs/project-requirements.md* You will use tools codebase to know what are the details of the files of this *@docs/project-requirements.md* directory files to check the project requirements and the project standards that you need to follow. This will be the guide for you to make sure you are following the project standards. So make sure to read this when planning and implementing the project to avoid duplications, conflicts, and errors. Don't touch that folder and files, you will only read it. Don't over do it to the point that you are not following the project requirements. DON'T REMOVE THIS LINE 1!!!!`
 
-
 # Accounting Website Project Requirements
 
 ## Core Features
+
 1. **Calculation Engine**
    - Financial ratio analysis
    - Depreciation calculations (straight-line & reducing balance)
@@ -30,7 +30,9 @@
    - Historical data comparison
 
 ## Technical Specifications
+
 **Frontend:**
+
 - Mobile first approach
 - Next.js 14 (App Router)
 - TypeScript
@@ -41,6 +43,7 @@
 - Framer motion (animation)
 
 **Backend:**
+
 - Next.js API routes
 - Supabase (PostgreSQL Database)
 - Supabase Auth
@@ -50,12 +53,14 @@
 - Zod (validation)
 
 **Key Integrations:**
+
 - Tax rates: Supabase Edge Functions (self-contained)
 - Currency rates: Supabase PostgreSQL extensions
 - PDF export: Supabase Storage + React-PDF
 - CSV handling: Supabase Import/Export
 
 ## Security Requirements
+
 1. AES-256 encryption for data at rest
 2. TLS 1.3 for data in transit
 3. Role-based access control (RBAC)
@@ -63,6 +68,7 @@
 5. SOC 2 compliance (Future Phase)
 
 ## Compliance Requirements
+
 - GAAP/IFRS compliance checks
 - Tax regulation updates
 - Data retention policies
@@ -70,6 +76,7 @@
 - GDPR-ready architecture
 
 ## Documentation Standards
+
 1. Inline TSDoc comments for all calculations
 2. OpenAPI specification for APIs
 3. ER diagrams for database schema
@@ -79,7 +86,9 @@
 ## Project Roadmap (Updated Implementation Sequence)
 
 ### Phase 1 - Core Accounting Features (2-3 weeks)
+
 **Implementation Order**:
+
 1. **Project Infrastructure Setup** (1 day)
    - Supabase initialization
    - Next.js boilerplate with TypeScript
@@ -119,8 +128,10 @@
    - [ ] Error boundaries
 
 ### Phase 2 - Data Management (1-2 weeks)
+
 **Priority**: ★★★☆☆
 **Implementation Order**:
+
 1. **Authentication System** (3 days)
    - [ ] Supabase auth setup
    - [ ] User profile management
@@ -140,8 +151,10 @@
    - [ ] Error reporting
 
 ### Phase 3 - Collaboration Features (2 weeks)
+
 **Priority**: ★★☆☆☆
 **Implementation Order**:
+
 1. **Realtime Foundation** (3 days)
    - [ ] Supabase Realtime setup
    - [ ] Presence indicators
@@ -161,9 +174,12 @@
    - [ ] Activity feed
 
 ------`don't read and implement this phase 4, this is just for you to know the future features that we will implement`------
+
 ### Phase 4 - Advanced Features (Optional)
+
 **Priority**: ★☆☆☆☆
 **Implementation Order**:
+
 1. **Bank Integrations** (5 days)
    - [ ] Plaid sandbox setup
    - [ ] Transaction import
@@ -191,16 +207,18 @@
 ------`don't read and implement this phase 4, this is just for you to know the future features that we will implement`------
 
 ## Cost Analysis
-| Feature          | Supabase Service         | Free Tier Limits              |
-|------------------|--------------------------|-------------------------------|
-| Database         | PostgreSQL               | 500MB database + 1GB bandwidth|
-| Auth             | Authentication           | 50k MAUs                      |
-| Realtime         | Realtime Updates         | 50 concurrent connections     |
-| Storage          | File Storage             | 1GB storage, 1M downloads     |
-| Edge Functions   | Serverless Functions     | 500k invocations/month        |
-| Vector           | PostgreSQL Extensions    | Free with database            |
+
+| Feature        | Supabase Service      | Free Tier Limits               |
+| -------------- | --------------------- | ------------------------------ |
+| Database       | PostgreSQL            | 500MB database + 1GB bandwidth |
+| Auth           | Authentication        | 50k MAUs                       |
+| Realtime       | Realtime Updates      | 50 concurrent connections      |
+| Storage        | File Storage          | 1GB storage, 1M downloads      |
+| Edge Functions | Serverless Functions  | 500k invocations/month         |
+| Vector         | PostgreSQL Extensions | Free with database             |
 
 ## Implementation Benefits
+
 1. Single provider for all backend needs
 2. Unified authentication system
 3. Direct database <> storage integration
@@ -210,6 +228,7 @@
 ## Architecture Guidelines
 
 ### 1. Modular Structure
+
 ```
 src/
 ├── app/               # Next.js app router
@@ -226,6 +245,7 @@ src/
 ```
 
 ### 2. Server/Client Separation
+
 - **Server Components**: Default to server components for:
   - Data fetching
   - Sensitive operations
@@ -236,6 +256,7 @@ src/
   - State management
 
 ### 3. Reusable Components
+
 1. Create atomic components with:
    - PropTypes using TypeScript interfaces
    - Storybook stories for documentation
@@ -245,6 +266,7 @@ src/
    - `CoreComponentName.tsx` (e.g. `FormInput.tsx`)
 
 ### 4. API Design Rules
+
 - Versioned endpoints: `/api/v1/...`
 - RESTful structure for resources
 - Error format standardization:

@@ -14,52 +14,50 @@ export const EditProfileDialog = ({ user, onClose }: EditProfileDialogProps) => 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     updateSettings({
       user: {
         ...user,
         bio,
-        picture
-      }
+        picture,
+      },
     });
-    
+
     onClose();
   };
 
   return (
-    <div className="edit-profile-dialog">
+    <div className='edit-profile-dialog'>
       <h2>Edit Profile</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="picture">Profile Picture</label>
+        <div className='form-group'>
+          <label htmlFor='picture'>Profile Picture</label>
           <input
-            type="text"
-            id="picture"
+            type='text'
+            id='picture'
             value={picture}
-            onChange={(e) => setPicture(e.target.value)}
-            placeholder="Enter picture URL"
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="bio">Bio</label>
-          <textarea
-            id="bio"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="Tell us about yourself"
+            onChange={e => setPicture(e.target.value)}
+            placeholder='Enter picture URL'
           />
         </div>
 
-        <div className="form-actions">
-          <button type="button" onClick={onClose}>
+        <div className='form-group'>
+          <label htmlFor='bio'>Bio</label>
+          <textarea
+            id='bio'
+            value={bio}
+            onChange={e => setBio(e.target.value)}
+            placeholder='Tell us about yourself'
+          />
+        </div>
+
+        <div className='form-actions'>
+          <button type='button' onClick={onClose}>
             Cancel
           </button>
-          <button type="submit">
-            Save Changes
-          </button>
+          <button type='submit'>Save Changes</button>
         </div>
       </form>
     </div>
   );
-}; 
+};

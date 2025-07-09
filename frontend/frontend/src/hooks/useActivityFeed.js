@@ -27,7 +27,7 @@ export const useActivityFeed = () => {
         setLoading(false);
       }
     },
-    [loading, hasMore, page]
+    [loading, hasMore, page],
   );
 
   const createActivity = useCallback(async content => {
@@ -47,8 +47,8 @@ export const useActivityFeed = () => {
         prev.map(activity =>
           activity.id === activityId
             ? { ...activity, likes: activity.likes + 1, isLiked: true }
-            : activity
-        )
+            : activity,
+        ),
       );
     } catch (err) {
       throw new Error(err.response?.data?.message || 'Failed to like activity');
@@ -62,8 +62,8 @@ export const useActivityFeed = () => {
         prev.map(activity =>
           activity.id === activityId
             ? { ...activity, comments: [...activity.comments, data] }
-            : activity
-        )
+            : activity,
+        ),
       );
       return data;
     } catch (err) {

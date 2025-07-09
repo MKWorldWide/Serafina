@@ -117,8 +117,8 @@ const Comment: React.FC<CommentProps> = ({
         />
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="subtitle2">{comment.author.username}</Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant='subtitle2'>{comment.author.username}</Typography>
+            <Typography variant='caption' color='text.secondary'>
               {formatDistanceToNow(new Date(comment.createdAt), {
                 addSuffix: true,
               })}
@@ -132,7 +132,7 @@ const Comment: React.FC<CommentProps> = ({
                 inputRef={editInputRef}
                 fullWidth
                 multiline
-                size="small"
+                size='small'
                 value={editContent}
                 onChange={e => setEditContent(e.target.value)}
                 onKeyDown={e => {
@@ -143,12 +143,12 @@ const Comment: React.FC<CommentProps> = ({
                 }}
               />
               <Box sx={{ mt: 1, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                <Button size="small" onClick={() => setIsEditing(false)}>
+                <Button size='small' onClick={() => setIsEditing(false)}>
                   Cancel
                 </Button>
                 <Button
-                  size="small"
-                  variant="contained"
+                  size='small'
+                  variant='contained'
                   onClick={handleEdit}
                   disabled={!editContent.trim() || editContent === comment.content}
                 >
@@ -157,12 +157,12 @@ const Comment: React.FC<CommentProps> = ({
               </Box>
             </Box>
           ) : (
-            <Typography variant="body2">{comment.content}</Typography>
+            <Typography variant='body2'>{comment.content}</Typography>
           )}
 
           <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
             <Button
-              size="small"
+              size='small'
               startIcon={<LikeIcon color={comment.liked ? 'primary' : undefined} />}
               onClick={onLike}
             >
@@ -170,7 +170,7 @@ const Comment: React.FC<CommentProps> = ({
             </Button>
             {level < MAX_NESTING_LEVEL && (
               <Button
-                size="small"
+                size='small'
                 startIcon={<ReplyIcon />}
                 onClick={() => setIsReplying(!isReplying)}
               >
@@ -179,8 +179,8 @@ const Comment: React.FC<CommentProps> = ({
             )}
             {user?.username === comment.author.id && (
               <>
-                <IconButton size="small" onClick={e => setAnchorEl(e.currentTarget)}>
-                  <MoreIcon fontSize="small" />
+                <IconButton size='small' onClick={e => setAnchorEl(e.currentTarget)}>
+                  <MoreIcon fontSize='small' />
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}
@@ -194,7 +194,7 @@ const Comment: React.FC<CommentProps> = ({
                     }}
                   >
                     <ListItemIcon>
-                      <EditIcon fontSize="small" />
+                      <EditIcon fontSize='small' />
                     </ListItemIcon>
                     Edit
                   </MenuItem>
@@ -205,7 +205,7 @@ const Comment: React.FC<CommentProps> = ({
                     }}
                   >
                     <ListItemIcon>
-                      <DeleteIcon fontSize="small" />
+                      <DeleteIcon fontSize='small' />
                     </ListItemIcon>
                     Delete
                   </MenuItem>
@@ -220,8 +220,8 @@ const Comment: React.FC<CommentProps> = ({
                 inputRef={replyInputRef}
                 fullWidth
                 multiline
-                size="small"
-                placeholder="Write a reply..."
+                size='small'
+                placeholder='Write a reply...'
                 value={replyContent}
                 onChange={e => setReplyContent(e.target.value)}
                 onKeyDown={e => {
@@ -233,7 +233,7 @@ const Comment: React.FC<CommentProps> = ({
               />
               <Box sx={{ mt: 1, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                 <Button
-                  size="small"
+                  size='small'
                   onClick={() => {
                     setReplyContent('');
                     setIsReplying(false);
@@ -242,8 +242,8 @@ const Comment: React.FC<CommentProps> = ({
                   Cancel
                 </Button>
                 <Button
-                  size="small"
-                  variant="contained"
+                  size='small'
+                  variant='contained'
                   onClick={handleReply}
                   disabled={!replyContent.trim()}
                 >
@@ -258,7 +258,7 @@ const Comment: React.FC<CommentProps> = ({
       {comment.replies.length > 0 && (
         <>
           <Button
-            size="small"
+            size='small'
             startIcon={showReplies ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             onClick={() => setShowReplies(!showReplies)}
             sx={{ ml: 5, mb: 1 }}
@@ -306,15 +306,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
   if (!user) {
     return (
-      <div className="text-center py-4">
-        <p className="text-gray-600">Please sign in to comment</p>
+      <div className='text-center py-4'>
+        <p className='text-gray-600'>Please sign in to comment</p>
       </div>
     );
   }
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant='h6' gutterBottom>
         Comments ({comments.length})
       </Typography>
 
@@ -323,7 +323,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           inputRef={commentInputRef}
           fullWidth
           multiline
-          placeholder="Write a comment..."
+          placeholder='Write a comment...'
           value={newComment}
           onChange={e => setNewComment(e.target.value)}
           onKeyDown={e => {
@@ -334,7 +334,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           }}
         />
         <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end' }}>
-          <Button variant="contained" onClick={handleAddComment} disabled={!newComment.trim()}>
+          <Button variant='contained' onClick={handleAddComment} disabled={!newComment.trim()}>
             Comment
           </Button>
         </Box>

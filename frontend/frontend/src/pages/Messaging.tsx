@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Paper, Typography, TextField, Button, List, ListItem, ListItemText, ListItemAvatar, Avatar, Box } from '@mui/material';
+import {
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Box,
+} from '@mui/material';
 import { generateClient } from 'aws-amplify/api';
 import { useAuth } from '../context/AuthContext';
 import { IConversation, IMessage } from '../types/social';
@@ -73,7 +86,7 @@ const Messaging: React.FC = () => {
               }
             }
           }
-        `
+        `,
       });
       if ('data' in response) {
         setConversations(response.data.listConversations.items);
@@ -102,7 +115,7 @@ const Messaging: React.FC = () => {
             }
           }
         `,
-        variables: { conversationId }
+        variables: { conversationId },
       });
       if ('data' in response) {
         setMessages(response.data.getMessages.items);
@@ -128,7 +141,7 @@ const Messaging: React.FC = () => {
           }
         }
       `,
-      variables: { conversationId }
+      variables: { conversationId },
     });
 
     return subscription.subscribe({
@@ -137,7 +150,7 @@ const Messaging: React.FC = () => {
           setMessages(prev => [...prev, result.data!.onNewMessage]);
         }
       },
-      error: (error: Error) => console.error('Subscription error:', error)
+      error: (error: Error) => console.error('Subscription error:', error),
     });
   };
 
@@ -163,9 +176,9 @@ const Messaging: React.FC = () => {
         variables: {
           input: {
             conversationId: selectedConversation,
-            content: newMessage
-          }
-        }
+            content: newMessage,
+          },
+        },
       });
       setNewMessage('');
     } catch (error) {
@@ -174,15 +187,15 @@ const Messaging: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Paper sx={{ p: 2, height: '70vh', overflow: 'auto' }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               Conversations
             </Typography>
             <List>
-              {conversations.map((conversation) => (
+              {conversations.map(conversation => (
                 <ListItem
                   key={conversation.id}
                   button
@@ -206,24 +219,24 @@ const Messaging: React.FC = () => {
             {selectedConversation ? (
               <>
                 <Box sx={{ flexGrow: 1, overflow: 'auto', mb: 2 }}>
-                  {messages.map((message) => (
+                  {messages.map(message => (
                     <Box
                       key={message.id}
                       sx={{
                         display: 'flex',
                         justifyContent: message.sender.id === user?.id ? 'flex-end' : 'flex-start',
-                        mb: 2
+                        mb: 2,
                       }}
                     >
                       <Paper
                         sx={{
                           p: 2,
                           maxWidth: '70%',
-                          bgcolor: message.sender.id === user?.id ? 'primary.light' : 'grey.100'
+                          bgcolor: message.sender.id === user?.id ? 'primary.light' : 'grey.100',
                         }}
                       >
-                        <Typography variant="body1">{message.content}</Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant='body1'>{message.content}</Typography>
+                        <Typography variant='caption' color='text.secondary'>
                           {new Date(message.createdAt).toLocaleTimeString()}
                         </Typography>
                       </Paper>
@@ -233,14 +246,14 @@ const Messaging: React.FC = () => {
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <TextField
                     fullWidth
-                    variant="outlined"
-                    placeholder="Type a message..."
+                    variant='outlined'
+                    placeholder='Type a message...'
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    onChange={e => setNewMessage(e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
                   />
                   <Button
-                    variant="contained"
+                    variant='contained'
                     onClick={handleSendMessage}
                     disabled={!newMessage.trim()}
                   >
@@ -249,7 +262,7 @@ const Messaging: React.FC = () => {
                 </Box>
               </>
             ) : (
-              <Typography variant="body1" sx={{ textAlign: 'center', mt: 4 }}>
+              <Typography variant='body1' sx={{ textAlign: 'center', mt: 4 }}>
                 Select a conversation to start messaging
               </Typography>
             )}

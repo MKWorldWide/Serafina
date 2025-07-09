@@ -27,7 +27,7 @@ class WebSocketService {
     const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3001';
     this.socket = new WebSocket(`${wsUrl}?token=${token}`);
 
-    this.socket.onmessage = (event) => {
+    this.socket.onmessage = event => {
       try {
         const message: WebSocketMessage = JSON.parse(event.data);
         this.handleMessage(message);
@@ -45,7 +45,7 @@ class WebSocketService {
       }, 5000);
     };
 
-    this.socket.onerror = (error) => {
+    this.socket.onerror = error => {
       console.error('WebSocket error:', error);
     };
   }
@@ -77,10 +77,12 @@ class WebSocketService {
 
   send(message: Partial<WebSocketMessage>) {
     if (this.socket?.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify({
-        ...message,
-        timestamp: new Date().toISOString(),
-      }));
+      this.socket.send(
+        JSON.stringify({
+          ...message,
+          timestamp: new Date().toISOString(),
+        }),
+      );
     } else {
       console.warn('WebSocket is not connected');
     }

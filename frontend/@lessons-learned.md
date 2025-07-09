@@ -262,4 +262,4 @@
    - Multi-language support
    - Region-specific features
    - Localized content
-   - Cultural adaptations 
+   - Cultural adaptations

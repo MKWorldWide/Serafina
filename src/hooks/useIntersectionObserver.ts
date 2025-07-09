@@ -27,8 +27,8 @@ export function useIntersectionObserver({
     }
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting && savedCallback.current) {
             savedCallback.current();
           }
@@ -37,7 +37,7 @@ export function useIntersectionObserver({
       {
         threshold,
         rootMargin,
-      }
+      },
     );
 
     const element = target.current;
@@ -49,4 +49,4 @@ export function useIntersectionObserver({
       }
     };
   }, [enabled, rootMargin, target, threshold]);
-} 
+}

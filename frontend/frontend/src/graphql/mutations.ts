@@ -66,4 +66,4 @@ export const createConversation = /* GraphQL */ `
       updatedAt
     }
   }
-`; 
+`;

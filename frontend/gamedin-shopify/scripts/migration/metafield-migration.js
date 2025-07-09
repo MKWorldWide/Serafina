@@ -1,6 +1,6 @@
 /**
  * Metafield Migration Module
- * 
+ *
  * Handles migration of custom game data from AWS to Shopify metafields
  */
 
@@ -60,7 +60,7 @@ function initialize(options) {
 
   // Create clients
   const dynamoDB = new AWS.DynamoDB.DocumentClient();
-  
+
   return { dynamoDB };
 }
 
@@ -96,7 +96,7 @@ async function fetchGameMetadata(dynamoDB, options) {
     do {
       const params = {
         TableName: tableName,
-        Limit: 50
+        Limit: 50,
       };
 
       if (lastEvaluatedKey) {
@@ -107,8 +107,10 @@ async function fetchGameMetadata(dynamoDB, options) {
       metadata = metadata.concat(response.Items);
       lastEvaluatedKey = response.LastEvaluatedKey;
 
-      logMessage(`Fetched ${response.Items.length} metadata entries from DynamoDB. Total: ${metadata.length}`);
-      
+      logMessage(
+        `Fetched ${response.Items.length} metadata entries from DynamoDB. Total: ${metadata.length}`,
+      );
+
       // For dry runs, limit the number of entries to speed up testing
       if (options.dryRun && metadata.length >= 10) {
         logMessage('Dry run mode - limiting to 10 metadata entries for testing');
@@ -139,7 +141,7 @@ async function fetchRecommendations(dynamoDB, options) {
     do {
       const params = {
         TableName: tableName,
-        Limit: 50
+        Limit: 50,
       };
 
       if (lastEvaluatedKey) {
@@ -150,8 +152,10 @@ async function fetchRecommendations(dynamoDB, options) {
       recommendations = recommendations.concat(response.Items);
       lastEvaluatedKey = response.LastEvaluatedKey;
 
-      logMessage(`Fetched ${response.Items.length} recommendation entries from DynamoDB. Total: ${recommendations.length}`);
-      
+      logMessage(
+        `Fetched ${response.Items.length} recommendation entries from DynamoDB. Total: ${recommendations.length}`,
+      );
+
       // For dry runs, limit the number of entries to speed up testing
       if (options.dryRun && recommendations.length >= 10) {
         logMessage('Dry run mode - limiting to 10 recommendation entries for testing');
@@ -190,7 +194,7 @@ async function createMetafields(productId, metafields, session, options) {
         results.push({
           success: true,
           key: metafield.key,
-          id: response.body.metafield.id
+          id: response.body.metafield.id,
         });
 
         logMessage(`Successfully created metafield '${metafield.key}' for product ${productId}`);
@@ -198,16 +202,19 @@ async function createMetafields(productId, metafields, session, options) {
         results.push({
           success: false,
           key: metafield.key,
-          error: error.message
+          error: error.message,
         });
 
-        logMessage(`Error creating metafield '${metafield.key}' for product ${productId}: ${error.message}`, 'error');
+        logMessage(
+          `Error creating metafield '${metafield.key}' for product ${productId}: ${error.message}`,
+          'error',
+        );
       }
     }
 
-    return { 
-      success: results.some(r => r.success), 
-      results 
+    return {
+      success: results.some(r => r.success),
+      results,
     };
   } catch (error) {
     logMessage(`Error creating metafields for product ${productId}: ${error.message}`, 'error');
@@ -227,51 +234,51 @@ async function registerMetafieldDefinitions(session, options) {
 
   try {
     const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
-    
+
     // Define the metafield definitions we need
     const definitions = [
       {
-        name: "Game Features",
-        namespace: "gamedin",
-        key: "features",
-        description: "Special features of the game",
-        owner_resource: "product",
-        type: "json_string"
+        name: 'Game Features',
+        namespace: 'gamedin',
+        key: 'features',
+        description: 'Special features of the game',
+        owner_resource: 'product',
+        type: 'json_string',
       },
       {
-        name: "Game Platforms",
-        namespace: "gamedin",
-        key: "platforms",
-        description: "Platforms the game is available on",
-        owner_resource: "product",
-        type: "list.single_line_text_field"
+        name: 'Game Platforms',
+        namespace: 'gamedin',
+        key: 'platforms',
+        description: 'Platforms the game is available on',
+        owner_resource: 'product',
+        type: 'list.single_line_text_field',
       },
       {
-        name: "Age Rating",
-        namespace: "gamedin",
-        key: "age_rating",
-        description: "Age rating for the game",
-        owner_resource: "product",
-        type: "single_line_text_field"
+        name: 'Age Rating',
+        namespace: 'gamedin',
+        key: 'age_rating',
+        description: 'Age rating for the game',
+        owner_resource: 'product',
+        type: 'single_line_text_field',
       },
       {
-        name: "Release Date",
-        namespace: "gamedin",
-        key: "release_date",
-        description: "Original release date of the game",
-        owner_resource: "product",
-        type: "date"
+        name: 'Release Date',
+        namespace: 'gamedin',
+        key: 'release_date',
+        description: 'Original release date of the game',
+        owner_resource: 'product',
+        type: 'date',
       },
       {
-        name: "Recommended Games",
-        namespace: "gamedin",
-        key: "recommended_games",
-        description: "List of recommended game IDs",
-        owner_resource: "product",
-        type: "json_string"
-      }
+        name: 'Recommended Games',
+        namespace: 'gamedin',
+        key: 'recommended_games',
+        description: 'List of recommended game IDs',
+        owner_resource: 'product',
+        type: 'json_string',
+      },
     ];
-    
+
     // Create each definition
     for (const definition of definitions) {
       try {
@@ -280,18 +287,25 @@ async function registerMetafieldDefinitions(session, options) {
           data: { metafield_definition: definition },
           type: 'json',
         });
-        
-        logMessage(`Successfully registered metafield definition '${definition.namespace}.${definition.key}'`);
+
+        logMessage(
+          `Successfully registered metafield definition '${definition.namespace}.${definition.key}'`,
+        );
       } catch (error) {
         // If the definition already exists, that's fine
         if (error.message && error.message.includes('already exists')) {
-          logMessage(`Metafield definition '${definition.namespace}.${definition.key}' already exists`);
+          logMessage(
+            `Metafield definition '${definition.namespace}.${definition.key}' already exists`,
+          );
         } else {
-          logMessage(`Error registering metafield definition '${definition.namespace}.${definition.key}': ${error.message}`, 'error');
+          logMessage(
+            `Error registering metafield definition '${definition.namespace}.${definition.key}': ${error.message}`,
+            'error',
+          );
         }
       }
     }
-    
+
     return { success: true };
   } catch (error) {
     logMessage(`Error registering metafield definitions: ${error.message}`, 'error');
@@ -311,7 +325,7 @@ function mapMetadataToMetafields(metadata) {
       namespace: 'gamedin',
       key: 'trailer_url',
       value: metadata.trailerUrl,
-      type: 'url'
+      type: 'url',
     });
   }
 
@@ -319,10 +333,11 @@ function mapMetadataToMetafields(metadata) {
     metafields.push({
       namespace: 'gamedin',
       key: 'developer_info',
-      value: typeof metadata.developerInfo === 'object' 
-        ? JSON.stringify(metadata.developerInfo) 
-        : metadata.developerInfo,
-      type: 'json_string'
+      value:
+        typeof metadata.developerInfo === 'object'
+          ? JSON.stringify(metadata.developerInfo)
+          : metadata.developerInfo,
+      type: 'json_string',
     });
   }
 
@@ -330,10 +345,11 @@ function mapMetadataToMetafields(metadata) {
     metafields.push({
       namespace: 'gamedin',
       key: 'system_requirements',
-      value: typeof metadata.systemRequirements === 'object' 
-        ? JSON.stringify(metadata.systemRequirements) 
-        : metadata.systemRequirements,
-      type: 'json_string'
+      value:
+        typeof metadata.systemRequirements === 'object'
+          ? JSON.stringify(metadata.systemRequirements)
+          : metadata.systemRequirements,
+      type: 'json_string',
     });
   }
 
@@ -342,7 +358,7 @@ function mapMetadataToMetafields(metadata) {
       namespace: 'gamedin',
       key: 'gameplay_duration',
       value: metadata.gameplayDuration.toString(),
-      type: 'single_line_text_field'
+      type: 'single_line_text_field',
     });
   }
 
@@ -351,7 +367,7 @@ function mapMetadataToMetafields(metadata) {
       namespace: 'gamedin',
       key: 'supported_languages',
       value: JSON.stringify(metadata.supportedLanguages),
-      type: 'list.single_line_text_field'
+      type: 'list.single_line_text_field',
     });
   }
 
@@ -360,7 +376,7 @@ function mapMetadataToMetafields(metadata) {
       namespace: 'gamedin',
       key: 'awards',
       value: JSON.stringify(metadata.awards),
-      type: 'json_string'
+      type: 'json_string',
     });
   }
 
@@ -387,12 +403,14 @@ function mapRecommendationsToMetafields(recommendations, productMappings) {
     return [];
   }
 
-  return [{
-    namespace: 'gamedin',
-    key: 'recommended_games',
-    value: JSON.stringify(shopifyRecommendations),
-    type: 'json_string'
-  }];
+  return [
+    {
+      namespace: 'gamedin',
+      key: 'recommended_games',
+      value: JSON.stringify(shopifyRecommendations),
+      type: 'json_string',
+    },
+  ];
 }
 
 /**
@@ -400,21 +418,21 @@ function mapRecommendationsToMetafields(recommendations, productMappings) {
  */
 async function migrate(options) {
   logMessage('Starting metafield migration...');
-  
+
   const result = {
     processed: 0,
     success: 0,
-    errors: 0
+    errors: 0,
   };
 
   try {
     // Initialize AWS and Shopify connections
     const { dynamoDB } = initialize(options);
-    
+
     // Get an offline session (in a real scenario, use a real authenticated session)
     const session = {
       shop: options.shopifyStore || process.env.SHOPIFY_SHOP,
-      accessToken: process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN
+      accessToken: process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN,
     };
 
     // Register metafield definitions for better visibility in Shopify admin
@@ -442,7 +460,10 @@ async function migrate(options) {
       try {
         const originalProductId = metadata.gameId || metadata.productId;
         if (!originalProductId) {
-          logMessage(`Skipping metadata entry without product ID: ${JSON.stringify(metadata)}`, 'warning');
+          logMessage(
+            `Skipping metadata entry without product ID: ${JSON.stringify(metadata)}`,
+            'warning',
+          );
           continue;
         }
 
@@ -460,13 +481,15 @@ async function migrate(options) {
         const metafields = mapMetadataToMetafields(metadata);
 
         // Find recommendations for this product
-        const productRecommendations = recommendationsData.find(r => r.gameId === originalProductId || r.productId === originalProductId);
+        const productRecommendations = recommendationsData.find(
+          r => r.gameId === originalProductId || r.productId === originalProductId,
+        );
         if (productRecommendations && productRecommendations.recommendations) {
           const recommendationMetafields = mapRecommendationsToMetafields(
-            productRecommendations.recommendations, 
-            productMappings
+            productRecommendations.recommendations,
+            productMappings,
           );
-          
+
           metafields.push(...recommendationMetafields);
         }
 
@@ -479,21 +502,26 @@ async function migrate(options) {
 
         // Create metafields in Shopify
         const createResult = await createMetafields(shopifyProductId, metafields, session, options);
-        
+
         if (createResult.success) {
           result.success++;
           logMessage(`Successfully created metafields for product ${shopifyProductId}`);
         } else {
           result.errors++;
-          logMessage(`Failed to create metafields for product ${shopifyProductId}: ${createResult.error}`, 'error');
+          logMessage(
+            `Failed to create metafields for product ${shopifyProductId}: ${createResult.error}`,
+            'error',
+          );
         }
       } catch (error) {
         result.errors++;
         logMessage(`Error processing metadata: ${error.message}`, 'error');
       }
     }
-    
-    logMessage(`Metafield migration completed. Processed: ${result.processed}, Success: ${result.success}, Errors: ${result.errors}`);
+
+    logMessage(
+      `Metafield migration completed. Processed: ${result.processed}, Success: ${result.success}, Errors: ${result.errors}`,
+    );
     return result;
   } catch (error) {
     logMessage(`Migration failed: ${error.message}`, 'error');
@@ -502,5 +530,5 @@ async function migrate(options) {
 }
 
 module.exports = {
-  migrate
-}; 
+  migrate,
+};

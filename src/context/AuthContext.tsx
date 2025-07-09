@@ -23,14 +23,10 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     logout: state.logout,
     resetPassword: state.resetPassword,
     confirmResetPassword: state.confirmResetPassword,
-    resendConfirmationCode: state.resendConfirmationCode
+    resendConfirmationCode: state.resendConfirmationCode,
   }));
 
-  return (
-    <AuthContext.Provider value={store}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={store}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
@@ -39,4 +35,4 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthContextProvider');
   }
   return context;
-}; 
+};

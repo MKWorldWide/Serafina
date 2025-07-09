@@ -1,9 +1,9 @@
 /**
  * 🎮 GameDin Discord Bot - Simplified Entry Point
- * 
+ *
  * This is a simplified version of the Discord bot that excludes web app dependencies
  * and focuses only on Discord bot functionality.
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -35,7 +35,7 @@ const events = new Collection();
 const logger = {
   info: (message: string) => console.log(`[INFO] ${message}`),
   warn: (message: string) => console.log(`[WARN] ${message}`),
-  error: (message: string, error?: any) => console.error(`[ERROR] ${message}`, error || '')
+  error: (message: string, error?: any) => console.error(`[ERROR] ${message}`, error || ''),
 };
 
 // Load commands
@@ -46,7 +46,7 @@ try {
   for (const file of commandFiles) {
     const filePath = join(commandsPath, file);
     const command = require(filePath);
-    
+
     if ('data' in command && 'execute' in command) {
       commands.set(command.data.name, command);
       logger.info(`Loaded command: ${command.data.name}`);
@@ -66,13 +66,13 @@ try {
   for (const file of eventFiles) {
     const filePath = join(eventsPath, file);
     const event = require(filePath);
-    
+
     if (event.once) {
       client.once(event.name, (...args) => event.execute(...args));
     } else {
       client.on(event.name, (...args) => event.execute(...args));
     }
-    
+
     logger.info(`Loaded event: ${event.name}`);
   }
 } catch (error) {
@@ -104,9 +104,9 @@ client.on(Events.InteractionCreate, async interaction => {
     }
   } catch (error) {
     logger.error(`Error executing command ${interaction.commandName}:`, error);
-    
+
     const errorMessage = 'There was an error while executing this command!';
-    
+
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({ content: errorMessage, ephemeral: true });
     } else {
@@ -119,17 +119,18 @@ client.on(Events.InteractionCreate, async interaction => {
 client.on(Events.MessageCreate, async message => {
   // Ignore bot messages
   if (message.author.bot) return;
-  
+
   try {
     // Simple message logging
-    logger.info(`Message from ${message.author.tag} in ${message.guild?.name}: ${message.content.substring(0, 50)}...`);
-    
+    logger.info(
+      `Message from ${message.author.tag} in ${message.guild?.name}: ${message.content.substring(0, 50)}...`,
+    );
+
     // Add XP for message (simple implementation)
     if (message.member) {
       // TODO: Implement XP system
       logger.info(`XP added for ${message.member.user.tag}`);
     }
-    
   } catch (error) {
     logger.error('Error processing message:', error);
   }
@@ -139,12 +140,12 @@ client.on(Events.MessageCreate, async message => {
 client.on(Events.GuildMemberAdd, async member => {
   try {
     logger.info(`New member joined: ${member.user.tag} in ${member.guild.name}`);
-    
+
     // Send welcome message
     const welcomeChannel = member.guild.channels.cache.find(c => c.name === 'welcome');
     if (welcomeChannel && welcomeChannel.isTextBased()) {
       await welcomeChannel.send({
-        content: `🌟 Welcome to GameDin, ${member}! We're excited to have you join our gaming community! 🎮`
+        content: `🌟 Welcome to GameDin, ${member}! We're excited to have you join our gaming community! 🎮`,
       });
     }
   } catch (error) {
@@ -191,4 +192,4 @@ client.login(token).catch(error => {
   process.exit(1);
 });
 
-export { client, logger }; 
+export { client, logger };

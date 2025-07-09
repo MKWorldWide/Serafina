@@ -17,19 +17,15 @@ interface MessageGroup {
   messages: IMessage[];
 }
 
-export const MessageList: React.FC<MessageListProps> = ({
-  messages,
-  currentUser,
-  virtualizer
-}) => {
-  const darkMode = useStore((state) => state.darkMode);
+export const MessageList: React.FC<MessageListProps> = ({ messages, currentUser, virtualizer }) => {
+  const darkMode = useStore(state => state.darkMode);
 
   // Group messages by date
   const messageGroups = useMemo(() => {
     const groups: MessageGroup[] = [];
     let currentGroup: MessageGroup | null = null;
 
-    messages.forEach((message) => {
+    messages.forEach(message => {
       const messageDate = new Date(message.createdAt);
 
       if (!currentGroup || !isSameDay(currentGroup.date, messageDate)) {
@@ -38,7 +34,7 @@ export const MessageList: React.FC<MessageListProps> = ({
         }
         currentGroup = {
           date: messageDate,
-          messages: [message]
+          messages: [message],
         };
       } else {
         currentGroup.messages.push(message);
@@ -66,7 +62,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   // Check if messages are consecutive from same user
   const isConsecutive = useCallback((message: IMessage, prevMessage?: IMessage): boolean => {
     if (!prevMessage) return false;
-    
+
     return (
       message.author.id === prevMessage.author.id &&
       new Date(message.createdAt).getTime() - new Date(prevMessage.createdAt).getTime() < 120000 // 2 minutes
@@ -82,21 +78,21 @@ export const MessageList: React.FC<MessageListProps> = ({
         ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}
       `}
       style={{
-        height: virtualizer.getTotalSize()
+        height: virtualizer.getTotalSize(),
       }}
-      role="log"
-      aria-live="polite"
-      aria-label="Message history"
+      role='log'
+      aria-live='polite'
+      aria-label='Message history'
     >
       <div
-        className="absolute top-0 left-0 w-full"
+        className='absolute top-0 left-0 w-full'
         style={{
-          transform: `translateY(${virtualRows[0]?.start ?? 0}px)`
+          transform: `translateY(${virtualRows[0]?.start ?? 0}px)`,
         }}
       >
         <AnimatePresence initial={false}>
           {messageGroups.map((group, groupIndex) => (
-            <div key={group.date.toISOString()} className="mb-6">
+            <div key={group.date.toISOString()} className='mb-6'>
               <div
                 className={`
                   sticky top-0 z-10 flex justify-center mb-4
@@ -108,7 +104,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                     px-3 py-1 text-xs rounded-full
                     ${darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-600'}
                   `}
-                  role="separator"
+                  role='separator'
                   aria-label={formatGroupDate(group.date)}
                 >
                   {formatGroupDate(group.date)}
@@ -119,9 +115,13 @@ export const MessageList: React.FC<MessageListProps> = ({
                 const prevMessage = group.messages[messageIndex - 1];
                 const isConsecutiveMessage = isConsecutive(message, prevMessage);
                 const virtualRow = virtualRows.find(
-                  (row) => row.index === messageGroups.reduce((acc, g, i) => (
-                    i < groupIndex ? acc + g.messages.length : acc
-                  ), 0) + messageIndex
+                  row =>
+                    row.index ===
+                    messageGroups.reduce(
+                      (acc, g, i) => (i < groupIndex ? acc + g.messages.length : acc),
+                      0,
+                    ) +
+                      messageIndex,
                 );
 
                 if (!virtualRow) return null;
@@ -138,7 +138,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                       ${message.author.id === currentUser.id ? 'flex justify-end' : 'flex justify-start'}
                     `}
                     data-message-id={message.id}
-                    role="article"
+                    role='article'
                     aria-label={`Message from ${message.author.name}`}
                   >
                     <MessageBubble
@@ -159,4 +159,4 @@ export const MessageList: React.FC<MessageListProps> = ({
   );
 };
 
-MessageList.displayName = 'MessageList'; 
+MessageList.displayName = 'MessageList';

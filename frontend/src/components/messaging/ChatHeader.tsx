@@ -3,7 +3,7 @@ import { IConversation, IUser } from '../../types/social';
 import {
   EllipsisVerticalIcon,
   ChevronRightIcon,
-  ChevronLeftIcon
+  ChevronLeftIcon,
 } from '@heroicons/react/24/outline';
 
 interface ChatHeaderProps {
@@ -27,7 +27,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onMuteConversation,
   onBlockUser,
   onToggleSidebar,
-  isSidebarOpen
+  isSidebarOpen,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -64,48 +64,44 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
-      <div className="flex items-center flex-1 min-w-0">
+    <div className='flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white'>
+      <div className='flex items-center flex-1 min-w-0'>
         <img
           src={getHeaderAvatar()}
           alt={getHeaderTitle()}
-          className="w-10 h-10 rounded-full object-cover mr-3"
+          className='w-10 h-10 rounded-full object-cover mr-3'
         />
-        <div className="min-w-0">
-          <h2 className="text-lg font-semibold text-gray-900 truncate">
-            {getHeaderTitle()}
-          </h2>
-          <p className="text-sm text-gray-500 truncate">
-            {getHeaderSubtitle()}
-          </p>
+        <div className='min-w-0'>
+          <h2 className='text-lg font-semibold text-gray-900 truncate'>{getHeaderTitle()}</h2>
+          <p className='text-sm text-gray-500 truncate'>{getHeaderSubtitle()}</p>
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className='flex items-center space-x-4'>
         <button
           onClick={onToggleSidebar}
-          className="p-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+          className='p-2 text-gray-500 hover:text-gray-700 focus:outline-none'
           aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
         >
           {isSidebarOpen ? (
-            <ChevronRightIcon className="w-5 h-5" />
+            <ChevronRightIcon className='w-5 h-5' />
           ) : (
-            <ChevronLeftIcon className="w-5 h-5" />
+            <ChevronLeftIcon className='w-5 h-5' />
           )}
         </button>
 
-        <div className="relative">
+        <div className='relative'>
           <button
             onClick={toggleMenu}
-            className="p-2 text-gray-500 hover:text-gray-700 focus:outline-none"
-            aria-label="Menu"
+            className='p-2 text-gray-500 hover:text-gray-700 focus:outline-none'
+            aria-label='Menu'
           >
-            <EllipsisVerticalIcon className="w-5 h-5" />
+            <EllipsisVerticalIcon className='w-5 h-5' />
           </button>
 
           {isMenuOpen && (
-            <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-              <div className="py-1" role="menu">
+            <div className='absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5'>
+              <div className='py-1' role='menu'>
                 {conversation.type === 'GROUP' ? (
                   <>
                     {onEditGroup && (
@@ -114,8 +110,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                           onEditGroup();
                           setIsMenuOpen(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
+                        className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                        role='menuitem'
                       >
                         Edit Group
                       </button>
@@ -126,8 +122,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                           onLeaveGroup();
                           setIsMenuOpen(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                        role="menuitem"
+                        className='w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100'
+                        role='menuitem'
                       >
                         Leave Group
                       </button>
@@ -141,8 +137,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                           onViewProfile(getOtherParticipant().id);
                           setIsMenuOpen(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
+                        className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                        role='menuitem'
                       >
                         View Profile
                       </button>
@@ -153,8 +149,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                           onBlockUser();
                           setIsMenuOpen(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                        role="menuitem"
+                        className='w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100'
+                        role='menuitem'
                       >
                         Block User
                       </button>
@@ -167,8 +163,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                       onMuteConversation();
                       setIsMenuOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    role="menuitem"
+                    className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                    role='menuitem'
                   >
                     Mute Conversation
                   </button>
@@ -180,4 +176,4 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
     </div>
   );
-}; 
+};

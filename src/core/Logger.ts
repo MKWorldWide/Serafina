@@ -1,16 +1,16 @@
 /**
  * 🎮 GameDin Discord Bot - Logger
- * 
+ *
  * Comprehensive logging system for the Discord bot with multiple log levels,
  * formatting, and error handling capabilities.
- * 
+ *
  * Features:
  * - Multiple log levels (debug, info, warn, error)
  * - Timestamp formatting
  * - Module-specific logging
  * - Error stack trace handling
  * - Performance tracking
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -20,7 +20,7 @@ export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
   WARN = 2,
-  ERROR = 3
+  ERROR = 3,
 }
 
 export interface LogEntry {
@@ -58,9 +58,9 @@ export class Logger {
   private formatLevel(level: LogLevel): string {
     const colors = {
       [LogLevel.DEBUG]: '\x1b[36m', // Cyan
-      [LogLevel.INFO]: '\x1b[32m',  // Green
-      [LogLevel.WARN]: '\x1b[33m',  // Yellow
-      [LogLevel.ERROR]: '\x1b[31m'  // Red
+      [LogLevel.INFO]: '\x1b[32m', // Green
+      [LogLevel.WARN]: '\x1b[33m', // Yellow
+      [LogLevel.ERROR]: '\x1b[31m', // Red
     };
 
     const reset = '\x1b[0m';
@@ -68,13 +68,13 @@ export class Logger {
       [LogLevel.DEBUG]: 'DEBUG',
       [LogLevel.INFO]: 'INFO',
       [LogLevel.WARN]: 'WARN',
-      [LogLevel.ERROR]: 'ERROR'
+      [LogLevel.ERROR]: 'ERROR',
     };
 
     if (this.enableColors) {
       return `${colors[level]}${levelNames[level]}${reset}`;
     }
-    
+
     return levelNames[level];
   }
 
@@ -87,7 +87,7 @@ export class Logger {
       level,
       module: this.module,
       message,
-      data
+      data,
     };
   }
 
@@ -103,7 +103,7 @@ export class Logger {
     const message = entry.message;
 
     const logLine = `[${timestamp}] ${level} [${module}] ${message}`;
-    
+
     if (entry.data) {
       console.log(logLine, entry.data);
     } else {
@@ -137,17 +137,17 @@ export class Logger {
    */
   error(message: string, error?: any): void {
     const entry = this.createLogEntry(LogLevel.ERROR, message);
-    
+
     if (error instanceof Error) {
       entry.data = {
         name: error.name,
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
       };
     } else if (error) {
       entry.data = error;
     }
-    
+
     this.output(entry);
   }
 
@@ -199,4 +199,4 @@ export class Logger {
   getModule(): string {
     return this.module;
   }
-} 
+}

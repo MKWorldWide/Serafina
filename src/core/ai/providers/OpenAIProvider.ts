@@ -1,23 +1,30 @@
 /**
  * 🎮 GameDin Discord Bot - OpenAI Provider
- * 
+ *
  * OpenAI API provider implementation for the Discord bot AI system.
  * Supports GPT-3.5, GPT-4, and other OpenAI models with comprehensive
  * error handling, rate limiting, and cost tracking.
- * 
+ *
  * Features:
  * - Support for GPT-3.5-turbo, GPT-4, and other OpenAI models
  * - Rate limiting and error handling
  * - Cost tracking and usage statistics
  * - TypeScript interfaces for type safety
  * - Quantum documentation and usage tracking
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
  */
 
-import { BaseAIProvider, AIRequestParams, AIResponse, AIModelConfig, AIErrorType, AIProviderError } from '../AIProvider';
+import {
+  BaseAIProvider,
+  AIRequestParams,
+  AIResponse,
+  AIModelConfig,
+  AIErrorType,
+  AIProviderError,
+} from '../AIProvider';
 import { Logger } from '../../Logger';
 
 /**
@@ -90,7 +97,7 @@ export class OpenAIProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.000002 // $0.002 per 1K tokens
+      costPerToken: 0.000002, // $0.002 per 1K tokens
     });
 
     this.models.set('gpt-3.5-turbo-16k', {
@@ -100,7 +107,7 @@ export class OpenAIProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.000004 // $0.004 per 1K tokens
+      costPerToken: 0.000004, // $0.004 per 1K tokens
     });
 
     // GPT-4 models
@@ -111,7 +118,7 @@ export class OpenAIProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.00003 // $0.03 per 1K tokens
+      costPerToken: 0.00003, // $0.03 per 1K tokens
     });
 
     this.models.set('gpt-4-32k', {
@@ -121,7 +128,7 @@ export class OpenAIProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.00006 // $0.06 per 1K tokens
+      costPerToken: 0.00006, // $0.06 per 1K tokens
     });
 
     this.logger.info(`Initialized ${this.models.size} OpenAI models`);
@@ -132,7 +139,7 @@ export class OpenAIProvider extends BaseAIProvider {
    */
   protected async generateResponseInternal(
     params: AIRequestParams,
-    model: AIModelConfig
+    model: AIModelConfig,
   ): Promise<AIResponse> {
     const requestBody: OpenAIRequest = {
       model: model.name,
@@ -141,25 +148,25 @@ export class OpenAIProvider extends BaseAIProvider {
       temperature: params.temperature ?? model.temperature,
       top_p: params.topP ?? model.topP,
       frequency_penalty: params.frequencyPenalty ?? model.frequencyPenalty,
-      presence_penalty: params.presencePenalty ?? model.presencePenalty
+      presence_penalty: params.presencePenalty ?? model.presencePenalty,
     };
 
     try {
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
         await this.handleAPIError(response);
       }
 
-      const data = await response.json() as OpenAIResponse;
-      
+      const data = (await response.json()) as OpenAIResponse;
+
       if (!data.choices || data.choices.length === 0) {
         throw new AIProviderError('No response generated', AIErrorType.UNKNOWN);
       }
@@ -182,18 +189,18 @@ export class OpenAIProvider extends BaseAIProvider {
         metadata: {
           finishReason: data.choices[0]?.finish_reason || 'unknown',
           promptTokens: data.usage?.prompt_tokens || 0,
-          completionTokens: data.usage?.completion_tokens || 0
-        }
+          completionTokens: data.usage?.completion_tokens || 0,
+        },
       };
     } catch (error) {
       if (error instanceof AIProviderError) {
         throw error;
       }
-      
+
       throw new AIProviderError(
         `OpenAI API error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         AIErrorType.NETWORK_ERROR,
-        true
+        true,
       );
     }
   }
@@ -208,7 +215,7 @@ export class OpenAIProvider extends BaseAIProvider {
     if (params.systemPrompt) {
       messages.push({
         role: 'system',
-        content: params.systemPrompt
+        content: params.systemPrompt,
       });
     }
 
@@ -216,14 +223,14 @@ export class OpenAIProvider extends BaseAIProvider {
     if (params.context) {
       messages.push({
         role: 'system',
-        content: `Context: ${params.context}`
+        content: `Context: ${params.context}`,
       });
     }
 
     // Add user prompt
     messages.push({
       role: 'user',
-      content: params.prompt
+      content: params.prompt,
     });
 
     return messages;
@@ -238,9 +245,9 @@ export class OpenAIProvider extends BaseAIProvider {
     let retryable = false;
 
     try {
-      const errorData = await response.json() as any;
+      const errorData = (await response.json()) as any;
       errorMessage = errorData?.error?.message || errorMessage;
-      
+
       // Map OpenAI error codes to our error types
       switch (response.status) {
         case 401:
@@ -292,7 +299,7 @@ export class OpenAIProvider extends BaseAIProvider {
       name: this.name,
       models: Array.from(this.models.keys()),
       baseUrl: this.baseUrl,
-      defaultModel: this.defaultModel
+      defaultModel: this.defaultModel,
     };
   }
-} 
+}

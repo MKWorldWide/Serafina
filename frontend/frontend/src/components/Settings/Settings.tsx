@@ -133,14 +133,17 @@ const Settings: React.FC = () => {
     login: state.login,
     logout: state.logout,
     darkMode: state.darkMode,
-    toggleDarkMode: state.toggleDarkMode
+    toggleDarkMode: state.toggleDarkMode,
   }));
 
   const handleSettingChange = (setting: keyof ISettings, value: any) => {
     updateSettings({ [setting]: value });
   };
 
-  const handleNotificationChange = (key: keyof ISettings['notifications']['emailNotifications']['types'], value: any) => {
+  const handleNotificationChange = (
+    key: keyof ISettings['notifications']['emailNotifications']['types'],
+    value: any,
+  ) => {
     updateSettings({
       notifications: {
         ...settings.notifications,
@@ -149,9 +152,9 @@ const Settings: React.FC = () => {
           types: {
             ...settings.notifications.emailNotifications.types,
             [key]: value,
-          }
-        }
-      }
+          },
+        },
+      },
     });
   };
 
@@ -161,50 +164,38 @@ const Settings: React.FC = () => {
         ...settings.notifications,
         emailNotifications: {
           ...settings.notifications.emailNotifications,
-          frequency: value
-        }
-      }
+          frequency: value,
+        },
+      },
     });
   };
 
   const renderAccountSettings = () => (
     <Box>
-      <Typography variant="h6" gutterBottom>Profile Information</Typography>
+      <Typography variant='h6' gutterBottom>
+        Profile Information
+      </Typography>
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Avatar
-          src={user?.avatar}
-          alt={user?.username}
-          sx={{ width: 80, height: 80 }}
-        />
-        <Button startIcon={<EditIcon />} variant="outlined">
+        <Avatar src={user?.avatar} alt={user?.username} sx={{ width: 80, height: 80 }} />
+        <Button startIcon={<EditIcon />} variant='outlined'>
           Change Avatar
         </Button>
       </Box>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Username"
-            defaultValue={user?.username}
-            margin="normal"
-          />
+          <TextField fullWidth label='Username' defaultValue={user?.username} margin='normal' />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Email"
-            defaultValue={user?.email}
-            margin="normal"
-          />
+          <TextField fullWidth label='Email' defaultValue={user?.email} margin='normal' />
         </Grid>
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label="Bio"
+            label='Bio'
             multiline
             rows={4}
             defaultValue={user?.bio}
-            margin="normal"
+            margin='normal'
           />
         </Grid>
       </Grid>
@@ -213,57 +204,59 @@ const Settings: React.FC = () => {
 
   const renderPrivacySettings = () => (
     <Box>
-      <Typography variant="h6" gutterBottom>Privacy Settings</Typography>
+      <Typography variant='h6' gutterBottom>
+        Privacy Settings
+      </Typography>
       <List>
         <ListItem>
-          <ListItemText
-            primary="Profile Visibility"
-            secondary="Control who can see your profile"
-          />
+          <ListItemText primary='Profile Visibility' secondary='Control who can see your profile' />
           <FormControlLabel
             control={
               <Switch
                 checked={settings.profileVisibility === 'public'}
-                onChange={(e) => handleSettingChange('profileVisibility', e.target.checked ? 'public' : 'private')}
+                onChange={e =>
+                  handleSettingChange('profileVisibility', e.target.checked ? 'public' : 'private')
+                }
               />
             }
             label={settings.profileVisibility === 'public' ? 'Public' : 'Private'}
           />
         </ListItem>
         <ListItem>
-          <ListItemText
-            primary="Online Status"
-            secondary="Show when you're online"
-          />
+          <ListItemText primary='Online Status' secondary="Show when you're online" />
           <FormControlLabel
             control={
               <Switch
                 checked={settings.privacy.showOnlineStatus}
-                onChange={(e) => handleSettingChange('privacy', {
-                  ...settings.privacy,
-                  showOnlineStatus: e.target.checked
-                })}
+                onChange={e =>
+                  handleSettingChange('privacy', {
+                    ...settings.privacy,
+                    showOnlineStatus: e.target.checked,
+                  })
+                }
               />
             }
-            label=""
+            label=''
           />
         </ListItem>
         <ListItem>
           <ListItemText
-            primary="Game Activity"
-            secondary="Share your gaming activity with friends"
+            primary='Game Activity'
+            secondary='Share your gaming activity with friends'
           />
           <FormControlLabel
             control={
               <Switch
                 checked={settings.privacy.showGameStats}
-                onChange={(e) => handleSettingChange('privacy', {
-                  ...settings.privacy,
-                  showGameStats: e.target.checked
-                })}
+                onChange={e =>
+                  handleSettingChange('privacy', {
+                    ...settings.privacy,
+                    showGameStats: e.target.checked,
+                  })
+                }
               />
             }
-            label=""
+            label=''
           />
         </ListItem>
       </List>
@@ -272,35 +265,33 @@ const Settings: React.FC = () => {
 
   const renderNotificationSettings = () => (
     <Box>
-      <Typography variant="h6" gutterBottom>Notification Preferences</Typography>
-      
+      <Typography variant='h6' gutterBottom>
+        Notification Preferences
+      </Typography>
+
       {/* Email Notification Frequency */}
-      <FormControl component="fieldset" sx={{ mb: 4, width: '100%' }}>
-        <FormLabel component="legend" sx={{ mb: 2 }}>Email Digest Frequency</FormLabel>
+      <FormControl component='fieldset' sx={{ mb: 4, width: '100%' }}>
+        <FormLabel component='legend' sx={{ mb: 2 }}>
+          Email Digest Frequency
+        </FormLabel>
         <RadioGroup
           value={settings.notifications.emailNotifications.frequency}
-          onChange={(e) => handleFrequencyChange(e.target.value as 'daily' | 'weekly' | 'real-time' | 'none')}
+          onChange={e =>
+            handleFrequencyChange(e.target.value as 'daily' | 'weekly' | 'real-time' | 'none')
+          }
         >
-          <FormControlLabel 
-            value="none" 
-            control={<Radio />} 
-            label="No email notifications (recommended)"
+          <FormControlLabel
+            value='none'
+            control={<Radio />}
+            label='No email notifications (recommended)'
           />
-          <FormControlLabel 
-            value="real-time" 
-            control={<Radio />} 
-            label="Real-time updates (high volume)"
+          <FormControlLabel
+            value='real-time'
+            control={<Radio />}
+            label='Real-time updates (high volume)'
           />
-          <FormControlLabel 
-            value="daily-digest" 
-            control={<Radio />} 
-            label="Daily digest"
-          />
-          <FormControlLabel 
-            value="weekly-digest" 
-            control={<Radio />} 
-            label="Weekly digest"
-          />
+          <FormControlLabel value='daily-digest' control={<Radio />} label='Daily digest' />
+          <FormControlLabel value='weekly-digest' control={<Radio />} label='Weekly digest' />
         </RadioGroup>
       </FormControl>
 
@@ -311,16 +302,16 @@ const Settings: React.FC = () => {
             <FormControl fullWidth sx={{ mb: 4 }}>
               <FormLabel>Digest Delivery Time</FormLabel>
               <TextField
-                type="time"
+                type='time'
                 value={settings.emailDigestTime}
-                onChange={(e) => handleSettingChange('emailDigestTime', e.target.value)}
+                onChange={e => handleSettingChange('emailDigestTime', e.target.value)}
                 sx={{ mt: 1 }}
               />
             </FormControl>
           )}
 
           {/* Email Notification Categories */}
-          <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+          <Typography variant='subtitle1' gutterBottom sx={{ mt: 2 }}>
             Email Notification Categories
           </Typography>
           <FormGroup>
@@ -329,18 +320,20 @@ const Settings: React.FC = () => {
                 <ListItemIcon>
                   <SecurityIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Security Alerts" 
-                  secondary="Login attempts, password changes, etc."
+                <ListItemText
+                  primary='Security Alerts'
+                  secondary='Login attempts, password changes, etc.'
                 />
                 <Switch
                   checked={false}
-                  onChange={(e) => {/* Security notifications not in current types */}}
+                  onChange={e => {
+                    /* Security notifications not in current types */
+                  }}
                 />
               </AccordionSummary>
               <AccordionDetails>
-                <Typography color="text.secondary">
-                  These are important security-related notifications that help protect your account. 
+                <Typography color='text.secondary'>
+                  These are important security-related notifications that help protect your account.
                   We recommend keeping these enabled.
                 </Typography>
               </AccordionDetails>
@@ -351,19 +344,19 @@ const Settings: React.FC = () => {
                 <ListItemIcon>
                   <MessageIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Direct Messages" 
-                  secondary="Notifications about new messages"
+                <ListItemText
+                  primary='Direct Messages'
+                  secondary='Notifications about new messages'
                 />
                 <Switch
                   checked={settings.notifications.emailNotifications.types.messages}
-                  onChange={(e) => handleNotificationChange('messages', e.target.checked)}
+                  onChange={e => handleNotificationChange('messages', e.target.checked)}
                 />
               </AccordionSummary>
               <AccordionDetails>
-                <Typography color="text.secondary">
-                  Receive email notifications when you get new direct messages. 
-                  If disabled, you'll still see messages in the app.
+                <Typography color='text.secondary'>
+                  Receive email notifications when you get new direct messages. If disabled, you'll
+                  still see messages in the app.
                 </Typography>
               </AccordionDetails>
             </Accordion>
@@ -373,13 +366,10 @@ const Settings: React.FC = () => {
                 <ListItemIcon>
                   <GroupIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Social" 
-                  secondary="Friend requests and team invites"
-                />
+                <ListItemText primary='Social' secondary='Friend requests and team invites' />
                 <Switch
                   checked={settings.notifications.emailNotifications.types.friendRequests}
-                  onChange={(e) => handleNotificationChange('friendRequests', e.target.checked)}
+                  onChange={e => handleNotificationChange('friendRequests', e.target.checked)}
                 />
               </AccordionSummary>
               <AccordionDetails>
@@ -388,19 +378,21 @@ const Settings: React.FC = () => {
                     control={
                       <Switch
                         checked={settings.notifications.emailNotifications.types.friendRequests}
-                        onChange={(e) => handleNotificationChange('friendRequests', e.target.checked)}
+                        onChange={e => handleNotificationChange('friendRequests', e.target.checked)}
                       />
                     }
-                    label="Friend Requests"
+                    label='Friend Requests'
                   />
                   <FormControlLabel
                     control={
                       <Switch
                         checked={false}
-                        onChange={(e) => {/* Team invites notifications not in current types */}}
+                        onChange={e => {
+                          /* Team invites notifications not in current types */
+                        }}
                       />
                     }
-                    label="Team Invites"
+                    label='Team Invites'
                   />
                 </FormGroup>
               </AccordionDetails>
@@ -411,13 +403,10 @@ const Settings: React.FC = () => {
                 <ListItemIcon>
                   <GamesIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Gaming" 
-                  secondary="Game invites and matchmaking"
-                />
+                <ListItemText primary='Gaming' secondary='Game invites and matchmaking' />
                 <Switch
                   checked={settings.notifications.emailNotifications.types.gameInvites}
-                  onChange={(e) => handleNotificationChange('gameInvites', e.target.checked)}
+                  onChange={e => handleNotificationChange('gameInvites', e.target.checked)}
                 />
               </AccordionSummary>
               <AccordionDetails>
@@ -426,19 +415,21 @@ const Settings: React.FC = () => {
                     control={
                       <Switch
                         checked={settings.notifications.emailNotifications.types.gameInvites}
-                        onChange={(e) => handleNotificationChange('gameInvites', e.target.checked)}
+                        onChange={e => handleNotificationChange('gameInvites', e.target.checked)}
                       />
                     }
-                    label="Game Invites"
+                    label='Game Invites'
                   />
                   <FormControlLabel
                     control={
                       <Switch
                         checked={false}
-                        onChange={(e) => {/* Matchmaking notifications not in current types */}}
+                        onChange={e => {
+                          /* Matchmaking notifications not in current types */
+                        }}
                       />
                     }
-                    label="Matchmaking Updates"
+                    label='Matchmaking Updates'
                   />
                 </FormGroup>
               </AccordionDetails>
@@ -449,17 +440,14 @@ const Settings: React.FC = () => {
                 <ListItemIcon>
                   <EventsIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Achievements" 
-                  secondary="Progress and unlocks"
-                />
+                <ListItemText primary='Achievements' secondary='Progress and unlocks' />
                 <Switch
                   checked={settings.notifications.emailNotifications.types.achievements}
-                  onChange={(e) => handleNotificationChange('achievements', e.target.checked)}
+                  onChange={e => handleNotificationChange('achievements', e.target.checked)}
                 />
               </AccordionSummary>
               <AccordionDetails>
-                <Typography color="text.secondary">
+                <Typography color='text.secondary'>
                   Get notified when you unlock new achievements or make significant progress.
                 </Typography>
               </AccordionDetails>
@@ -470,19 +458,18 @@ const Settings: React.FC = () => {
                 <ListItemIcon>
                   <CampaignIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Marketing" 
-                  secondary="News, updates, and promotions"
-                />
+                <ListItemText primary='Marketing' secondary='News, updates, and promotions' />
                 <Switch
                   checked={false}
-                  onChange={(e) => {/* Marketing notifications not in current types */}}
+                  onChange={e => {
+                    /* Marketing notifications not in current types */
+                  }}
                 />
               </AccordionSummary>
               <AccordionDetails>
-                <Typography color="text.secondary">
-                  Receive updates about new features, gaming events, and special offers.
-                  You can unsubscribe from these at any time.
+                <Typography color='text.secondary'>
+                  Receive updates about new features, gaming events, and special offers. You can
+                  unsubscribe from these at any time.
                 </Typography>
               </AccordionDetails>
             </Accordion>
@@ -493,7 +480,7 @@ const Settings: React.FC = () => {
       <Divider sx={{ my: 4 }} />
 
       {/* Push Notifications */}
-      <Typography variant="subtitle1" gutterBottom>
+      <Typography variant='subtitle1' gutterBottom>
         Push Notifications
       </Typography>
       <ListItem>
@@ -501,15 +488,17 @@ const Settings: React.FC = () => {
           <NotificationsActiveIcon />
         </ListItemIcon>
         <ListItemText
-          primary="Browser Notifications"
-          secondary="Receive notifications while browsing"
+          primary='Browser Notifications'
+          secondary='Receive notifications while browsing'
         />
         <Switch
           checked={settings.notifications.push}
-          onChange={(e) => handleSettingChange('notifications', {
-            ...settings.notifications,
-            push: e.target.checked
-          })}
+          onChange={e =>
+            handleSettingChange('notifications', {
+              ...settings.notifications,
+              push: e.target.checked,
+            })
+          }
         />
       </ListItem>
     </Box>
@@ -517,45 +506,50 @@ const Settings: React.FC = () => {
 
   const renderGamingSettings = () => (
     <Box>
-      <Typography variant="h6" gutterBottom>Gaming Preferences</Typography>
+      <Typography variant='h6' gutterBottom>
+        Gaming Preferences
+      </Typography>
       <List>
         <ListItem>
           <ListItemText
-            primary="Matchmaking"
-            secondary="Allow automatic matchmaking with other players"
+            primary='Matchmaking'
+            secondary='Allow automatic matchmaking with other players'
           />
           <Switch
             checked={settings.privacy.showGameStats}
-            onChange={(e) => handleSettingChange('privacy', {
-              ...settings.privacy,
-              showGameStats: e.target.checked
-            })}
+            onChange={e =>
+              handleSettingChange('privacy', {
+                ...settings.privacy,
+                showGameStats: e.target.checked,
+              })
+            }
           />
         </ListItem>
         <ListItem>
           <ListItemText
-            primary="Friend Requests"
-            secondary="Allow other players to send you friend requests"
+            primary='Friend Requests'
+            secondary='Allow other players to send you friend requests'
           />
           <Switch
             checked={settings.privacy.allowFriendRequests}
-            onChange={(e) => handleSettingChange('privacy', {
-              ...settings.privacy,
-              allowFriendRequests: e.target.checked
-            })}
+            onChange={e =>
+              handleSettingChange('privacy', {
+                ...settings.privacy,
+                allowFriendRequests: e.target.checked,
+              })
+            }
           />
         </ListItem>
         <ListItem>
-          <ListItemText
-            primary="Direct Messages"
-            secondary="Allow messages from other players"
-          />
+          <ListItemText primary='Direct Messages' secondary='Allow messages from other players' />
           <Switch
             checked={settings.privacy.showLastSeen}
-            onChange={(e) => handleSettingChange('privacy', {
-              ...settings.privacy,
-              showLastSeen: e.target.checked
-            })}
+            onChange={e =>
+              handleSettingChange('privacy', {
+                ...settings.privacy,
+                showLastSeen: e.target.checked,
+              })
+            }
           />
         </ListItem>
       </List>
@@ -575,11 +569,11 @@ const Settings: React.FC = () => {
 
     return (
       <Box>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant='h6' gutterBottom>
           Theme Color
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4 }}>
-          {themeColors.map((color) => (
+          {themeColors.map(color => (
             <Box
               key={color.value}
               onClick={() => handleSettingChange('themeColor', color.value)}
@@ -604,13 +598,15 @@ const Settings: React.FC = () => {
           control={
             <Switch
               checked={settings.theme.darkMode}
-              onChange={(e) => handleSettingChange('theme', {
-                ...settings.theme,
-                darkMode: e.target.checked
-              })}
+              onChange={e =>
+                handleSettingChange('theme', {
+                  ...settings.theme,
+                  darkMode: e.target.checked,
+                })
+              }
             />
           }
-          label="Dark Mode"
+          label='Dark Mode'
         />
       </Box>
     );
@@ -634,13 +630,13 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
         {/* Left Navigation */}
         <Grid item xs={12} md={3}>
           <Paper sx={{ bgcolor: 'background.paper' }}>
-            <List component="nav">
-              {settingsSections.map((section) => (
+            <List component='nav'>
+              {settingsSections.map(section => (
                 <ListItemButton
                   key={section.id}
                   selected={selectedSection === section.id}
@@ -656,7 +652,9 @@ const Settings: React.FC = () => {
                     },
                   }}
                 >
-                  <ListItemIcon sx={{ color: selectedSection === section.id ? 'primary.light' : 'inherit' }}>
+                  <ListItemIcon
+                    sx={{ color: selectedSection === section.id ? 'primary.light' : 'inherit' }}
+                  >
                     {section.icon}
                   </ListItemIcon>
                   <ListItemText
@@ -679,13 +677,11 @@ const Settings: React.FC = () => {
 
         {/* Main Content */}
         <Grid item xs={12} md={9}>
-          <Paper sx={{ p: 3, bgcolor: 'background.paper' }}>
-            {renderContent()}
-          </Paper>
+          <Paper sx={{ p: 3, bgcolor: 'background.paper' }}>{renderContent()}</Paper>
         </Grid>
       </Grid>
     </Container>
   );
 };
 
-export default Settings; 
+export default Settings;

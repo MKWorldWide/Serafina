@@ -9,17 +9,20 @@
 ## Environment Setup
 
 1. Install dependencies:
+
    ```bash
    npm install
    cd frontend && npm install
    ```
 
 2. Configure Amplify:
+
    ```bash
    amplify configure
    ```
 
 3. Initialize Amplify in the project:
+
    ```bash
    amplify init
    ```
@@ -34,6 +37,7 @@
 Create the following environment files:
 
 ### Development (.env.development)
+
 ```env
 VITE_API_URL=http://localhost:4000
 VITE_STAGE=development
@@ -41,6 +45,7 @@ VITE_AWS_REGION=us-east-1
 ```
 
 ### Production (.env.production)
+
 ```env
 VITE_API_URL=https://api.gamedin.xyz
 VITE_STAGE=production
@@ -50,16 +55,19 @@ VITE_AWS_REGION=us-east-1
 ## Build and Deployment
 
 ### Local Development
+
 ```bash
 npm run dev
 ```
 
 ### Production Build
+
 ```bash
 npm run build
 ```
 
 ### Deploy to Amplify
+
 ```bash
 amplify publish
 ```
@@ -132,6 +140,7 @@ Feature flags are managed through the config/feature-flags.json file:
 ## Troubleshooting
 
 1. Build Issues:
+
    ```bash
    npm run clean
    npm install
@@ -139,6 +148,7 @@ Feature flags are managed through the config/feature-flags.json file:
    ```
 
 2. Deployment Issues:
+
    ```bash
    amplify status
    amplify push
@@ -152,6 +162,7 @@ Feature flags are managed through the config/feature-flags.json file:
 ## Support
 
 For deployment issues:
+
 1. Check CloudWatch Logs
 2. Review Amplify Console
-3. Contact DevOps team 
+3. Contact DevOps team

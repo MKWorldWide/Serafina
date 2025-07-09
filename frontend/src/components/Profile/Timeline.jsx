@@ -28,9 +28,9 @@ const Timeline = ({ userId }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showComments, setShowComments] = useState({});
   const [newComment, setNewComment] = useState('');
-  
+
   const { user, posts, addPost, deletePost, likePost, addComment, sharePost } = useStore();
-  
+
   const handlePostStatus = () => {
     if (newStatus.trim()) {
       addPost(newStatus.trim());
@@ -55,21 +55,21 @@ const Timeline = ({ userId }) => {
     }
   };
 
-  const handleToggleComments = (postId) => {
-    setShowComments((prev) => ({
+  const handleToggleComments = postId => {
+    setShowComments(prev => ({
       ...prev,
       [postId]: !prev[postId],
     }));
   };
 
-  const handleSubmitComment = (postId) => {
+  const handleSubmitComment = postId => {
     if (newComment.trim()) {
       addComment(postId, newComment.trim());
       setNewComment('');
     }
   };
 
-  const userPosts = posts.filter((post) => !userId || post.userId === userId);
+  const userPosts = posts.filter(post => !userId || post.userId === userId);
 
   return (
     <Stack spacing={3}>
@@ -86,12 +86,12 @@ const Timeline = ({ userId }) => {
                   rows={2}
                   placeholder="What's on your mind?"
                   value={newStatus}
-                  onChange={(e) => setNewStatus(e.target.value)}
-                  variant="outlined"
+                  onChange={e => setNewStatus(e.target.value)}
+                  variant='outlined'
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                   <Button
-                    variant="contained"
+                    variant='contained'
                     onClick={handlePostStatus}
                     disabled={!newStatus.trim()}
                   >
@@ -105,62 +105,47 @@ const Timeline = ({ userId }) => {
       )}
 
       {/* Posts */}
-      {userPosts.map((post) => (
+      {userPosts.map(post => (
         <Card key={post.id}>
           <CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Avatar src={post.avatar} alt={post.username} />
                 <Box>
-                  <Typography variant="subtitle1">{post.username}</Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant='subtitle1'>{post.username}</Typography>
+                  <Typography variant='caption' color='text.secondary'>
                     {formatDistanceToNow(new Date(post.timestamp), { addSuffix: true })}
                   </Typography>
                 </Box>
               </Box>
               {post.userId === user.id && (
                 <>
-                  <IconButton
-                    size="small"
-                    onClick={(e) => handleOpenMenu(e, post)}
-                  >
+                  <IconButton size='small' onClick={e => handleOpenMenu(e, post)}>
                     <MoreVertIcon />
                   </IconButton>
-                  <Menu
-                    anchorEl={menuAnchor}
-                    open={Boolean(menuAnchor)}
-                    onClose={handleCloseMenu}
-                  >
+                  <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleCloseMenu}>
                     <MenuItem onClick={handleDeletePost}>Delete</MenuItem>
                   </Menu>
                 </>
               )}
             </Box>
 
-            <Typography variant="body1" paragraph>
+            <Typography variant='body1' paragraph>
               {post.content}
             </Typography>
 
             <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-              <Button
-                startIcon={<ThumbUpIcon />}
-                onClick={() => likePost(post.id)}
-                size="small"
-              >
+              <Button startIcon={<ThumbUpIcon />} onClick={() => likePost(post.id)} size='small'>
                 {post.likes} Likes
               </Button>
               <Button
                 startIcon={<CommentIcon />}
                 onClick={() => handleToggleComments(post.id)}
-                size="small"
+                size='small'
               >
                 {post.comments.length} Comments
               </Button>
-              <Button
-                startIcon={<ShareIcon />}
-                onClick={() => sharePost(post.id)}
-                size="small"
-              >
+              <Button startIcon={<ShareIcon />} onClick={() => sharePost(post.id)} size='small'>
                 {post.shares} Shares
               </Button>
             </Box>
@@ -169,7 +154,7 @@ const Timeline = ({ userId }) => {
               <Box sx={{ mt: 2 }}>
                 <Divider />
                 <Box sx={{ mt: 2, mb: 2 }}>
-                  {post.comments.map((comment) => (
+                  {post.comments.map(comment => (
                     <Box key={comment.id} sx={{ display: 'flex', gap: 2, mb: 2 }}>
                       <Avatar
                         src={comment.avatar}
@@ -177,11 +162,9 @@ const Timeline = ({ userId }) => {
                         sx={{ width: 32, height: 32 }}
                       />
                       <Box>
-                        <Typography variant="subtitle2">
-                          {comment.username}
-                        </Typography>
-                        <Typography variant="body2">{comment.content}</Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant='subtitle2'>{comment.username}</Typography>
+                        <Typography variant='body2'>{comment.content}</Typography>
+                        <Typography variant='caption' color='text.secondary'>
                           {formatDistanceToNow(new Date(comment.timestamp), {
                             addSuffix: true,
                           })}
@@ -191,19 +174,15 @@ const Timeline = ({ userId }) => {
                   ))}
                 </Box>
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Avatar
-                    src={user.avatar}
-                    alt={user.username}
-                    sx={{ width: 32, height: 32 }}
-                  />
+                  <Avatar src={user.avatar} alt={user.username} sx={{ width: 32, height: 32 }} />
                   <Box sx={{ flex: 1 }}>
                     <TextField
                       fullWidth
-                      size="small"
-                      placeholder="Write a comment..."
+                      size='small'
+                      placeholder='Write a comment...'
                       value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      onKeyPress={(e) => {
+                      onChange={e => setNewComment(e.target.value)}
+                      onKeyPress={e => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
                           handleSubmitComment(post.id);
@@ -212,8 +191,8 @@ const Timeline = ({ userId }) => {
                     />
                   </Box>
                   <Button
-                    variant="contained"
-                    size="small"
+                    variant='contained'
+                    size='small'
                     onClick={() => handleSubmitComment(post.id)}
                     disabled={!newComment.trim()}
                   >
@@ -229,4 +208,4 @@ const Timeline = ({ userId }) => {
   );
 };
 
-export default Timeline; 
+export default Timeline;

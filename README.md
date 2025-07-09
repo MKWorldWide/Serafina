@@ -5,14 +5,16 @@ A comprehensive Discord bot with advanced AI integration, dynamic command/event 
 ## 🌟 Features
 
 ### 🤖 Multi-Provider AI Support
+
 - **OpenAI**: GPT-3.5, GPT-4, and other OpenAI models
-- **Mistral**: Mistral-7B, Mixtral-8x7B, and other Mistral models  
+- **Mistral**: Mistral-7B, Mixtral-8x7B, and other Mistral models
 - **AthenaMist**: AthenaMist models with comprehensive support
 - **Load Balancing**: Automatic provider selection and fallback
 - **Cost Tracking**: Real-time usage monitoring and cost estimation
 - **Health Monitoring**: Provider health checks and error recovery
 
 ### ⚡ Dynamic Command System
+
 - **Slash Commands**: Full Discord slash command support
 - **Prefix Commands**: Traditional prefix-based commands
 - **Dynamic Loading**: Automatic command discovery and loading
@@ -21,12 +23,14 @@ A comprehensive Discord bot with advanced AI integration, dynamic command/event 
 - **Statistics**: Comprehensive usage tracking
 
 ### 📊 Event Management
+
 - **Dynamic Events**: Automatic event discovery and registration
 - **Statistics Tracking**: Event execution monitoring
 - **Error Handling**: Comprehensive error recovery
 - **Performance Monitoring**: Latency and execution time tracking
 
 ### 🔧 Core Infrastructure
+
 - **TypeScript**: Full TypeScript support with strict typing
 - **Modular Architecture**: Clean separation of concerns
 - **Comprehensive Logging**: Color-coded logging with multiple levels
@@ -36,7 +40,8 @@ A comprehensive Discord bot with advanced AI integration, dynamic command/event 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - TypeScript
 - Discord Bot Token
 - AI Provider API Keys (optional)
@@ -44,27 +49,31 @@ A comprehensive Discord bot with advanced AI integration, dynamic command/event 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/M-K-World-Wide/GameDinDiscord.git
    cd GameDinDiscord
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure environment variables**
+
    ```bash
    cp .env.example .env
    ```
-   
+
    Edit `.env` with your configuration:
+
    ```env
    DISCORD_TOKEN=your_discord_bot_token
    DISCORD_CLIENT_ID=your_discord_client_id
    DISCORD_GUILD_ID=your_discord_guild_id
-   
+
    # AI Provider Keys (optional)
    OPENAI_API_KEY=your_openai_api_key
    MISTRAL_API_KEY=your_mistral_api_key
@@ -72,6 +81,7 @@ A comprehensive Discord bot with advanced AI integration, dynamic command/event 
    ```
 
 4. **Build the project**
+
    ```bash
    npm run build
    ```
@@ -107,9 +117,11 @@ src/
 ## 🤖 AI Commands
 
 ### `/ai` - AI Interaction
+
 Interact with multiple AI providers through a single command.
 
 **Options:**
+
 - `prompt` (required): Your question or prompt
 - `provider` (optional): Choose AI provider (auto/openai/mistral/athenamist)
 - `model` (optional): Specific model to use
@@ -118,6 +130,7 @@ Interact with multiple AI providers through a single command.
 - `system_prompt` (optional): System prompt to guide AI behavior
 
 **Examples:**
+
 ```bash
 /ai prompt: "What is the capital of France?"
 /ai prompt: "Write a short story about a robot" provider:openai max_tokens:1000
@@ -136,11 +149,11 @@ const aiConfig: AIManagerConfig = {
   openaiKey: process.env.OPENAI_API_KEY,
   mistralKey: process.env.MISTRAL_API_KEY,
   athenaMistKey: process.env.ATHENAMIST_API_KEY,
-  defaultProvider: 'auto',           // or 'openai', 'mistral', 'athenamist'
-  enableFallback: true,              // Automatic fallback on failures
-  maxRetries: 3,                     // Retry attempts per request
-  retryDelay: 1000,                  // Delay between retries (ms)
-  costLimit: 100                     // Monthly cost limit ($)
+  defaultProvider: 'auto', // or 'openai', 'mistral', 'athenamist'
+  enableFallback: true, // Automatic fallback on failures
+  maxRetries: 3, // Retry attempts per request
+  retryDelay: 1000, // Delay between retries (ms)
+  costLimit: 100, // Monthly cost limit ($)
 };
 ```
 
@@ -153,28 +166,31 @@ export const metadata = {
   name: 'command-name',
   description: 'Command description',
   category: 'Category',
-  cooldown: 10,                      // Cooldown in seconds
-  permissions: [],                   // Required permissions
+  cooldown: 10, // Cooldown in seconds
+  permissions: [], // Required permissions
   usage: 'Usage instructions',
-  examples: ['Example 1', 'Example 2']
+  examples: ['Example 1', 'Example 2'],
 };
 ```
 
 ## 📊 Monitoring & Statistics
 
 ### AI Usage Statistics
+
 - Total requests and tokens used
 - Cost tracking per provider
 - Average latency and error rates
 - Provider health monitoring
 
 ### Command Statistics
+
 - Command usage frequency
 - User interaction patterns
 - Error rates and performance metrics
 - Cooldown and permission tracking
 
 ### Event Statistics
+
 - Event execution frequency
 - Performance monitoring
 - Error tracking and recovery
@@ -182,12 +198,14 @@ export const metadata = {
 ## 🔒 Security & Permissions
 
 ### Command Permissions
+
 - Granular permission control per command
 - Role-based access control
 - User-level permissions
 - Guild-specific permissions
 
 ### AI Provider Security
+
 - API key management
 - Rate limiting and quota management
 - Cost monitoring and limits
@@ -198,13 +216,14 @@ export const metadata = {
 ### Adding New Commands
 
 1. **Create command file** in `src/commands/`
+
    ```typescript
    import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-   
+
    export const data = new SlashCommandBuilder()
      .setName('example')
      .setDescription('Example command');
-   
+
    export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
      // Command logic here
    }
@@ -216,20 +235,21 @@ export const metadata = {
      name: 'example',
      description: 'Example command',
      category: 'Utility',
-     cooldown: 5
+     cooldown: 5,
    };
    ```
 
 ### Adding New AI Providers
 
 1. **Extend BaseAIProvider**
+
    ```typescript
    import { BaseAIProvider, AIRequestParams, AIResponse } from '../AIProvider';
-   
+
    export class CustomProvider extends BaseAIProvider {
      protected async generateResponseInternal(
        params: AIRequestParams,
-       model: AIModelConfig
+       model: AIModelConfig,
      ): Promise<AIResponse> {
        // Implementation here
      }
@@ -248,12 +268,13 @@ export const metadata = {
 ### Adding New Events
 
 1. **Create event file** in `src/events/`
+
    ```typescript
    import { Events, ClientEvents } from 'discord.js';
-   
+
    export const name = Events.MessageCreate;
    export const once = false;
-   
+
    export async function execute(message: Message): Promise<void> {
      // Event logic here
    }
@@ -262,16 +283,19 @@ export const metadata = {
 ## 🧪 Testing
 
 ### Running Tests
+
 ```bash
 npm test
 ```
 
 ### Testing AI Providers
+
 ```bash
 npm run test:ai
 ```
 
 ### Testing Commands
+
 ```bash
 npm run test:commands
 ```
@@ -279,6 +303,7 @@ npm run test:commands
 ## 📈 Performance
 
 ### Optimization Features
+
 - Dynamic command/event loading
 - Efficient memory management
 - Connection pooling
@@ -286,6 +311,7 @@ npm run test:commands
 - Rate limiting
 
 ### Monitoring
+
 - Real-time performance metrics
 - Resource usage tracking
 - Error rate monitoring
@@ -300,6 +326,7 @@ npm run test:commands
 5. Submit a pull request
 
 ### Code Standards
+
 - TypeScript strict mode
 - Comprehensive documentation
 - Error handling
@@ -319,6 +346,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For support and questions:
+
 - Create an issue on GitHub
 - Join our Discord server
 - Check the documentation

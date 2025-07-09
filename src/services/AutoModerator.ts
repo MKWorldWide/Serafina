@@ -1,4 +1,11 @@
-import { Message, TextChannel, GuildMember, EmbedBuilder, Guild, GuildBasedChannel } from 'discord.js';
+import {
+  Message,
+  TextChannel,
+  GuildMember,
+  EmbedBuilder,
+  Guild,
+  GuildBasedChannel,
+} from 'discord.js';
 import { SERVER_CONFIG } from '../config/serverConfig';
 import { logger } from '../utils/logger';
 
@@ -27,7 +34,7 @@ export class AutoModerator {
         messageCount: 0,
         lastMessageTime: currentTime,
         warnings: 0,
-        mutes: 0
+        mutes: 0,
       });
     }
 
@@ -58,7 +65,11 @@ export class AutoModerator {
     userData.lastMessageTime = currentTime;
   }
 
-  private async checkSpam(message: Message, userData: UserActivity, currentTime: number): Promise<boolean> {
+  private async checkSpam(
+    message: Message,
+    userData: UserActivity,
+    currentTime: number,
+  ): Promise<boolean> {
     if (userData.messageCount >= this.spamThreshold) {
       await this.handleSpam(message, userData);
       return true;
@@ -117,8 +128,10 @@ export class AutoModerator {
 
       const embed = new EmbedBuilder()
         .setTitle('🚫 Spam Detected')
-        .setColor(0xFF0000)
-        .setDescription(`**User:** ${message.author.tag}\n**Action:** Message deleted\n**Reason:** Sending messages too quickly\n**Warning Count:** ${userData.warnings}`)
+        .setColor(0xff0000)
+        .setDescription(
+          `**User:** ${message.author.tag}\n**Action:** Message deleted\n**Reason:** Sending messages too quickly\n**Warning Count:** ${userData.warnings}`,
+        )
         .setTimestamp();
 
       await this.logModAction(message.guild!, embed);
@@ -139,14 +152,20 @@ export class AutoModerator {
 
       const embed = new EmbedBuilder()
         .setTitle('⚠️ Toxic Content Detected')
-        .setColor(0xFFA500)
-        .setDescription(`**User:** ${message.author.tag}\n**Action:** Message deleted\n**Reason:** Inappropriate language detected\n**Warning Count:** ${userData.warnings}`)
+        .setColor(0xffa500)
+        .setDescription(
+          `**User:** ${message.author.tag}\n**Action:** Message deleted\n**Reason:** Inappropriate language detected\n**Warning Count:** ${userData.warnings}`,
+        )
         .setTimestamp();
 
       await this.logModAction(message.guild!, embed);
 
       // Send warning DM
-      await this.sendWarningDM(message.author.id, 'Toxic content detected', 'Please keep the community positive and respectful.');
+      await this.sendWarningDM(
+        message.author.id,
+        'Toxic content detected',
+        'Please keep the community positive and respectful.',
+      );
 
       // Auto-mute after 2 toxic content warnings
       if (userData.warnings >= 2) {
@@ -163,8 +182,10 @@ export class AutoModerator {
 
       const embed = new EmbedBuilder()
         .setTitle('🔊 Excessive Caps Detected')
-        .setColor(0xFFFF00)
-        .setDescription(`**User:** ${message.author.tag}\n**Action:** Message deleted\n**Reason:** Excessive use of capital letters`)
+        .setColor(0xffff00)
+        .setDescription(
+          `**User:** ${message.author.tag}\n**Action:** Message deleted\n**Reason:** Excessive use of capital letters`,
+        )
         .setTimestamp();
 
       await this.logModAction(message.guild!, embed);
@@ -180,8 +201,10 @@ export class AutoModerator {
 
       const embed = new EmbedBuilder()
         .setTitle('🔗 Link Spam Detected')
-        .setColor(0xFF0000)
-        .setDescription(`**User:** ${message.author.tag}\n**Action:** Message deleted\n**Reason:** Multiple links in single message\n**Warning Count:** ${userData.warnings}`)
+        .setColor(0xff0000)
+        .setDescription(
+          `**User:** ${message.author.tag}\n**Action:** Message deleted\n**Reason:** Multiple links in single message\n**Warning Count:** ${userData.warnings}`,
+        )
         .setTimestamp();
 
       await this.logModAction(message.guild!, embed);
@@ -193,14 +216,14 @@ export class AutoModerator {
   private async autoMute(member: GuildMember, reason: string): Promise<void> {
     try {
       const muteRole = member.guild.roles.cache.find(r => r.name === 'Muted');
-      
+
       if (!muteRole) {
         // Create mute role if it doesn't exist
         const newMuteRole = await member.guild.roles.create({
           name: 'Muted',
           color: 0x808080,
           permissions: [],
-          reason: 'Auto-moderation mute role'
+          reason: 'Auto-moderation mute role',
         });
 
         // Set permissions for all channels
@@ -208,7 +231,7 @@ export class AutoModerator {
           if (channel.isTextBased() && 'permissionOverwrites' in channel) {
             await channel.permissionOverwrites.create(newMuteRole, {
               SendMessages: false,
-              AddReactions: false
+              AddReactions: false,
             });
           }
         });
@@ -220,32 +243,38 @@ export class AutoModerator {
 
       const embed = new EmbedBuilder()
         .setTitle('🔇 Auto-Mute Applied')
-        .setColor(0xFF0000)
-        .setDescription(`**User:** ${member.user.tag}\n**Action:** Auto-muted\n**Reason:** ${reason}\n**Duration:** 10 minutes`)
+        .setColor(0xff0000)
+        .setDescription(
+          `**User:** ${member.user.tag}\n**Action:** Auto-muted\n**Reason:** ${reason}\n**Duration:** 10 minutes`,
+        )
         .setTimestamp();
 
       await this.logModAction(member.guild, embed);
 
       // Remove mute after 10 minutes
-      setTimeout(async () => {
-        try {
-          const muteRole = member.guild.roles.cache.find(r => r.name === 'Muted');
-          if (muteRole && member.roles.cache.has(muteRole.id)) {
-            await member.roles.remove(muteRole);
-            
-            const unmuteEmbed = new EmbedBuilder()
-              .setTitle('🔊 Auto-Mute Removed')
-              .setColor(0x00FF00)
-              .setDescription(`**User:** ${member.user.tag}\n**Action:** Mute automatically removed`)
-              .setTimestamp();
+      setTimeout(
+        async () => {
+          try {
+            const muteRole = member.guild.roles.cache.find(r => r.name === 'Muted');
+            if (muteRole && member.roles.cache.has(muteRole.id)) {
+              await member.roles.remove(muteRole);
 
-            await this.logModAction(member.guild, unmuteEmbed);
+              const unmuteEmbed = new EmbedBuilder()
+                .setTitle('🔊 Auto-Mute Removed')
+                .setColor(0x00ff00)
+                .setDescription(
+                  `**User:** ${member.user.tag}\n**Action:** Mute automatically removed`,
+                )
+                .setTimestamp();
+
+              await this.logModAction(member.guild, unmuteEmbed);
+            }
+          } catch (error) {
+            logger.error('Error removing auto-mute:', error);
           }
-        } catch (error) {
-          logger.error('Error removing auto-mute:', error);
-        }
-      }, 10 * 60 * 1000); // 10 minutes
-
+        },
+        10 * 60 * 1000,
+      ); // 10 minutes
     } catch (error) {
       logger.error('Error applying auto-mute:', error);
     }
@@ -268,8 +297,10 @@ export class AutoModerator {
       if (user) {
         const dmEmbed = new EmbedBuilder()
           .setTitle('⚠️ Warning from GameDin')
-          .setColor(0xFFA500)
-          .setDescription(`**Reason:** ${reason}\n\n**Guidance:** ${guidance}\n\nPlease review our community guidelines and contribute positively.`)
+          .setColor(0xffa500)
+          .setDescription(
+            `**Reason:** ${reason}\n\n**Guidance:** ${guidance}\n\nPlease review our community guidelines and contribute positively.`,
+          )
           .setTimestamp();
 
         await user.send({ embeds: [dmEmbed] });
@@ -296,4 +327,4 @@ export class AutoModerator {
   resetUserActivity(userId: string): void {
     this.userActivity.delete(userId);
   }
-} 
+}

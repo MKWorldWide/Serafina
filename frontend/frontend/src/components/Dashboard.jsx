@@ -1,5 +1,18 @@
 import { Link } from 'react-router-dom';
-import { Box, Card, CardContent, Typography, Button, List, ListItem, ListItemAvatar, ListItemText, Avatar, Container, Grid } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  Container,
+  Grid,
+} from '@mui/material';
 import { People as PeopleIcon } from '@mui/icons-material';
 import useStore from '../store/useStore';
 
@@ -8,23 +21,23 @@ const Dashboard = () => {
   const matches = useStore(state => state.matches || []);
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Card elevation={3}>
             <CardContent>
-              <Typography variant="h5" component="h2" gutterBottom>
+              <Typography variant='h5' component='h2' gutterBottom>
                 Welcome {user?.username || 'Gamer'}!
               </Typography>
-              <Typography variant="body1" color="text.secondary" paragraph>
+              <Typography variant='body1' color='text.secondary' paragraph>
                 Find your perfect gaming match today.
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
                   component={Link}
-                  to="/matches"
-                  variant="contained"
-                  color="primary"
+                  to='/matches'
+                  variant='contained'
+                  color='primary'
                   startIcon={<PeopleIcon />}
                 >
                   Find Matches
@@ -37,7 +50,7 @@ const Dashboard = () => {
         <Grid item xs={12} md={6}>
           <Card elevation={3}>
             <CardContent>
-              <Typography variant="h5" component="h2" gutterBottom>
+              <Typography variant='h5' component='h2' gutterBottom>
                 Recent Matches
               </Typography>
               {matches?.length > 0 ? (
@@ -65,7 +78,7 @@ const Dashboard = () => {
                   ))}
                 </List>
               ) : (
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant='body1' color='text.secondary'>
                   No matches yet. Start browsing to find gaming partners!
                 </Typography>
               )}

@@ -9,4 +9,4 @@ const useToast = () => {
   return { showToast };
 };
 
-export default useToast; 
+export default useToast;

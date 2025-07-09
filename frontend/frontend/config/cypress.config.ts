@@ -14,7 +14,7 @@ export default defineConfig({
     responseTimeout: 30000,
     env: {
       apiUrl: 'http://localhost:3000/api',
-      coverage: false
+      coverage: false,
     },
     setupNodeEvents(on, config) {
       require('@cypress/code-coverage/task')(on, config);
@@ -34,4 +34,4 @@ export default defineConfig({
     openMode: 0,
   },
   projectId: 'gamedin',
-}); 
+});

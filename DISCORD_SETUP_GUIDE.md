@@ -81,15 +81,18 @@ In your Discord server, use the `/setup` command to create channels and roles.
 ## 🔧 Troubleshooting
 
 ### "401 Unauthorized" Error
+
 - Check that your bot token is correct
 - Make sure the bot is invited to your server
 - Verify the client ID matches your application
 
 ### "Missing Permissions" Error
+
 - Ensure the bot has the required permissions
 - Check that the bot role is above the roles it needs to manage
 
 ### Bot Not Responding
+
 - Check that the bot is online
 - Verify the bot has permission to read messages in the channel
 - Check the console for error messages
@@ -97,6 +100,7 @@ In your Discord server, use the `/setup` command to create channels and roles.
 ## 📞 Support
 
 If you need help:
+
 1. Check the console output for error messages
 2. Verify all environment variables are set correctly
 3. Ensure the bot has proper permissions in your server
@@ -104,6 +108,7 @@ If you need help:
 ## 🎯 Next Steps
 
 Once the bot is running:
+
 1. Use `/setup` to create your server structure
 2. Test the moderation features
 3. Configure XP system settings
@@ -112,4 +117,4 @@ Once the bot is running:
 ---
 
 **Your Server**: https://discord.gg/snwv9dbq
-**Bot Status**: Ready for deployment once credentials are configured 
+**Bot Status**: Ready for deployment once credentials are configured

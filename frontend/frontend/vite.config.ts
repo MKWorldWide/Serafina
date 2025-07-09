@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
   // Load env file based on mode
   const env = loadEnv(mode, process.cwd(), '');
   const isProd = mode === 'production';
-  
+
   return {
     plugins: [
       react(),
@@ -32,20 +32,20 @@ export default defineConfig(({ mode }) => {
             {
               src: '/icon-192x192.png',
               sizes: '192x192',
-              type: 'image/png'
-            },
-            {
-              src: '/icon-512x512.png',
-              sizes: '512x512',
-              type: 'image/png'
+              type: 'image/png',
             },
             {
               src: '/icon-512x512.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'maskable'
-            }
-          ]
+            },
+            {
+              src: '/icon-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable',
+            },
+          ],
         },
         workbox: {
           runtimeCaching: [
@@ -56,12 +56,12 @@ export default defineConfig(({ mode }) => {
                 cacheName: 'google-fonts-cache',
                 expiration: {
                   maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
                 },
                 cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
+                  statuses: [0, 200],
+                },
+              },
             },
             {
               urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
@@ -70,12 +70,12 @@ export default defineConfig(({ mode }) => {
                 cacheName: 'gstatic-fonts-cache',
                 expiration: {
                   maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
                 },
                 cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
+                  statuses: [0, 200],
+                },
+              },
             },
             {
               urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/i,
@@ -84,9 +84,9 @@ export default defineConfig(({ mode }) => {
                 cacheName: 'images-cache',
                 expiration: {
                   maxEntries: 50,
-                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-                }
-              }
+                  maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                },
+              },
             },
             {
               urlPattern: /^https:\/\/.*\.amazonaws\.com\/.*/i,
@@ -95,12 +95,12 @@ export default defineConfig(({ mode }) => {
                 cacheName: 'aws-cache',
                 expiration: {
                   maxEntries: 50,
-                  maxAgeSeconds: 60 * 60 * 24 // 1 day
+                  maxAgeSeconds: 60 * 60 * 24, // 1 day
                 },
                 cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
+                  statuses: [0, 200],
+                },
+              },
             },
             {
               urlPattern: /^https:\/\/.*\.amplifyapp\.com\/api\/.*/i,
@@ -110,29 +110,30 @@ export default defineConfig(({ mode }) => {
                 networkTimeoutSeconds: 10,
                 expiration: {
                   maxEntries: 100,
-                  maxAgeSeconds: 60 * 5 // 5 minutes
+                  maxAgeSeconds: 60 * 5, // 5 minutes
                 },
                 cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
-            }
-          ]
-        }
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
+        },
       }),
       isProd && compression({ algorithm: 'brotliCompress' }),
       isProd && compression({ algorithm: 'gzip' }),
-      mode === 'analyze' && visualizer({
-        open: true,
-        filename: 'dist/stats.html',
-        gzipSize: true,
-        brotliSize: true
-      })
+      mode === 'analyze' &&
+        visualizer({
+          open: true,
+          filename: 'dist/stats.html',
+          gzipSize: true,
+          brotliSize: true,
+        }),
     ].filter(Boolean),
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src')
-      }
+        '@': path.resolve(__dirname, './src'),
+      },
     },
     server: {
       port: 3000,
@@ -143,9 +144,9 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL || 'http://localhost:4000',
           changeOrigin: true,
           secure: false,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      }
+          rewrite: path => path.replace(/^\/api/, ''),
+        },
+      },
     },
     build: {
       outDir: 'dist',
@@ -154,8 +155,8 @@ export default defineConfig(({ mode }) => {
       terserOptions: {
         compress: {
           drop_console: true,
-          drop_debugger: true
-        }
+          drop_debugger: true,
+        },
       },
       rollupOptions: {
         output: {
@@ -163,10 +164,10 @@ export default defineConfig(({ mode }) => {
             vendor: ['react', 'react-dom', 'react-router-dom'],
             ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
             aws: ['aws-amplify', '@aws-amplify/ui-react'],
-            utils: ['date-fns', 'zustand', 'zod']
-          }
-        }
-      }
-    }
+            utils: ['date-fns', 'zustand', 'zod'],
+          },
+        },
+      },
+    },
   };
 });

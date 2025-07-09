@@ -65,11 +65,7 @@ mutation UpdateUserProfile($input: UpdateUserProfileInput!) {
 #### Query Games List
 
 ```graphql
-query ListGames(
-  $filter: GameFilterInput
-  $limit: Int
-  $nextToken: String
-) {
+query ListGames($filter: GameFilterInput, $limit: Int, $nextToken: String) {
   listGames(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
@@ -314,7 +310,7 @@ import { GameDinAPI } from '@gamedin/sdk';
 
 const api = new GameDinAPI({
   apiKey: 'your-api-key',
-  environment: 'production'
+  environment: 'production',
 });
 
 // Query user profile
@@ -323,7 +319,7 @@ const profile = await api.users.getProfile(userId);
 // Update game review
 await api.games.updateReview(reviewId, {
   rating: 5,
-  comment: 'Great game!'
+  comment: 'Great game!',
 });
 ```
 
@@ -332,6 +328,7 @@ await api.games.updateReview(reviewId, {
 Current version: v1
 
 Version is specified in the URL:
+
 ```
 https://api.gamedin.xyz/v1/graphql
 ```
@@ -339,6 +336,7 @@ https://api.gamedin.xyz/v1/graphql
 ## Support
 
 For API support:
+
 - Email: api@gamedin.xyz
 - Documentation: https://docs.gamedin.xyz
-- Status: https://status.gamedin.xyz 
+- Status: https://status.gamedin.xyz

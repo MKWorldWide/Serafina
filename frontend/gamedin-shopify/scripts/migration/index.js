@@ -2,7 +2,7 @@
 
 /**
  * GameDin Migration Tool
- * 
+ *
  * This script migrates data from AWS Amplify to Shopify.
  * It handles users, products, and custom metadata.
  */
@@ -41,7 +41,7 @@ program
   .option('--dry-run', 'Perform a dry run without making actual changes')
   .option('--aws-profile <profile>', 'AWS profile to use')
   .option('--shopify-store <store>', 'Shopify store domain')
-  .action(async (options) => {
+  .action(async options => {
     console.log(chalk.blue('🎮 GameDin Migration Tool'));
     console.log(chalk.blue('======================='));
 
@@ -53,31 +53,35 @@ program
     // Confirm environment
     const shopifyStore = options.shopifyStore || process.env.SHOPIFY_SHOP;
     if (!shopifyStore) {
-      console.error(chalk.red('Error: No Shopify store specified. Use --shopify-store or set SHOPIFY_SHOP env variable.'));
+      console.error(
+        chalk.red(
+          'Error: No Shopify store specified. Use --shopify-store or set SHOPIFY_SHOP env variable.',
+        ),
+      );
       process.exit(1);
     }
 
     console.log(chalk.green(`Target Shopify Store: ${shopifyStore}`));
     console.log(chalk.yellow(`Dry Run Mode: ${options.dryRun ? 'Enabled' : 'Disabled'}`));
-    
+
     // Run migrations
     try {
       if (options.users) {
         await runMigration('Users', userMigration.migrate, options);
       }
-      
+
       if (options.products) {
         await runMigration('Products', productMigration.migrate, options);
       }
-      
+
       if (options.metafields) {
         await runMigration('Metafields', metafieldMigration.migrate, options);
       }
-      
+
       if (options.content) {
         await runMigration('User Content', contentMigration.migrate, options);
       }
-      
+
       console.log(chalk.green('✅ Migration completed successfully!'));
     } catch (error) {
       console.error(chalk.red(`❌ Migration failed: ${error.message}`));
@@ -92,20 +96,20 @@ program
   .option('-u, --users', 'Validate user data')
   .option('-p, --products', 'Validate product data')
   .option('--aws-profile <profile>', 'AWS profile to use')
-  .action(async (options) => {
+  .action(async options => {
     console.log(chalk.blue('🎮 GameDin Validation Tool'));
     console.log(chalk.blue('========================='));
-    
+
     // Run validations
     try {
       if (options.users) {
         await runValidation('Users', userMigration.validate, options);
       }
-      
+
       if (options.products) {
         await runValidation('Products', productMigration.validate, options);
       }
-      
+
       console.log(chalk.green('✅ Validation completed successfully!'));
     } catch (error) {
       console.error(chalk.red(`❌ Validation failed: ${error.message}`));
@@ -118,9 +122,15 @@ async function runMigration(name, migrationFn, options) {
   const spinner = ora(`Migrating ${name}...`).start();
   try {
     const result = await migrationFn(options);
-    spinner.succeed(`${name} migration complete: ${result.processed} processed, ${result.success} successful, ${result.errors} errors`);
+    spinner.succeed(
+      `${name} migration complete: ${result.processed} processed, ${result.success} successful, ${result.errors} errors`,
+    );
     if (result.errors > 0) {
-      console.log(chalk.yellow(`⚠️ There were ${result.errors} errors during ${name} migration. See logs for details.`));
+      console.log(
+        chalk.yellow(
+          `⚠️ There were ${result.errors} errors during ${name} migration. See logs for details.`,
+        ),
+      );
     }
     return result;
   } catch (error) {
@@ -133,9 +143,15 @@ async function runValidation(name, validationFn, options) {
   const spinner = ora(`Validating ${name}...`).start();
   try {
     const result = await validationFn(options);
-    spinner.succeed(`${name} validation complete: ${result.valid} valid, ${result.invalid} invalid`);
+    spinner.succeed(
+      `${name} validation complete: ${result.valid} valid, ${result.invalid} invalid`,
+    );
     if (result.invalid > 0) {
-      console.log(chalk.yellow(`⚠️ Found ${result.invalid} invalid ${name.toLowerCase()} records. See logs for details.`));
+      console.log(
+        chalk.yellow(
+          `⚠️ Found ${result.invalid} invalid ${name.toLowerCase()} records. See logs for details.`,
+        ),
+      );
     }
     return result;
   } catch (error) {
@@ -144,4 +160,4 @@ async function runValidation(name, validationFn, options) {
   }
 }
 
-program.parse(); 
+program.parse();

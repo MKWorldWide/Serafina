@@ -51,7 +51,9 @@ export default function ProductDetails({ showToast }) {
       // Fetch recommendations
       const recommendationsResponse = await fetch(`/api/products/${id}/recommendations`);
       if (!recommendationsResponse.ok) {
-        throw new Error(`Recommendations request failed with status ${recommendationsResponse.status}`);
+        throw new Error(
+          `Recommendations request failed with status ${recommendationsResponse.status}`,
+        );
       }
       const recommendationsData = await recommendationsResponse.json();
 
@@ -81,7 +83,7 @@ export default function ProductDetails({ showToast }) {
   }, [fetchProductDetails]);
 
   // Handle tab change
-  const handleTabChange = useCallback((selectedTabIndex) => {
+  const handleTabChange = useCallback(selectedTabIndex => {
     setSelectedTab(selectedTabIndex);
   }, []);
 
@@ -110,15 +112,12 @@ export default function ProductDetails({ showToast }) {
   // Render loading state
   if (loading) {
     return (
-      <Page
-        title="Game Details"
-        breadcrumbs={[{ content: 'Games', url: '/products' }]}
-      >
+      <Page title='Game Details' breadcrumbs={[{ content: 'Games', url: '/products' }]}>
         <Layout>
           <Layout.Section>
             <Card>
               <Card.Section>
-                <SkeletonDisplayText size="large" />
+                <SkeletonDisplayText size='large' />
                 <SkeletonBodyText lines={10} />
               </Card.Section>
             </Card>
@@ -131,15 +130,12 @@ export default function ProductDetails({ showToast }) {
   // Render error state
   if (error) {
     return (
-      <Page
-        title="Game Details"
-        breadcrumbs={[{ content: 'Games', url: '/products' }]}
-      >
+      <Page title='Game Details' breadcrumbs={[{ content: 'Games', url: '/products' }]}>
         <Layout>
           <Layout.Section>
             <Banner
-              title="There was an error loading the game details"
-              status="critical"
+              title='There was an error loading the game details'
+              status='critical'
               action={{ content: 'Try again', onAction: fetchProductDetails }}
             >
               <p>{error}</p>
@@ -153,15 +149,12 @@ export default function ProductDetails({ showToast }) {
   // Render not found state
   if (!product) {
     return (
-      <Page
-        title="Game Not Found"
-        breadcrumbs={[{ content: 'Games', url: '/products' }]}
-      >
+      <Page title='Game Not Found' breadcrumbs={[{ content: 'Games', url: '/products' }]}>
         <Layout>
           <Layout.Section>
             <EmptyState
-              heading="Game not found"
-              image=""
+              heading='Game not found'
+              image=''
               action={{ content: 'Back to Games', onAction: () => navigate('/products') }}
             >
               <p>The game you're looking for doesn't exist or has been removed.</p>
@@ -173,19 +166,11 @@ export default function ProductDetails({ showToast }) {
   }
 
   // Extract product details
-  const {
-    title,
-    description,
-    images,
-    status,
-    product_type,
-    variants,
-    metafields = [],
-  } = product;
+  const { title, description, images, status, product_type, variants, metafields = [] } = product;
 
   // Extract price from variants
   const price = variants && variants.length > 0 ? variants[0].price : '0.00';
-  
+
   // Extract metafields
   const genre = metafields.find(m => m.key === 'genre')?.value || '';
   const developer = metafields.find(m => m.key === 'developer')?.value || '';
@@ -212,7 +197,8 @@ export default function ProductDetails({ showToast }) {
       secondaryActions={[
         {
           content: 'View in Store',
-          onAction: () => window.open(`https://${window.location.host}/products/${product.handle}`, '_blank'),
+          onAction: () =>
+            window.open(`https://${window.location.host}/products/${product.handle}`, '_blank'),
         },
       ]}
     >
@@ -221,39 +207,37 @@ export default function ProductDetails({ showToast }) {
         <Layout.Section>
           <LegacyCard>
             <LegacyCard.Section>
-              <LegacyStack wrap={false} alignment="center">
+              <LegacyStack wrap={false} alignment='center'>
                 <LegacyStack.Item>
                   <div style={{ width: '150px', height: '150px' }}>
                     <Thumbnail
                       source={images && images.length > 0 ? images[0].src : ''}
                       alt={title}
-                      size="large"
+                      size='large'
                     />
                   </div>
                 </LegacyStack.Item>
                 <LegacyStack.Item fill>
-                  <LegacyStack vertical spacing="tight">
+                  <LegacyStack vertical spacing='tight'>
                     <TextContainer>
-                      <LegacyStack alignment="center" spacing="tight">
-                        <Text variant="headingLg" as="h2">{title}</Text>
+                      <LegacyStack alignment='center' spacing='tight'>
+                        <Text variant='headingLg' as='h2'>
+                          {title}
+                        </Text>
                         <Badge status={statusBadgeStatus}>{status}</Badge>
                       </LegacyStack>
-                      <LegacyStack spacing="tight">
+                      <LegacyStack spacing='tight'>
                         {product_type && <Badge>{product_type}</Badge>}
                         {genre && <Badge>{genre}</Badge>}
                         {rating && <Badge>{rating}</Badge>}
                       </LegacyStack>
-                      <Text variant="headingMd" as="h3">${price}</Text>
-                      <LegacyStack spacing="tight">
-                        {developer && (
-                          <Text variant="bodySm">Developer: {developer}</Text>
-                        )}
-                        {publisher && (
-                          <Text variant="bodySm">Publisher: {publisher}</Text>
-                        )}
-                        {releaseDate && (
-                          <Text variant="bodySm">Released: {releaseDate}</Text>
-                        )}
+                      <Text variant='headingMd' as='h3'>
+                        ${price}
+                      </Text>
+                      <LegacyStack spacing='tight'>
+                        {developer && <Text variant='bodySm'>Developer: {developer}</Text>}
+                        {publisher && <Text variant='bodySm'>Publisher: {publisher}</Text>}
+                        {releaseDate && <Text variant='bodySm'>Released: {releaseDate}</Text>}
                       </LegacyStack>
                     </TextContainer>
                   </LegacyStack>
@@ -269,20 +253,24 @@ export default function ProductDetails({ showToast }) {
             <Tabs tabs={tabs} selected={selectedTab} onSelect={handleTabChange}>
               {/* Game Details Tab */}
               {selectedTab === 0 && (
-                <Card.Section title="Game Details">
+                <Card.Section title='Game Details'>
                   <TextContainer>
                     <div dangerouslySetInnerHTML={{ __html: description }} />
-                    
+
                     {platforms && (
                       <>
-                        <Text variant="headingSm" as="h4">Platforms</Text>
+                        <Text variant='headingSm' as='h4'>
+                          Platforms
+                        </Text>
                         <p>{platforms}</p>
                       </>
                     )}
-                    
+
                     {features && (
                       <>
-                        <Text variant="headingSm" as="h4">Features</Text>
+                        <Text variant='headingSm' as='h4'>
+                          Features
+                        </Text>
                         <p>{features}</p>
                       </>
                     )}
@@ -292,12 +280,12 @@ export default function ProductDetails({ showToast }) {
 
               {/* Recommendations Tab */}
               {selectedTab === 1 && (
-                <Card.Section title="Similar Games">
+                <Card.Section title='Similar Games'>
                   {recommendations.length > 0 ? (
                     <ResourceList
                       resourceName={{ singular: 'game', plural: 'games' }}
                       items={recommendations}
-                      renderItem={(item) => {
+                      renderItem={item => {
                         const { id, title, images, price } = item;
                         return (
                           <ResourceList.Item
@@ -315,12 +303,16 @@ export default function ProductDetails({ showToast }) {
                               <LegacyStack.Item fill>
                                 <h3>
                                   <TextContainer>
-                                    <Text variant="bodyMd" fontWeight="bold">{title}</Text>
+                                    <Text variant='bodyMd' fontWeight='bold'>
+                                      {title}
+                                    </Text>
                                   </TextContainer>
                                 </h3>
                               </LegacyStack.Item>
                               <LegacyStack.Item>
-                                <Text variant="bodyMd" fontWeight="bold">${price}</Text>
+                                <Text variant='bodyMd' fontWeight='bold'>
+                                  ${price}
+                                </Text>
                               </LegacyStack.Item>
                             </LegacyStack>
                           </ResourceList.Item>
@@ -328,10 +320,7 @@ export default function ProductDetails({ showToast }) {
                       }}
                     />
                   ) : (
-                    <EmptyState
-                      heading="No recommendations available"
-                      image=""
-                    >
+                    <EmptyState heading='No recommendations available' image=''>
                       <p>There are no similar games to recommend at this time.</p>
                     </EmptyState>
                   )}
@@ -340,22 +329,26 @@ export default function ProductDetails({ showToast }) {
 
               {/* Reviews Tab */}
               {selectedTab === 2 && (
-                <Card.Section title="Customer Reviews">
+                <Card.Section title='Customer Reviews'>
                   {reviews.length > 0 ? (
                     <ResourceList
                       resourceName={{ singular: 'review', plural: 'reviews' }}
                       items={reviews}
-                      renderItem={(review) => {
+                      renderItem={review => {
                         const { id, customer_name, rating, content, created_at } = review;
                         return (
                           <ResourceList.Item id={id}>
-                            <LegacyStack vertical spacing="tight">
+                            <LegacyStack vertical spacing='tight'>
                               <LegacyStack>
                                 <LegacyStack.Item fill>
-                                  <Text variant="bodyMd" fontWeight="bold">{customer_name}</Text>
+                                  <Text variant='bodyMd' fontWeight='bold'>
+                                    {customer_name}
+                                  </Text>
                                 </LegacyStack.Item>
                                 <LegacyStack.Item>
-                                  <Text variant="bodySm">{new Date(created_at).toLocaleDateString()}</Text>
+                                  <Text variant='bodySm'>
+                                    {new Date(created_at).toLocaleDateString()}
+                                  </Text>
                                 </LegacyStack.Item>
                               </LegacyStack>
                               <div>
@@ -368,10 +361,7 @@ export default function ProductDetails({ showToast }) {
                       }}
                     />
                   ) : (
-                    <EmptyState
-                      heading="No reviews yet"
-                      image=""
-                    >
+                    <EmptyState heading='No reviews yet' image=''>
                       <p>This game hasn't received any reviews yet.</p>
                     </EmptyState>
                   )}
@@ -383,4 +373,4 @@ export default function ProductDetails({ showToast }) {
       </Layout>
     </Page>
   );
-} 
+}

@@ -19,10 +19,11 @@ export const useStore = create<Store>((set, get) => ({
   setIsAuthenticated: (value: boolean) => set({ isAuthenticated: value }),
   setLoading: (value: boolean) => set({ loading: value }),
   setError: (error: string | null) => set({ error }),
-  updateSettings: (newSettings: Partial<ISettings>) => set((state) => ({
-    settings: { ...state.settings, ...newSettings }
-  })),
-  toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+  updateSettings: (newSettings: Partial<ISettings>) =>
+    set(state => ({
+      settings: { ...state.settings, ...newSettings },
+    })),
+  toggleDarkMode: () => set(state => ({ darkMode: !state.darkMode })),
 
   login: async (credentials: LoginCredentials) => {
     const { setLoading, setError, setUser, setIsAuthenticated } = get();
@@ -51,8 +52,8 @@ export const useStore = create<Store>((set, get) => ({
         password: userData.password,
         attributes: {
           email: userData.email,
-          name: userData.username
-        }
+          name: userData.username,
+        },
       });
       return Promise.resolve();
     } catch (error) {
@@ -102,7 +103,11 @@ export const useStore = create<Store>((set, get) => ({
       await Auth.forgotPasswordSubmit(email, code, newPassword);
       return Promise.resolve();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred during password reset confirmation');
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'An error occurred during password reset confirmation',
+      );
       throw error;
     } finally {
       setLoading(false);
@@ -117,12 +122,16 @@ export const useStore = create<Store>((set, get) => ({
       await Auth.resendSignUp(email);
       return Promise.resolve();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred when resending confirmation code');
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'An error occurred when resending confirmation code',
+      );
       throw error;
     } finally {
       setLoading(false);
     }
-  }
+  },
 }));
 
-export default useStore; 
+export default useStore;

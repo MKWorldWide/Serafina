@@ -26,7 +26,7 @@ export const userMapper = (cognitoUser: CognitoUser): IUser => {
       email: attributes.email,
       name: attributes.name,
       picture: attributes.picture,
-      rank: attributes['custom:rank'] || 'Rookie'
-    }
+      rank: attributes['custom:rank'] || 'Rookie',
+    },
   };
 };

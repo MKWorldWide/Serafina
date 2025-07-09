@@ -21,7 +21,7 @@ export const Messaging = () => {
       if (event.type === 'MESSAGE_CREATE' && event.data.message) {
         const { message } = event.data;
         if (message.conversationId === selectedConversation?.id) {
-          setMessages((prev) => [...prev, message]);
+          setMessages(prev => [...prev, message]);
         }
       }
     };
@@ -38,25 +38,29 @@ export const Messaging = () => {
       content,
       userId: user.username,
       userName: user.username,
-      userAvatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
+      userAvatar:
+        user.attributes?.picture ||
+        `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
       timestamp: new Date().toISOString(),
       conversationId: selectedConversation.id,
       read: false,
       sender: {
         id: user.username,
         username: user.username,
-        avatar: user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`
+        avatar:
+          user.attributes?.picture ||
+          `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
       },
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
-    setMessages((prev) => [...prev, newMessage]);
+    setMessages(prev => [...prev, newMessage]);
     send({
       type: 'MESSAGE_CREATE',
       data: {
-        message: newMessage
+        message: newMessage,
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   };
 
@@ -85,8 +89,8 @@ export const Messaging = () => {
               <MessageInput onSubmit={handleSendMessage} />
             </>
           ) : (
-            <Box p={4} textAlign="center">
-              <Typography color="textSecondary">
+            <Box p={4} textAlign='center'>
+              <Typography color='textSecondary'>
                 Select a conversation to start messaging
               </Typography>
             </Box>
@@ -97,4 +101,4 @@ export const Messaging = () => {
   );
 };
 
-export default Messaging; 
+export default Messaging;

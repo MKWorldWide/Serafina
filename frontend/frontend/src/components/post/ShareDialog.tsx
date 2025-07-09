@@ -55,7 +55,7 @@ const shareOptions: ShareOption[] = [
     onClick: url => {
       window.open(
         `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-        '_blank'
+        '_blank',
       );
     },
   },
@@ -66,9 +66,9 @@ const shareOptions: ShareOption[] = [
     onClick: (url, title) => {
       window.open(
         `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-          url
+          url,
         )}&text=${encodeURIComponent(title)}`,
-        '_blank'
+        '_blank',
       );
     },
   },
@@ -79,7 +79,7 @@ const shareOptions: ShareOption[] = [
     onClick: (url, title) => {
       window.open(
         `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-        '_blank'
+        '_blank',
       );
     },
   },
@@ -90,9 +90,9 @@ const shareOptions: ShareOption[] = [
     onClick: (url, title) => {
       window.open(
         `https://reddit.com/submit?url=${encodeURIComponent(
-          url
+          url,
         )}&title=${encodeURIComponent(title)}`,
-        '_blank'
+        '_blank',
       );
     },
   },
@@ -111,7 +111,7 @@ const shareOptions: ShareOption[] = [
     onClick: (url, title) => {
       window.open(
         `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
-        '_blank'
+        '_blank',
       );
     },
   },
@@ -121,7 +121,7 @@ const shareOptions: ShareOption[] = [
     color: '#ea4335',
     onClick: (url, title) => {
       window.location.href = `mailto:?subject=${encodeURIComponent(
-        title
+        title,
       )}&body=${encodeURIComponent(`Check this out: ${url}`)}`;
     },
   },
@@ -187,7 +187,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
       <Dialog
         open={open}
         onClose={onClose}
-        maxWidth="sm"
+        maxWidth='sm'
         fullWidth
         PaperProps={{
           sx: {
@@ -196,9 +196,9 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
         }}
       >
         <DialogTitle>
-          <Box display="flex" alignItems="center" justifyContent="space-between">
-            <Typography variant="h6">Share Post</Typography>
-            <IconButton onClick={onClose} size="small">
+          <Box display='flex' alignItems='center' justifyContent='space-between'>
+            <Typography variant='h6'>Share Post</Typography>
+            <IconButton onClick={onClose} size='small'>
               <CloseIcon />
             </IconButton>
           </Box>
@@ -211,12 +211,12 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
                 fullWidth
                 multiline
                 rows={4}
-                placeholder="Add your thoughts..."
+                placeholder='Add your thoughts...'
                 value={repostContent}
                 onChange={e => setRepostContent(e.target.value)}
                 sx={{ mb: 2 }}
               />
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Sharing: {postTitle}
               </Typography>
             </Box>
@@ -249,14 +249,14 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
               >
                 <TextField
                   fullWidth
-                  size="small"
+                  size='small'
                   value={postUrl}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
-                <Tooltip title="Copy link">
-                  <IconButton onClick={handleCopyLink} color="primary">
+                <Tooltip title='Copy link'>
+                  <IconButton onClick={handleCopyLink} color='primary'>
                     <LinkIcon />
                   </IconButton>
                 </Tooltip>
@@ -279,7 +279,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
         {showRepost && (
           <DialogActions>
             <Button onClick={() => setShowRepost(false)}>Cancel</Button>
-            <Button variant="contained" onClick={handleRepost} disabled={!repostContent.trim()}>
+            <Button variant='contained' onClick={handleRepost} disabled={!repostContent.trim()}>
               Share
             </Button>
           </DialogActions>

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  List,
-  ListItem,
-  ListItemText,
-  Menu,
-} from '@mui/material';
+import { List, ListItem, ListItemText, Menu } from '@mui/material';
 import { INotification } from '../../types/social';
 
 interface NotificationsMenuProps {
@@ -33,21 +28,14 @@ const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
       }}
     >
       <List>
-        {notifications.map((notification) => (
-          <ListItem
-            key={notification.id}
-            button
-            onClick={() => onNotificationClick(notification)}
-          >
-            <ListItemText
-              primary={notification.title}
-              secondary={notification.description}
-            />
+        {notifications.map(notification => (
+          <ListItem key={notification.id} button onClick={() => onNotificationClick(notification)}>
+            <ListItemText primary={notification.title} secondary={notification.description} />
           </ListItem>
         ))}
         {notifications.length === 0 && (
           <ListItem>
-            <ListItemText primary="No notifications" />
+            <ListItemText primary='No notifications' />
           </ListItem>
         )}
       </List>

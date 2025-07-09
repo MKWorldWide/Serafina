@@ -129,7 +129,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
 
   const totalReactions = Object.values(reactions).reduce(
     (sum, reaction) => sum + reaction.count,
-    0
+    0,
   );
 
   const userReaction = Object.entries(reactions).find(([_, reaction]) => reaction.reacted)?.[0] as
@@ -150,7 +150,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
           {userReaction ? reactionConfig[userReaction].icon : reactionConfig.like.icon}
         </AnimatedIconButton>
         {totalReactions > 0 && (
-          <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+          <Typography variant='body2' color='text.secondary' component='span' sx={{ ml: 0.5 }}>
             {totalReactions}
           </Typography>
         )}
@@ -158,7 +158,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
 
       {showCommentButton && (
         <Button
-          size="small"
+          size='small'
           startIcon={<CommentIcon />}
           onClick={onComment}
           sx={{ minWidth: 'auto' }}
@@ -168,7 +168,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
       )}
 
       {showShareButton && (
-        <Button size="small" startIcon={<ShareIcon />} onClick={onShare} sx={{ minWidth: 'auto' }}>
+        <Button size='small' startIcon={<ShareIcon />} onClick={onShare} sx={{ minWidth: 'auto' }}>
           {shareCount > 0 && shareCount}
         </Button>
       )}
@@ -201,9 +201,9 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
               key={type}
               title={
                 <Box>
-                  <Typography variant="body2">{config.label}</Typography>
+                  <Typography variant='body2'>{config.label}</Typography>
                   {reaction.count > 0 && (
-                    <Typography variant="caption">
+                    <Typography variant='caption'>
                       {reaction.count} {reaction.count === 1 ? 'person' : 'people'}
                     </Typography>
                   )}
@@ -211,7 +211,7 @@ const ReactionBar: React.FC<ReactionBarProps> = ({
               }
             >
               <IconButton
-                size="small"
+                size='small'
                 onClick={() => handleReactionClick(type as ReactionType)}
                 className={animatingButton === type ? 'pop' : ''}
                 sx={{

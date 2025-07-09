@@ -7,6 +7,7 @@ This guide provides comprehensive instructions for testing and deploying the Ser
 ## 🎯 Current Status
 
 **✅ Bot Status**: ONLINE AND HEALTHY
+
 - **Bot Name**: Serafina#0158
 - **Process ID**: 56925
 - **Uptime**: 527+ seconds (healthy)
@@ -18,11 +19,12 @@ This guide provides comprehensive instructions for testing and deploying the Ser
 ### 1. Local Testing ✅ COMPLETED
 
 **Health Checks**:
+
 ```bash
 # Health endpoint
 curl http://localhost:3000/health
 
-# Status endpoint  
+# Status endpoint
 curl http://localhost:3000/status
 
 # Metrics endpoint
@@ -30,6 +32,7 @@ curl http://localhost:3000/metrics
 ```
 
 **Bot Commands Available**:
+
 - `/ai` - AI interaction with multiple providers (OpenAI, Mistral, AthenaMist)
 - `/bless` - Divine blessing system
 - `/match` - Game party creation and management
@@ -37,16 +40,19 @@ curl http://localhost:3000/metrics
 ### 2. Command Testing
 
 **AI Command**:
+
 ```
 /ai prompt:"What is the best gaming strategy?" provider:auto max_tokens:300
 ```
 
 **Bless Command**:
+
 ```
 /bless target:@username
 ```
 
 **Match Command**:
+
 ```
 /match game:Fortnite mode:Battle Royale
 ```
@@ -85,6 +91,7 @@ curl http://localhost:3000/metrics
 ### Prerequisites
 
 1. **AWS CLI Configuration**
+
    ```bash
    aws configure
    # Enter your AWS Access Key ID
@@ -100,21 +107,25 @@ curl http://localhost:3000/metrics
 ### Deployment Commands
 
 **Development Environment**:
+
 ```bash
 npm run aws:deploy:dev
 ```
 
 **Staging Environment**:
+
 ```bash
 npm run aws:deploy:staging
 ```
 
 **Production Environment**:
+
 ```bash
 npm run aws:deploy:prod
 ```
 
 **Manual Deployment**:
+
 ```bash
 bash aws/deploy-serafina.sh [environment] [alert-email] [domain]
 ```
@@ -152,6 +163,7 @@ bash aws/deploy-serafina.sh [environment] [alert-email] [domain]
 Access the dashboard at: `https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=Serafina-production`
 
 **Key Metrics**:
+
 - EC2 CPU and memory utilization
 - Load balancer request count and response time
 - Auto Scaling Group capacity
@@ -159,6 +171,7 @@ Access the dashboard at: `https://console.aws.amazon.com/cloudwatch/home?region=
 ### Alarms
 
 **Critical Alarms**:
+
 - `serafina-cpu-alarm-production` - CPU > 70%
 - `serafina-health-alarm-production` - Health check failures
 - `serafina-memory-alarm-production` - Memory > 80%
@@ -166,6 +179,7 @@ Access the dashboard at: `https://console.aws.amazon.com/cloudwatch/home?region=
 ### Logs
 
 **CloudWatch Logs**:
+
 - Application logs: `/aws/ec2/serafina-production`
 - Access logs: `/aws/applicationloadbalancer/serafina-production`
 
@@ -279,18 +293,21 @@ Access the dashboard at: `https://console.aws.amazon.com/cloudwatch/home?region=
 ## 📝 Deployment Checklist
 
 ### Pre-Deployment
+
 - [ ] AWS CLI configured and tested
 - [ ] Discord bot credentials ready
 - [ ] Local testing completed
 - [ ] CloudFormation template validated
 
 ### Deployment
+
 - [ ] Environment selected (dev/staging/prod)
 - [ ] Infrastructure deployed successfully
 - [ ] Monitoring configured
 - [ ] Alarms set up
 
 ### Post-Deployment
+
 - [ ] Bot responding to commands
 - [ ] Health checks passing
 - [ ] CloudWatch dashboard accessible
@@ -300,4 +317,4 @@ Access the dashboard at: `https://console.aws.amazon.com/cloudwatch/home?region=
 
 **Last Updated**: 2025-07-07  
 **Version**: 1.8.0  
-**Status**: READY FOR PRODUCTION DEPLOYMENT 
+**Status**: READY FOR PRODUCTION DEPLOYMENT

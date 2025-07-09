@@ -7,17 +7,18 @@ import { visualizer } from 'rollup-plugin-visualizer';
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
-    mode === 'analyze' && visualizer({
-      open: true,
-      filename: 'dist/stats.html',
-      gzipSize: true,
-      brotliSize: true
-    })
+    mode === 'analyze' &&
+      visualizer({
+        open: true,
+        filename: 'dist/stats.html',
+        gzipSize: true,
+        brotliSize: true,
+      }),
   ].filter(Boolean),
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '../src')
-    }
+      '@': path.resolve(__dirname, '../src'),
+    },
   },
   server: {
     port: 3001,
@@ -27,14 +28,14 @@ export default defineConfig(({ mode }) => ({
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:3000',
         changeOrigin: true,
-        secure: false
-      }
-    }
+        secure: false,
+      },
+    },
   },
   build: {
     outDir: '../dist',
     sourcemap: true,
-    target: 'esnext'
+    target: 'esnext',
   },
   optimizeDeps: {
     include: [
@@ -44,17 +45,17 @@ export default defineConfig(({ mode }) => ({
       'aws-amplify',
       '@aws-amplify/ui-react',
       '@headlessui/react',
-      '@heroicons/react'
-    ]
+      '@heroicons/react',
+    ],
   },
   css: {
     postcss: {
       plugins: [
         require('tailwindcss')({
-          config: path.resolve(__dirname, './tailwind.config.js')
+          config: path.resolve(__dirname, './tailwind.config.js'),
         }),
-        require('autoprefixer')
-      ]
-    }
-  }
+        require('autoprefixer'),
+      ],
+    },
+  },
 }));

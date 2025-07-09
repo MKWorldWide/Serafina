@@ -12,7 +12,7 @@ export const options = {
     { duration: '5m', target: 200 }, // Stay at 200 users
     { duration: '2m', target: 300 }, // Ramp up to 300 users
     { duration: '5m', target: 300 }, // Stay at 300 users
-    { duration: '2m', target: 0 },   // Ramp down to 0 users
+    { duration: '2m', target: 0 }, // Ramp down to 0 users
   ],
   thresholds: {
     http_req_duration: ['p(95)<500'], // 95% of requests should be below 500ms
@@ -32,22 +32,22 @@ export function setup() {
   });
 
   check(loginRes, {
-    'logged in successfully': (resp) => resp.status === 200,
+    'logged in successfully': resp => resp.status === 200,
   });
 
   return { token: loginRes.json('token') };
 }
 
-export default function(data) {
+export default function (data) {
   const headers = {
-    'Authorization': `Bearer ${data.token}`,
+    Authorization: `Bearer ${data.token}`,
     'Content-Type': 'application/json',
   };
 
   // Test homepage load
   const homeRes = http.get(BASE_URL, { tags: { type: 'staticAsset' } });
   check(homeRes, {
-    'homepage loaded': (resp) => resp.status === 200,
+    'homepage loaded': resp => resp.status === 200,
   });
 
   // Test game search
@@ -56,7 +56,7 @@ export default function(data) {
     tags: { type: 'apiEndpoint' },
   });
   check(searchRes, {
-    'search successful': (resp) => resp.status === 200,
+    'search successful': resp => resp.status === 200,
   });
 
   // Test game recommendations
@@ -65,7 +65,7 @@ export default function(data) {
     tags: { type: 'apiEndpoint' },
   });
   check(recommendationsRes, {
-    'recommendations loaded': (resp) => resp.status === 200,
+    'recommendations loaded': resp => resp.status === 200,
   });
 
   // Test WebSocket connection
@@ -74,7 +74,7 @@ export default function(data) {
     tags: { type: 'apiEndpoint' },
   });
   check(wsRes, {
-    'websocket connection successful': (resp) => resp.status === 101,
+    'websocket connection successful': resp => resp.status === 101,
   });
 
   // Test user profile update
@@ -86,7 +86,7 @@ export default function(data) {
     tags: { type: 'apiEndpoint' },
   });
   check(profileRes, {
-    'profile update successful': (resp) => resp.status === 200,
+    'profile update successful': resp => resp.status === 200,
   });
 
   // Random sleep between 1s and 5s
@@ -97,11 +97,11 @@ export function teardown(data) {
   // Cleanup: Logout and close any open connections
   const logoutRes = http.post(`${BASE_URL}/api/auth/logout`, {
     headers: {
-      'Authorization': `Bearer ${data.token}`,
+      Authorization: `Bearer ${data.token}`,
     },
   });
 
   check(logoutRes, {
-    'logged out successfully': (resp) => resp.status === 200,
+    'logged out successfully': resp => resp.status === 200,
   });
-} 
+}

@@ -36,7 +36,7 @@ const useToast = (): UseToastReturn => {
     // TODO: Implement actual toast functionality with a toast library
     // For now, we'll use console.log as a placeholder
     console.log(`${type.toUpperCase()}: ${message}`);
-    
+
     // In a real implementation, this would:
     // 1. Create a toast message object
     // 2. Add it to a toast state/context
@@ -44,29 +44,41 @@ const useToast = (): UseToastReturn => {
     // 4. Auto-remove after specified duration
   }, []);
 
-  const showSuccess = useCallback((message: string) => {
-    showToast(message, 'success');
-  }, [showToast]);
+  const showSuccess = useCallback(
+    (message: string) => {
+      showToast(message, 'success');
+    },
+    [showToast],
+  );
 
-  const showError = useCallback((message: string) => {
-    showToast(message, 'error');
-  }, [showToast]);
+  const showError = useCallback(
+    (message: string) => {
+      showToast(message, 'error');
+    },
+    [showToast],
+  );
 
-  const showInfo = useCallback((message: string) => {
-    showToast(message, 'info');
-  }, [showToast]);
+  const showInfo = useCallback(
+    (message: string) => {
+      showToast(message, 'info');
+    },
+    [showToast],
+  );
 
-  const showWarning = useCallback((message: string) => {
-    showToast(message, 'warning');
-  }, [showToast]);
+  const showWarning = useCallback(
+    (message: string) => {
+      showToast(message, 'warning');
+    },
+    [showToast],
+  );
 
   return {
     showToast,
     showSuccess,
     showError,
     showInfo,
-    showWarning
+    showWarning,
   };
 };
 
-export default useToast; 
+export default useToast;

@@ -20,57 +20,57 @@ const MatchFinder = () => {
   };
 
   return (
-    <div className="card bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h2 className="card-title">Find Gaming Partners</h2>
+    <div className='card bg-base-100 shadow-xl'>
+      <div className='card-body'>
+        <h2 className='card-title'>Find Gaming Partners</h2>
 
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Game</span>
+        <div className='form-control'>
+          <label className='label'>
+            <span className='label-text'>Game</span>
           </label>
           <input
-            type="text"
-            placeholder="Enter game name"
-            className="input input-bordered"
+            type='text'
+            placeholder='Enter game name'
+            className='input input-bordered'
             value={filters.game}
             onChange={e => setFilters({ ...filters, game: e.target.value })}
           />
         </div>
 
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Skill Level</span>
+        <div className='form-control'>
+          <label className='label'>
+            <span className='label-text'>Skill Level</span>
           </label>
           <select
-            className="select select-bordered"
+            className='select select-bordered'
             value={filters.skill}
             onChange={e => setFilters({ ...filters, skill: e.target.value })}
           >
-            <option value="any">Any Skill Level</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="pro">Pro</option>
+            <option value='any'>Any Skill Level</option>
+            <option value='beginner'>Beginner</option>
+            <option value='intermediate'>Intermediate</option>
+            <option value='pro'>Pro</option>
           </select>
         </div>
 
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Region</span>
+        <div className='form-control'>
+          <label className='label'>
+            <span className='label-text'>Region</span>
           </label>
           <select
-            className="select select-bordered"
+            className='select select-bordered'
             value={filters.region}
             onChange={e => setFilters({ ...filters, region: e.target.value })}
           >
-            <option value="any">Any Region</option>
-            <option value="na">North America</option>
-            <option value="eu">Europe</option>
-            <option value="asia">Asia</option>
+            <option value='any'>Any Region</option>
+            <option value='na'>North America</option>
+            <option value='eu'>Europe</option>
+            <option value='asia'>Asia</option>
           </select>
         </div>
 
-        <div className="card-actions justify-end mt-4">
-          <button className="btn btn-primary" onClick={handleSearch}>
+        <div className='card-actions justify-end mt-4'>
+          <button className='btn btn-primary' onClick={handleSearch}>
             Find Matches
           </button>
         </div>

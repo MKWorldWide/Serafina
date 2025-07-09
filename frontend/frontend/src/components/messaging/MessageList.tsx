@@ -18,7 +18,7 @@ export default function MessageList({ messages, currentUser }: MessageListProps)
         flexDirection: 'column',
       }}
     >
-      {messages.map((message) => (
+      {messages.map(message => (
         <MessageBubble
           key={message.id}
           message={message}

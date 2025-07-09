@@ -24,9 +24,7 @@ export default function NotificationSettings() {
     return (
       <Box sx={{ p: 4 }}>
         <Paper sx={{ p: 3, textAlign: 'center' }}>
-          <Typography variant="h6">
-            Please sign in to view notification settings
-          </Typography>
+          <Typography variant='h6'>Please sign in to view notification settings</Typography>
         </Paper>
       </Box>
     );
@@ -34,7 +32,7 @@ export default function NotificationSettings() {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant='h4' gutterBottom>
         Notification Settings
       </Typography>
       <Grid container spacing={3}>
@@ -46,60 +44,60 @@ export default function NotificationSettings() {
                   <Switch
                     checked={settings.emailNotifications}
                     onChange={handleChange}
-                    name="emailNotifications"
+                    name='emailNotifications'
                   />
                 }
-                label="Email Notifications"
+                label='Email Notifications'
               />
               <FormControlLabel
                 control={
                   <Switch
                     checked={settings.pushNotifications}
                     onChange={handleChange}
-                    name="pushNotifications"
+                    name='pushNotifications'
                   />
                 }
-                label="Push Notifications"
+                label='Push Notifications'
               />
               <FormControlLabel
                 control={
                   <Switch
                     checked={settings.messageNotifications}
                     onChange={handleChange}
-                    name="messageNotifications"
+                    name='messageNotifications'
                   />
                 }
-                label="Message Notifications"
+                label='Message Notifications'
               />
               <FormControlLabel
                 control={
                   <Switch
                     checked={settings.achievementNotifications}
                     onChange={handleChange}
-                    name="achievementNotifications"
+                    name='achievementNotifications'
                   />
                 }
-                label="Achievement Notifications"
+                label='Achievement Notifications'
               />
               <FormControlLabel
                 control={
                   <Switch
                     checked={settings.friendRequestNotifications}
                     onChange={handleChange}
-                    name="friendRequestNotifications"
+                    name='friendRequestNotifications'
                   />
                 }
-                label="Friend Request Notifications"
+                label='Friend Request Notifications'
               />
               <FormControlLabel
                 control={
                   <Switch
                     checked={settings.tournamentNotifications}
                     onChange={handleChange}
-                    name="tournamentNotifications"
+                    name='tournamentNotifications'
                   />
                 }
-                label="Tournament Notifications"
+                label='Tournament Notifications'
               />
             </FormGroup>
           </Paper>
@@ -107,4 +105,4 @@ export default function NotificationSettings() {
       </Grid>
     </Box>
   );
-} 
+}

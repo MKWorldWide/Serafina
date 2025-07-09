@@ -37,11 +37,11 @@ class WebSocketService {
         this.attemptReconnect();
       };
 
-      this.ws.onerror = (error) => {
+      this.ws.onerror = error => {
         console.error('WebSocket error:', error);
       };
 
-      this.ws.onmessage = (event) => {
+      this.ws.onmessage = event => {
         try {
           const message: WebSocketMessage = JSON.parse(event.data);
           this.handleMessage(message);
@@ -61,10 +61,7 @@ class WebSocketService {
     }
 
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      const delay = Math.min(
-        this.baseReconnectDelay * Math.pow(2, this.reconnectAttempts),
-        30000
-      );
+      const delay = Math.min(this.baseReconnectDelay * Math.pow(2, this.reconnectAttempts), 30000);
 
       this.reconnectTimeout = window.setTimeout(() => {
         this.reconnectAttempts++;
@@ -87,7 +84,7 @@ class WebSocketService {
       const handlers = this.messageHandlers.get(type) || [];
       this.messageHandlers.set(
         type,
-        handlers.filter(h => h !== handler)
+        handlers.filter(h => h !== handler),
       );
     };
   }
@@ -130,7 +127,7 @@ export function useWebSocket() {
     (type: WebSocketMessage['type'], handler: (message: WebSocketMessage) => void) => {
       return wsService.subscribe(type, handler);
     },
-    []
+    [],
   );
 
   const send = useCallback((type: WebSocketMessage['type'], data: any) => {

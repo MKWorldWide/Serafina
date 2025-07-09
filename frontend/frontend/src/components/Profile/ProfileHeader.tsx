@@ -9,14 +9,10 @@ interface ProfileHeaderProps {
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      <Avatar
-        src={user.avatar}
-        alt={user.username}
-        sx={{ width: 120, height: 120 }}
-      />
+      <Avatar src={user.avatar} alt={user.username} sx={{ width: 120, height: 120 }} />
       <Box>
-        <Typography variant="h4">{user.username}</Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant='h4'>{user.username}</Typography>
+        <Typography variant='body1' color='text.secondary'>
           {user.bio}
         </Typography>
       </Box>
@@ -24,4 +20,4 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
   );
 };
 
-export default ProfileHeader; 
+export default ProfileHeader;

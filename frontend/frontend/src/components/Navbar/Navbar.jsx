@@ -36,7 +36,7 @@ const Navbar = () => {
   const { user, logout } = useStore();
   const navigate = useNavigate();
 
-  const handleMenu = (event) => {
+  const handleMenu = event => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -63,9 +63,9 @@ const Navbar = () => {
   ];
 
   const drawer = (
-    <Box sx={{ width: 250 }} role="presentation">
+    <Box sx={{ width: 250 }} role='presentation'>
       <List>
-        {menuItems.map((item) => (
+        {menuItems.map(item => (
           <ListItem
             button
             key={item.text}
@@ -83,13 +83,13 @@ const Navbar = () => {
   );
 
   return (
-    <AppBar position="static">
+    <AppBar position='static'>
       <Toolbar>
         <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
+          size='large'
+          edge='start'
+          color='inherit'
+          aria-label='menu'
           onClick={handleDrawerToggle}
           sx={{ mr: 2 }}
         >
@@ -97,9 +97,9 @@ const Navbar = () => {
         </IconButton>
 
         <Typography
-          variant="h6"
+          variant='h6'
           component={RouterLink}
-          to="/"
+          to='/'
           sx={{
             flexGrow: 1,
             textDecoration: 'none',
@@ -152,21 +152,21 @@ const Navbar = () => {
           </>
         ) : (
           <Box>
-            <Button color="inherit" component={RouterLink} to="/login">
+            <Button color='inherit' component={RouterLink} to='/login'>
               Login
             </Button>
-            <Button color="inherit" component={RouterLink} to="/register">
+            <Button color='inherit' component={RouterLink} to='/register'>
               Register
             </Button>
           </Box>
         )}
       </Toolbar>
 
-      <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
+      <Drawer anchor='left' open={drawerOpen} onClose={handleDrawerToggle}>
         {drawer}
       </Drawer>
     </AppBar>
   );
 };
 
-export default Navbar; 
+export default Navbar;

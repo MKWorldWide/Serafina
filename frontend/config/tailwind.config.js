@@ -3,10 +3,7 @@ const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './src/**/*.{js,jsx,ts,tsx}',
-    './public/index.html'
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: 'class',
   theme: {
     extend: {
@@ -23,8 +20,8 @@ module.exports = {
         info: colors.blue,
       },
       spacing: {
-        '128': '32rem',
-        '144': '36rem',
+        128: '32rem',
+        144: '36rem',
       },
       borderRadius: {
         '4xl': '2rem',
@@ -45,7 +42,7 @@ module.exports = {
         },
       },
       screens: {
-        'xs': '475px',
+        xs: '475px',
         ...defaultTheme.screens,
       },
     },

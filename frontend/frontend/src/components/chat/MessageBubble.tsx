@@ -18,7 +18,11 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
       }}
     >
       <Avatar
-        src={message.author.picture || message.author.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${message.author.username}`}
+        src={
+          message.author.picture ||
+          message.author.avatar ||
+          `https://api.dicebear.com/7.x/initials/svg?seed=${message.author.username}`
+        }
         alt={message.author.username}
         sx={{ mr: isOwn ? 0 : 1, ml: isOwn ? 1 : 0 }}
       />
@@ -32,11 +36,11 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
           position: 'relative',
         }}
       >
-        <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
+        <Typography variant='body1' sx={{ wordBreak: 'break-word' }}>
           {message.content}
         </Typography>
         <Typography
-          variant="caption"
+          variant='caption'
           sx={{
             display: 'block',
             mt: 0.5,
@@ -51,4 +55,4 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
       </Box>
     </Box>
   );
-} 
+}

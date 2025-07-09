@@ -78,7 +78,7 @@ export default function Dashboard({ showToast }) {
   }, [fetchDashboardData]);
 
   // Handle tab change
-  const handleTabChange = useCallback((selectedTabIndex) => {
+  const handleTabChange = useCallback(selectedTabIndex => {
     setSelectedTab(selectedTabIndex);
   }, []);
 
@@ -101,12 +101,12 @@ export default function Dashboard({ showToast }) {
   // Render loading state
   if (loading) {
     return (
-      <Page title="Dashboard">
+      <Page title='Dashboard'>
         <Layout>
           <Layout.Section oneHalf>
             <Card>
               <Card.Section>
-                <SkeletonDisplayText size="small" />
+                <SkeletonDisplayText size='small' />
                 <SkeletonBodyText lines={2} />
               </Card.Section>
             </Card>
@@ -114,7 +114,7 @@ export default function Dashboard({ showToast }) {
           <Layout.Section oneHalf>
             <Card>
               <Card.Section>
-                <SkeletonDisplayText size="small" />
+                <SkeletonDisplayText size='small' />
                 <SkeletonBodyText lines={2} />
               </Card.Section>
             </Card>
@@ -122,7 +122,7 @@ export default function Dashboard({ showToast }) {
           <Layout.Section>
             <Card>
               <Card.Section>
-                <SkeletonDisplayText size="small" />
+                <SkeletonDisplayText size='small' />
                 <SkeletonBodyText lines={6} />
               </Card.Section>
             </Card>
@@ -135,12 +135,12 @@ export default function Dashboard({ showToast }) {
   // Render error state
   if (error) {
     return (
-      <Page title="Dashboard">
+      <Page title='Dashboard'>
         <Layout>
           <Layout.Section>
             <Banner
-              title="There was an error loading the dashboard"
-              status="critical"
+              title='There was an error loading the dashboard'
+              status='critical'
               action={{ content: 'Try again', onAction: fetchDashboardData }}
             >
               <p>{error}</p>
@@ -152,16 +152,18 @@ export default function Dashboard({ showToast }) {
   }
 
   // Prepare data for charts
-  const salesData = analytics?.salesOverTime?.map(item => ({
-    name: item.date,
-    data: [{ key: 'Sales', value: item.amount }]
-  })) || [];
+  const salesData =
+    analytics?.salesOverTime?.map(item => ({
+      name: item.date,
+      data: [{ key: 'Sales', value: item.amount }],
+    })) || [];
 
   const topGamesData = {
-    data: analytics?.topGames?.map(game => ({
-      name: game.title,
-      data: [{ key: 'Sales', value: game.sales }]
-    })) || [],
+    data:
+      analytics?.topGames?.map(game => ({
+        name: game.title,
+        data: [{ key: 'Sales', value: game.sales }],
+      })) || [],
     showLegend: false,
   };
 
@@ -171,7 +173,7 @@ export default function Dashboard({ showToast }) {
     order.customer?.name || 'Guest',
     new Date(order.created_at).toLocaleDateString(),
     `$${order.total_price}`,
-    order.fulfillment_status || 'Unfulfilled'
+    order.fulfillment_status || 'Unfulfilled',
   ]);
 
   const productsTableRows = recentProducts.map(product => [
@@ -179,12 +181,12 @@ export default function Dashboard({ showToast }) {
     product.product_type || 'Game',
     new Date(product.created_at).toLocaleDateString(),
     product.status,
-    `$${product.variants[0]?.price || '0.00'}`
+    `$${product.variants[0]?.price || '0.00'}`,
   ]);
 
   return (
     <Page
-      title="Dashboard"
+      title='Dashboard'
       primaryAction={{
         content: 'View All Games',
         onAction: () => navigate('/products'),
@@ -196,27 +198,34 @@ export default function Dashboard({ showToast }) {
           <Card>
             <Card.Section>
               <TextContainer>
-                <Text variant="headingMd" as="h2">Sales Overview</Text>
-                <LegacyStack distribution="fillEvenly">
+                <Text variant='headingMd' as='h2'>
+                  Sales Overview
+                </Text>
+                <LegacyStack distribution='fillEvenly'>
                   <LegacyStack vertical>
-                    <Text variant="headingXl" as="p">${analytics?.totalSales?.toFixed(2) || '0.00'}</Text>
-                    <Text variant="bodySm" as="p">Total Sales</Text>
+                    <Text variant='headingXl' as='p'>
+                      ${analytics?.totalSales?.toFixed(2) || '0.00'}
+                    </Text>
+                    <Text variant='bodySm' as='p'>
+                      Total Sales
+                    </Text>
                   </LegacyStack>
                   <LegacyStack vertical>
-                    <Text variant="headingXl" as="p">{analytics?.totalOrders || 0}</Text>
-                    <Text variant="bodySm" as="p">Total Orders</Text>
+                    <Text variant='headingXl' as='p'>
+                      {analytics?.totalOrders || 0}
+                    </Text>
+                    <Text variant='bodySm' as='p'>
+                      Total Orders
+                    </Text>
                   </LegacyStack>
                 </LegacyStack>
               </TextContainer>
             </Card.Section>
-            <Card.Section title="Sales Over Time">
+            <Card.Section title='Sales Over Time'>
               {salesData.length > 0 ? (
-                <LineChart data={salesData} theme="Light" />
+                <LineChart data={salesData} theme='Light' />
               ) : (
-                <EmptyState
-                  heading="No sales data available"
-                  image=""
-                >
+                <EmptyState heading='No sales data available' image=''>
                   <p>Start selling to see your sales data here.</p>
                 </EmptyState>
               )}
@@ -228,27 +237,34 @@ export default function Dashboard({ showToast }) {
           <Card>
             <Card.Section>
               <TextContainer>
-                <Text variant="headingMd" as="h2">Game Metrics</Text>
-                <LegacyStack distribution="fillEvenly">
+                <Text variant='headingMd' as='h2'>
+                  Game Metrics
+                </Text>
+                <LegacyStack distribution='fillEvenly'>
                   <LegacyStack vertical>
-                    <Text variant="headingXl" as="p">{analytics?.totalGames || 0}</Text>
-                    <Text variant="bodySm" as="p">Total Games</Text>
+                    <Text variant='headingXl' as='p'>
+                      {analytics?.totalGames || 0}
+                    </Text>
+                    <Text variant='bodySm' as='p'>
+                      Total Games
+                    </Text>
                   </LegacyStack>
                   <LegacyStack vertical>
-                    <Text variant="headingXl" as="p">{analytics?.totalCustomers || 0}</Text>
-                    <Text variant="bodySm" as="p">Total Customers</Text>
+                    <Text variant='headingXl' as='p'>
+                      {analytics?.totalCustomers || 0}
+                    </Text>
+                    <Text variant='bodySm' as='p'>
+                      Total Customers
+                    </Text>
                   </LegacyStack>
                 </LegacyStack>
               </TextContainer>
             </Card.Section>
-            <Card.Section title="Top Selling Games">
+            <Card.Section title='Top Selling Games'>
               {topGamesData.data.length > 0 ? (
-                <BarChart data={topGamesData.data} theme="Light" />
+                <BarChart data={topGamesData.data} theme='Light' />
               ) : (
-                <EmptyState
-                  heading="No game sales data available"
-                  image=""
-                >
+                <EmptyState heading='No game sales data available' image=''>
                   <p>Start selling games to see your top performers here.</p>
                 </EmptyState>
               )}
@@ -261,8 +277,8 @@ export default function Dashboard({ showToast }) {
           <Card>
             <Tabs tabs={tabs} selected={selectedTab} onSelect={handleTabChange}>
               <Card.Section title={tabs[selectedTab].content}>
-                {selectedTab === 0 && (
-                  ordersTableRows.length > 0 ? (
+                {selectedTab === 0 &&
+                  (ordersTableRows.length > 0 ? (
                     <DataTable
                       columnContentTypes={['text', 'text', 'text', 'text', 'text']}
                       headings={['Order', 'Customer', 'Date', 'Total', 'Status']}
@@ -270,16 +286,15 @@ export default function Dashboard({ showToast }) {
                     />
                   ) : (
                     <EmptyState
-                      heading="No orders yet"
-                      image=""
+                      heading='No orders yet'
+                      image=''
                       action={{ content: 'View Store', url: 'https://admin.shopify.com' }}
                     >
                       <p>When you receive orders, they will appear here.</p>
                     </EmptyState>
-                  )
-                )}
-                {selectedTab === 1 && (
-                  productsTableRows.length > 0 ? (
+                  ))}
+                {selectedTab === 1 &&
+                  (productsTableRows.length > 0 ? (
                     <DataTable
                       columnContentTypes={['text', 'text', 'text', 'text', 'text']}
                       headings={['Game', 'Type', 'Added', 'Status', 'Price']}
@@ -287,14 +302,13 @@ export default function Dashboard({ showToast }) {
                     />
                   ) : (
                     <EmptyState
-                      heading="No games added yet"
-                      image=""
+                      heading='No games added yet'
+                      image=''
                       action={{ content: 'Add Game', onAction: () => navigate('/products/new') }}
                     >
                       <p>Add games to your store to see them here.</p>
                     </EmptyState>
-                  )
-                )}
+                  ))}
               </Card.Section>
               <Card.Section>
                 <div style={{ textAlign: 'right' }}>
@@ -309,4 +323,4 @@ export default function Dashboard({ showToast }) {
       </Layout>
     </Page>
   );
-} 
+}

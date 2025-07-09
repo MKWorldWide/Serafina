@@ -194,16 +194,16 @@ const GameAnalytics: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 3 }}>
+    <Container maxWidth='lg' sx={{ mt: 3 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Game Analytics & Matchmaking
         </Typography>
         <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
-          <Tab icon={<AssessmentIcon />} label="Performance Analysis" />
-          <Tab icon={<GroupsIcon />} label="Team Finder" />
-          <Tab icon={<TimelineIcon />} label="Progress Tracking" />
+          <Tab icon={<AssessmentIcon />} label='Performance Analysis' />
+          <Tab icon={<GroupsIcon />} label='Team Finder' />
+          <Tab icon={<TimelineIcon />} label='Progress Tracking' />
         </Tabs>
       </Box>
 
@@ -211,15 +211,15 @@ const GameAnalytics: React.FC = () => {
         <Grid container spacing={3}>
           {/* Game Selection */}
           <Grid item xs={12}>
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size='small'>
               <InputLabel>Select Game</InputLabel>
               <Select
                 value={selectedGame}
-                label="Select Game"
+                label='Select Game'
                 onChange={e => setSelectedGame(e.target.value)}
               >
-                <MenuItem value="valorant">Valorant</MenuItem>
-                <MenuItem value="lol">League of Legends</MenuItem>
+                <MenuItem value='valorant'>Valorant</MenuItem>
+                <MenuItem value='lol'>League of Legends</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -228,20 +228,20 @@ const GameAnalytics: React.FC = () => {
           <Grid item xs={12} md={8}>
             <StyledCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Performance Overview
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
                     <StatBox>
-                      <Typography variant="subtitle2" gutterBottom>
+                      <Typography variant='subtitle2' gutterBottom>
                         Win Rate
                       </Typography>
-                      <Typography variant="h4" color="primary">
+                      <Typography variant='h4' color='primary'>
                         {playerStats.games[0].winRate}%
                       </Typography>
                       <ProgressBar
-                        variant="determinate"
+                        variant='determinate'
                         value={playerStats.games[0].winRate}
                         sx={{ mt: 1 }}
                       />
@@ -249,14 +249,14 @@ const GameAnalytics: React.FC = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <StatBox>
-                      <Typography variant="subtitle2" gutterBottom>
+                      <Typography variant='subtitle2' gutterBottom>
                         KDA Ratio
                       </Typography>
-                      <Typography variant="h4" color="primary">
+                      <Typography variant='h4' color='primary'>
                         {playerStats.games[0].kda}
                       </Typography>
                       <ProgressBar
-                        variant="determinate"
+                        variant='determinate'
                         value={playerStats.games[0].kda * 20}
                         sx={{ mt: 1 }}
                       />
@@ -265,38 +265,38 @@ const GameAnalytics: React.FC = () => {
                 </Grid>
 
                 {/* Playstyle Analysis */}
-                <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
+                <Typography variant='h6' sx={{ mt: 4, mb: 2 }}>
                   Playstyle Analysis
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
-                    <Typography variant="body2">Aggression</Typography>
+                    <Typography variant='body2'>Aggression</Typography>
                     <ProgressBar
-                      variant="determinate"
+                      variant='determinate'
                       value={playerStats.playstyle.aggression}
                       sx={{ mb: 2 }}
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2">Teamwork</Typography>
+                    <Typography variant='body2'>Teamwork</Typography>
                     <ProgressBar
-                      variant="determinate"
+                      variant='determinate'
                       value={playerStats.playstyle.teamwork}
                       sx={{ mb: 2 }}
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2">Objective Focus</Typography>
+                    <Typography variant='body2'>Objective Focus</Typography>
                     <ProgressBar
-                      variant="determinate"
+                      variant='determinate'
                       value={playerStats.playstyle.objectiveFocus}
                       sx={{ mb: 2 }}
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="body2">Consistency</Typography>
+                    <Typography variant='body2'>Consistency</Typography>
                     <ProgressBar
-                      variant="determinate"
+                      variant='determinate'
                       value={playerStats.playstyle.consistency}
                       sx={{ mb: 2 }}
                     />
@@ -310,18 +310,18 @@ const GameAnalytics: React.FC = () => {
           <Grid item xs={12} md={4}>
             <StyledCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Role Proficiency
                 </Typography>
                 {playerStats.roles.map(role => (
                   <Box key={role.name} sx={{ mb: 2 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Typography variant="body2">{role.name}</Typography>
-                      <Typography variant="body2" color="primary">
+                    <Box display='flex' justifyContent='space-between' alignItems='center'>
+                      <Typography variant='body2'>{role.name}</Typography>
+                      <Typography variant='body2' color='primary'>
                         {role.proficiency}%
                       </Typography>
                     </Box>
-                    <ProgressBar variant="determinate" value={role.proficiency} />
+                    <ProgressBar variant='determinate' value={role.proficiency} />
                   </Box>
                 ))}
               </CardContent>
@@ -336,10 +336,10 @@ const GameAnalytics: React.FC = () => {
           <Grid item xs={12}>
             <StyledCard>
               <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                  <Typography variant="h6">AI Team Matchmaking</Typography>
+                <Box display='flex' justifyContent='space-between' alignItems='center' mb={3}>
+                  <Typography variant='h6'>AI Team Matchmaking</Typography>
                   <Button
-                    variant="contained"
+                    variant='contained'
                     startIcon={<PersonSearchIcon />}
                     onClick={handleFindTeam}
                     disabled={isAnalyzing}
@@ -357,24 +357,24 @@ const GameAnalytics: React.FC = () => {
 
                 {teamSuggestions.map(team => (
                   <Box key={team.id} sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" gutterBottom>
+                    <Typography variant='subtitle1' gutterBottom>
                       Suggested Team Composition
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid item xs={12} md={4}>
                         <StatBox>
-                          <Typography variant="subtitle2" gutterBottom>
+                          <Typography variant='subtitle2' gutterBottom>
                             Team Synergy
                           </Typography>
-                          <Box display="flex" alignItems="center" gap={1}>
+                          <Box display='flex' alignItems='center' gap={1}>
                             <CircularProgress
-                              variant="determinate"
+                              variant='determinate'
                               value={team.synergy}
                               size={60}
                               thickness={6}
                               sx={{ color: 'primary.main' }}
                             />
-                            <Typography variant="h4" color="primary">
+                            <Typography variant='h4' color='primary'>
                               {team.synergy}%
                             </Typography>
                           </Box>
@@ -382,22 +382,22 @@ const GameAnalytics: React.FC = () => {
                       </Grid>
                       <Grid item xs={12} md={8}>
                         <StatBox>
-                          <Typography variant="subtitle2" gutterBottom>
+                          <Typography variant='subtitle2' gutterBottom>
                             Team Members
                           </Typography>
-                          <Box display="flex" flexWrap="wrap" gap={2}>
+                          <Box display='flex' flexWrap='wrap' gap={2}>
                             {team.players.map(player => (
-                              <Box key={player.username} textAlign="center">
+                              <Box key={player.username} textAlign='center'>
                                 <Tooltip title={`${player.username} - ${player.role}`}>
                                   <Avatar
                                     src={player.avatarUrl}
                                     sx={{ width: 48, height: 48, mb: 1 }}
                                   />
                                 </Tooltip>
-                                <Typography variant="caption" display="block">
+                                <Typography variant='caption' display='block'>
                                   {player.role}
                                 </Typography>
-                                <Typography variant="caption" color="primary">
+                                <Typography variant='caption' color='primary'>
                                   {player.compatibility}% Match
                                 </Typography>
                               </Box>
@@ -407,22 +407,22 @@ const GameAnalytics: React.FC = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <StatBox>
-                          <Typography variant="subtitle2" gutterBottom>
+                          <Typography variant='subtitle2' gutterBottom>
                             Team Analysis
                           </Typography>
-                          <Typography variant="body2" gutterBottom>
+                          <Typography variant='body2' gutterBottom>
                             Playstyle: {team.playstyle}
                           </Typography>
-                          <Box display="flex" gap={1} flexWrap="wrap" mb={1}>
-                            <Typography variant="body2">Strengths:</Typography>
+                          <Box display='flex' gap={1} flexWrap='wrap' mb={1}>
+                            <Typography variant='body2'>Strengths:</Typography>
                             {team.strengths.map(strength => (
-                              <Chip key={strength} label={strength} size="small" color="success" />
+                              <Chip key={strength} label={strength} size='small' color='success' />
                             ))}
                           </Box>
-                          <Box display="flex" gap={1} flexWrap="wrap">
-                            <Typography variant="body2">Areas for Improvement:</Typography>
+                          <Box display='flex' gap={1} flexWrap='wrap'>
+                            <Typography variant='body2'>Areas for Improvement:</Typography>
                             {team.weaknesses.map(weakness => (
-                              <Chip key={weakness} label={weakness} size="small" color="warning" />
+                              <Chip key={weakness} label={weakness} size='small' color='warning' />
                             ))}
                           </Box>
                         </StatBox>
@@ -442,7 +442,7 @@ const GameAnalytics: React.FC = () => {
           <Grid item xs={12}>
             <StyledCard>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Performance Trends
                 </Typography>
                 {/* Add performance tracking charts and statistics here */}
@@ -456,35 +456,35 @@ const GameAnalytics: React.FC = () => {
       <Dialog
         open={findTeamDialogOpen}
         onClose={() => setFindTeamDialogOpen(false)}
-        maxWidth="md"
+        maxWidth='md'
         fullWidth
       >
         <DialogTitle>Team Preferences</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin='normal'>
               <InputLabel>Preferred Game</InputLabel>
-              <Select label="Preferred Game">
-                <MenuItem value="valorant">Valorant</MenuItem>
-                <MenuItem value="lol">League of Legends</MenuItem>
-                <MenuItem value="csgo">CS:GO</MenuItem>
+              <Select label='Preferred Game'>
+                <MenuItem value='valorant'>Valorant</MenuItem>
+                <MenuItem value='lol'>League of Legends</MenuItem>
+                <MenuItem value='csgo'>CS:GO</MenuItem>
               </Select>
             </FormControl>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin='normal'>
               <InputLabel>Preferred Role</InputLabel>
-              <Select label="Preferred Role">
-                <MenuItem value="entry">Entry Fragger</MenuItem>
-                <MenuItem value="support">Support</MenuItem>
-                <MenuItem value="igl">In-Game Leader</MenuItem>
+              <Select label='Preferred Role'>
+                <MenuItem value='entry'>Entry Fragger</MenuItem>
+                <MenuItem value='support'>Support</MenuItem>
+                <MenuItem value='igl'>In-Game Leader</MenuItem>
               </Select>
             </FormControl>
-            <TextField fullWidth label="Rank Range" margin="normal" />
-            <TextField fullWidth label="Schedule Availability" margin="normal" multiline rows={2} />
+            <TextField fullWidth label='Rank Range' margin='normal' />
+            <TextField fullWidth label='Schedule Availability' margin='normal' multiline rows={2} />
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setFindTeamDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={() => setFindTeamDialogOpen(false)}>
+          <Button variant='contained' onClick={() => setFindTeamDialogOpen(false)}>
             Find Matches
           </Button>
         </DialogActions>

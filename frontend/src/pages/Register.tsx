@@ -20,9 +20,9 @@ const Register: React.FC = () => {
         options: {
           userAttributes: {
             email,
-            name: username
-          }
-        }
+            name: username,
+          },
+        },
       });
       await login(email, password);
       navigate('/');
@@ -32,44 +32,39 @@ const Register: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
+    <Container maxWidth='sm' sx={{ mt: 8 }}>
       <Paper sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+        <Typography variant='h4' component='h1' gutterBottom align='center'>
           Register
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+        <Box component='form' onSubmit={handleSubmit} sx={{ mt: 2 }}>
           <TextField
             fullWidth
-            label="Username"
+            label='Username'
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            margin="normal"
+            onChange={e => setUsername(e.target.value)}
+            margin='normal'
             required
           />
           <TextField
             fullWidth
-            label="Email"
-            type="email"
+            label='Email'
+            type='email'
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
+            onChange={e => setEmail(e.target.value)}
+            margin='normal'
             required
           />
           <TextField
             fullWidth
-            label="Password"
-            type="password"
+            label='Password'
+            type='password'
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
+            onChange={e => setPassword(e.target.value)}
+            margin='normal'
             required
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3 }}
-          >
+          <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
             Register
           </Button>
         </Box>

@@ -1,6 +1,6 @@
 /**
  * API Type Definitions
- * 
+ *
  * This file contains TypeScript interface definitions for all API responses
  * used throughout the application. These types ensure type safety when
  * working with API data.
@@ -27,7 +27,7 @@ export interface ApiResponse<T> {
 export interface UserProfile {
   id: string;
   username: string;
-  email: string; 
+  email: string;
   displayName: string;
   avatar?: string;
   bio?: string;
@@ -273,4 +273,4 @@ export interface ApiErrorResponse {
   timestamp: number;
   requestId?: string;
   status: number;
-} 
+}

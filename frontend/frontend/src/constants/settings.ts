@@ -11,21 +11,21 @@ export const defaultSettings: ISettings = {
         friendRequests: true,
         messages: true,
         gameInvites: true,
-        achievements: true
-      }
-    }
+        achievements: true,
+      },
+    },
   },
   privacy: {
     showOnlineStatus: true,
     showLastSeen: true,
     allowFriendRequests: true,
-    showGameStats: true
+    showGameStats: true,
   },
   theme: {
     darkMode: false,
     fontSize: 'medium',
-    colorScheme: 'default'
+    colorScheme: 'default',
   },
   language: 'en',
-  soundEffects: true
+  soundEffects: true,
 };

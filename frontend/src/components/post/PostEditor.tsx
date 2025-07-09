@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  TextField,
-  Paper,
-} from '@mui/material';
-
-interface PostEditorProps {
-  onSubmit: (content: string) => void;
-}
-
-const PostEditor: React.FC<PostEditorProps> = ({ onSubmit }) => {
-  const [content, setContent] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (content.trim()) {
-      onSubmit(content);
-      setContent('');
-=======
 import { Box, TextField, Button } from '@mui/material';
 import { useState } from 'react';
 
@@ -43,43 +21,12 @@ export default function PostEditor({ onSubmit }: PostEditorProps) {
       console.error('Failed to submit post:', error);
     } finally {
       setIsSubmitting(false);
->>>>>>> 2471f6c48a55d40216017bf626f34df3290ed4b9
     }
   };
 
   return (
-<<<<<<< HEAD
-    <Paper sx={{ p: 2, mb: 2 }}>
-      <Box component="form" onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="What's on your mind?"
-          variant="outlined"
-          sx={{ mb: 2 }}
-        />
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={!content.trim()}
-          >
-            Post
-          </Button>
-        </Box>
-      </Box>
-    </Paper>
-  );
-};
-
-export default PostEditor;
-=======
     <Box
-      component="form"
+      component='form'
       onSubmit={handleSubmit}
       sx={{
         display: 'flex',
@@ -96,20 +43,15 @@ export default PostEditor;
         rows={4}
         placeholder="What's on your mind?"
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={e => setContent(e.target.value)}
         disabled={isSubmitting}
         fullWidth
       />
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={!content.trim() || isSubmitting}
-        >
+        <Button type='submit' variant='contained' disabled={!content.trim() || isSubmitting}>
           {isSubmitting ? 'Posting...' : 'Post'}
         </Button>
       </Box>
     </Box>
   );
-} 
->>>>>>> 2471f6c48a55d40216017bf626f34df3290ed4b9
+}

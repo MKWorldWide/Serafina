@@ -1,6 +1,6 @@
 /**
  * WebSocketService
- * 
+ *
  * A service for managing real-time WebSocket connections with AWS AppSync.
  * Includes connection management, reconnection logic, and message handling.
  */
@@ -9,10 +9,10 @@
 export enum WebSocketEvent {
   CONNECT = 'connect',
   DISCONNECT = 'disconnect',
-  MESSAGE = 'message', 
+  MESSAGE = 'message',
   ERROR = 'error',
   RECONNECT = 'reconnect',
-  RECONNECT_ATTEMPT = 'reconnect_attempt'
+  RECONNECT_ATTEMPT = 'reconnect_attempt',
 }
 
 // Message types for the chat application
@@ -21,7 +21,7 @@ export enum MessageType {
   IMAGE = 'image',
   FILE = 'file',
   SYSTEM = 'system',
-  TYPING = 'typing'
+  TYPING = 'typing',
 }
 
 // Basic message interface
@@ -55,7 +55,7 @@ interface WebSocketConfig {
 const DEFAULT_CONFIG: Partial<WebSocketConfig> = {
   reconnectInterval: 3000,
   maxReconnectAttempts: 5,
-  debug: false
+  debug: false,
 };
 
 /**
@@ -87,22 +87,25 @@ class WebSocketService {
    * Initialize the WebSocket connection
    */
   public connect(authToken?: string): Promise<void> {
-    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+    if (
+      this.ws &&
+      (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)
+    ) {
       this.log('WebSocket is already connected or connecting');
       return Promise.resolve();
     }
 
     this.isConnecting = true;
-    
+
     return new Promise((resolve, reject) => {
       try {
         // Add authentication token to connection URL if provided
-        const connectionUrl = authToken 
+        const connectionUrl = authToken
           ? `${this.config.url}?token=${encodeURIComponent(authToken)}`
           : this.config.url;
-          
+
         this.ws = new WebSocket(connectionUrl);
-        
+
         // Set up connection event handlers
         this.ws.onopen = () => {
           this.log('WebSocket connected');
@@ -112,25 +115,25 @@ class WebSocketService {
           this.processQueue(); // Process any queued messages
           resolve();
         };
-        
-        this.ws.onclose = (event) => {
+
+        this.ws.onclose = event => {
           this.log(`WebSocket disconnected: ${event.code} - ${event.reason}`);
           this.isConnecting = false;
           this.emitEvent(WebSocketEvent.DISCONNECT, event);
-          
+
           if (!event.wasClean) {
             this.attemptReconnect();
           }
         };
-        
-        this.ws.onerror = (error) => {
+
+        this.ws.onerror = error => {
           this.log('WebSocket error', error);
           this.isConnecting = false;
           this.emitEvent(WebSocketEvent.ERROR, error);
           reject(error);
         };
-        
-        this.ws.onmessage = (event) => {
+
+        this.ws.onmessage = event => {
           this.handleIncomingMessage(event);
         };
       } catch (error) {
@@ -150,12 +153,12 @@ class WebSocketService {
       this.ws.close(1000, 'User initiated disconnect');
       this.ws = null;
     }
-    
+
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
-    
+
     this.reconnectAttempts = 0;
   }
 
@@ -169,11 +172,11 @@ class WebSocketService {
       if (!message.id) {
         message.id = this.generateId();
       }
-      
+
       if (!message.timestamp) {
         message.timestamp = Date.now();
       }
-      
+
       // If WebSocket is open, send the message
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         try {
@@ -200,7 +203,7 @@ class WebSocketService {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
-    
+
     this.eventListeners.get(event)!.push(callback);
   }
 
@@ -211,10 +214,10 @@ class WebSocketService {
    */
   public off(event: WebSocketEvent, callback: Function): void {
     if (!this.eventListeners.has(event)) return;
-    
+
     const listeners = this.eventListeners.get(event)!;
     const index = listeners.indexOf(callback);
-    
+
     if (index !== -1) {
       listeners.splice(index, 1);
     }
@@ -258,7 +261,7 @@ class WebSocketService {
    */
   private emitEvent(event: WebSocketEvent, data?: any): void {
     if (!this.eventListeners.has(event)) return;
-    
+
     this.eventListeners.get(event)!.forEach(callback => {
       try {
         callback(data);
@@ -289,24 +292,29 @@ class WebSocketService {
     if (this.isConnecting || (this.ws && this.ws.readyState === WebSocket.OPEN)) {
       return;
     }
-    
-    if (this.config.maxReconnectAttempts && this.reconnectAttempts >= this.config.maxReconnectAttempts) {
+
+    if (
+      this.config.maxReconnectAttempts &&
+      this.reconnectAttempts >= this.config.maxReconnectAttempts
+    ) {
       this.log('Maximum reconnect attempts reached');
       return;
     }
-    
+
     this.reconnectAttempts++;
-    
-    this.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.config.maxReconnectAttempts || 'infinite'})`);
+
+    this.log(
+      `Attempting to reconnect (${this.reconnectAttempts}/${this.config.maxReconnectAttempts || 'infinite'})`,
+    );
     this.emitEvent(WebSocketEvent.RECONNECT_ATTEMPT, this.reconnectAttempts);
-    
+
     // Set up reconnect timer
     this.reconnectTimer = setTimeout(() => {
       this.connect()
         .then(() => {
           this.emitEvent(WebSocketEvent.RECONNECT);
         })
-        .catch((error) => {
+        .catch(error => {
           this.log('Reconnect failed', error);
           this.attemptReconnect();
         });
@@ -321,9 +329,9 @@ class WebSocketService {
     const queueItem: QueueItem = {
       message,
       retries: 0,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     this.messageQueue.push(queueItem);
     this.saveQueueToStorage();
   }
@@ -335,11 +343,11 @@ class WebSocketService {
     if (!this.isConnected() || this.messageQueue.length === 0) {
       return;
     }
-    
+
     // Create a copy of the queue to avoid issues with mutation during iteration
     const queueCopy = [...this.messageQueue];
     this.messageQueue = [];
-    
+
     queueCopy.forEach(item => {
       this.sendMessage(item.message).catch(() => {
         // If sending fails, re-queue the message if it hasn't exceeded retry limits
@@ -349,7 +357,7 @@ class WebSocketService {
         }
       });
     });
-    
+
     this.saveQueueToStorage();
   }
 
@@ -406,4 +414,4 @@ export const getWebSocketService = (): WebSocketService => {
   return websocketService;
 };
 
-export default WebSocketService; 
+export default WebSocketService;

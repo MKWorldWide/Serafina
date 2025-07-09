@@ -125,7 +125,7 @@ const useStore = create(
       // Actions - User
       setUser: user => set({ user, isAuthenticated: !!user }),
       updateUserProfile: updates =>
-        set((state) => ({
+        set(state => ({
           user: state.user ? { ...state.user, ...updates } : null,
         })),
 
@@ -145,20 +145,20 @@ const useStore = create(
       addFriend: friend =>
         set(state => ({
           friends: [...state.friends, friend],
-          friendRequests: state.friendRequests.filter(req => req.id !== friend.id)
+          friendRequests: state.friendRequests.filter(req => req.id !== friend.id),
         })),
       removeFriend: friendId =>
         set(state => ({
-          friends: state.friends.filter(friend => friend.id !== friendId)
+          friends: state.friends.filter(friend => friend.id !== friendId),
         })),
       setFriendRequests: requests => set({ friendRequests: requests }),
       addFriendRequest: request =>
         set(state => ({
-          friendRequests: [...state.friendRequests, request]
+          friendRequests: [...state.friendRequests, request],
         })),
       removeFriendRequest: requestId =>
         set(state => ({
-          friendRequests: state.friendRequests.filter(req => req.id !== requestId)
+          friendRequests: state.friendRequests.filter(req => req.id !== requestId),
         })),
 
       // Actions - Notifications
@@ -212,19 +212,19 @@ const useStore = create(
       updateActivity: (activityId, updates) =>
         set(state => ({
           activities: state.activities.map(activity =>
-            activity.id === activityId ? { ...activity, ...updates } : activity
+            activity.id === activityId ? { ...activity, ...updates } : activity,
           ),
         })),
 
       // Actions - Authentication
-      login: async (credentials) => {
+      login: async credentials => {
         set({ isLoading: true, error: null });
         try {
           // TODO: Replace with actual API call
           await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-          set({ 
-            user: mockUser, 
-            isAuthenticated: true, 
+          set({
+            user: mockUser,
+            isAuthenticated: true,
             isLoading: false,
             requests: mockRequests,
             suggestions: mockSuggestions,
@@ -235,7 +235,7 @@ const useStore = create(
         }
       },
 
-      register: async (userData) => {
+      register: async userData => {
         set({ isLoading: true, error: null });
         try {
           // TODO: Replace with actual API call
@@ -253,51 +253,62 @@ const useStore = create(
       },
 
       logout: () => {
-        set({ user: null, isAuthenticated: false, friends: [], friendRequests: [], suggestions: [] });
+        set({
+          user: null,
+          isAuthenticated: false,
+          friends: [],
+          friendRequests: [],
+          suggestions: [],
+        });
       },
       clearError: () => set({ error: null }),
 
       // Actions - Settings
-      updateSettings: (newSettings) => set((state) => ({
-        settings: { ...state.settings, ...newSettings }
-      })),
+      updateSettings: newSettings =>
+        set(state => ({
+          settings: { ...state.settings, ...newSettings },
+        })),
 
       // Actions - Suggestions
-      updateSuggestions: (suggestions) => set({ suggestions }),
+      updateSuggestions: suggestions => set({ suggestions }),
 
       // Friend management actions
-      setRequests: (requests) => set({ requests }),
-      acceptFriendRequest: (requestId) => set((state) => {
-        const request = state.requests.find(r => r.id === requestId);
-        if (!request) return state;
+      setRequests: requests => set({ requests }),
+      acceptFriendRequest: requestId =>
+        set(state => {
+          const request = state.requests.find(r => r.id === requestId);
+          if (!request) return state;
 
-        const newFriend = {
-          id: request.id,
-          username: request.username,
-          avatar: request.avatar,
-          isOnline: true
-        };
+          const newFriend = {
+            id: request.id,
+            username: request.username,
+            avatar: request.avatar,
+            isOnline: true,
+          };
 
-        return {
-          friends: [...state.friends, newFriend],
-          requests: state.requests.filter(r => r.id !== requestId)
-        };
-      }),
+          return {
+            friends: [...state.friends, newFriend],
+            requests: state.requests.filter(r => r.id !== requestId),
+          };
+        }),
 
-      rejectFriendRequest: (requestId) => set((state) => ({
-        requests: state.requests.filter(r => r.id !== requestId)
-      })),
+      rejectFriendRequest: requestId =>
+        set(state => ({
+          requests: state.requests.filter(r => r.id !== requestId),
+        })),
 
-      addFriend: (suggestion) => set((state) => ({
-        friends: [...state.friends, suggestion],
-        suggestions: state.suggestions.filter(s => s.id !== suggestion.id)
-      })),
+      addFriend: suggestion =>
+        set(state => ({
+          friends: [...state.friends, suggestion],
+          suggestions: state.suggestions.filter(s => s.id !== suggestion.id),
+        })),
 
-      removeFriend: (friendId) => set((state) => ({
-        friends: state.friends.filter(f => f.id !== friendId)
-      })),
+      removeFriend: friendId =>
+        set(state => ({
+          friends: state.friends.filter(f => f.id !== friendId),
+        })),
 
-      addPost: (content) => {
+      addPost: content => {
         const { user } = get();
         const newPost = {
           id: Date.now(),
@@ -310,19 +321,19 @@ const useStore = create(
           comments: [],
           shares: 0,
         };
-        set((state) => ({ posts: [newPost, ...state.posts] }));
+        set(state => ({ posts: [newPost, ...state.posts] }));
       },
 
-      deletePost: (postId) => {
-        set((state) => ({
-          posts: state.posts.filter((post) => post.id !== postId),
+      deletePost: postId => {
+        set(state => ({
+          posts: state.posts.filter(post => post.id !== postId),
         }));
       },
 
-      likePost: (postId) => {
-        set((state) => ({
-          posts: state.posts.map((post) =>
-            post.id === postId ? { ...post, likes: post.likes + 1 } : post
+      likePost: postId => {
+        set(state => ({
+          posts: state.posts.map(post =>
+            post.id === postId ? { ...post, likes: post.likes + 1 } : post,
           ),
         }));
       },
@@ -337,31 +348,29 @@ const useStore = create(
           avatar: user.avatar,
           timestamp: new Date().toISOString(),
         };
-        set((state) => ({
-          posts: state.posts.map((post) =>
-            post.id === postId
-              ? { ...post, comments: [...post.comments, newComment] }
-              : post
+        set(state => ({
+          posts: state.posts.map(post =>
+            post.id === postId ? { ...post, comments: [...post.comments, newComment] } : post,
           ),
         }));
       },
 
-      sharePost: (postId) => {
-        set((state) => ({
-          posts: state.posts.map((post) =>
-            post.id === postId ? { ...post, shares: post.shares + 1 } : post
+      sharePost: postId => {
+        set(state => ({
+          posts: state.posts.map(post =>
+            post.id === postId ? { ...post, shares: post.shares + 1 } : post,
           ),
         }));
       },
     }),
     {
       name: 'gamedin-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         ...state,
         posts: state.posts,
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default useStore;

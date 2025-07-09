@@ -6,7 +6,7 @@ import type { IUser } from '../types/social';
 
 const useStore = create<Store>()(
   persist(
-    (set) => ({
+    set => ({
       user: null,
       settings: defaultSettings,
       darkMode: false,
@@ -15,10 +15,11 @@ const useStore = create<Store>()(
       error: null,
 
       setUser: (user: IUser | null) => set({ user }),
-      updateSettings: (settings: Partial<ISettings>) => set((state) => ({ 
-        settings: { ...state.settings, ...settings } 
-      })),
-      toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+      updateSettings: (settings: Partial<ISettings>) =>
+        set(state => ({
+          settings: { ...state.settings, ...settings },
+        })),
+      toggleDarkMode: () => set(state => ({ darkMode: !state.darkMode })),
       setIsAuthenticated: (value: boolean) => set({ isAuthenticated: value }),
       setLoading: (value: boolean) => set({ loading: value }),
       setError: (error: string | null) => set({ error }),
@@ -35,16 +36,16 @@ const useStore = create<Store>()(
       },
 
       logout: () => {
-        set({ 
-          user: null, 
-          isAuthenticated: false 
+        set({
+          user: null,
+          isAuthenticated: false,
         });
-      }
+      },
     }),
     {
       name: 'gamedin-storage',
-    }
-  )
+    },
+  ),
 );
 
-export default useStore; 
+export default useStore;

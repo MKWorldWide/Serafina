@@ -29,20 +29,20 @@ interface IPrivateRouteProps {
 
 const PrivateRoute: React.FC<IPrivateRouteProps> = ({ children }) => {
   const { isAuthenticated } = useUser();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/" />;
+  return isAuthenticated ? <>{children}</> : <Navigate to='/' />;
 };
 
 const AppRoutes: React.FC = () => {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/token" element={<Token />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path='/' element={<Home />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/token' element={<Token />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
         <Route
-          path="/"
+          path='/'
           element={
             <PrivateRoute>
               <Feed />
@@ -50,7 +50,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/messages"
+          path='/messages'
           element={
             <PrivateRoute>
               <Box sx={{ p: 3, mt: 8 }}>
@@ -60,7 +60,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/forums"
+          path='/forums'
           element={
             <PrivateRoute>
               <Box sx={{ mt: 8 }}>
@@ -70,7 +70,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/achievements"
+          path='/achievements'
           element={
             <PrivateRoute>
               <Box sx={{ mt: 8 }}>
@@ -80,7 +80,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/tournaments"
+          path='/tournaments'
           element={
             <PrivateRoute>
               <Box sx={{ mt: 8 }}>
@@ -90,7 +90,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/jobs"
+          path='/jobs'
           element={
             <PrivateRoute>
               <Box sx={{ mt: 8 }}>
@@ -100,7 +100,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/analytics"
+          path='/analytics'
           element={
             <PrivateRoute>
               <Box sx={{ mt: 8 }}>
@@ -110,7 +110,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/profile"
+          path='/profile'
           element={
             <PrivateRoute>
               <Profile />
@@ -118,7 +118,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/settings/notifications"
+          path='/settings/notifications'
           element={
             <PrivateRoute>
               <Box sx={{ mt: 8 }}>
@@ -127,8 +127,8 @@ const AppRoutes: React.FC = () => {
             </PrivateRoute>
           }
         />
-        <Route path="/games" element={<Games />} />
-        <Route path="/games/:id" element={<GameDetails />} />
+        <Route path='/games' element={<Games />} />
+        <Route path='/games/:id' element={<GameDetails />} />
       </Routes>
     </Box>
   );

@@ -27,18 +27,18 @@ const VisionCard = styled(Paper)(({ theme }) => ({
 const About: React.FC = () => {
   return (
     <PageContainer>
-      <Container maxWidth="lg">
+      <Container maxWidth='lg'>
         <Typography
-          variant="h2"
-          align="center"
+          variant='h2'
+          align='center'
           sx={{ mb: 6, color: '#fff', fontSize: { xs: '2.5rem', md: '3.5rem' } }}
         >
           About GameDin
         </Typography>
 
         <Typography
-          variant="h5"
-          align="center"
+          variant='h5'
+          align='center'
           sx={{
             mb: 8,
             maxWidth: '800px',
@@ -57,7 +57,7 @@ const About: React.FC = () => {
               <TimelineIcon
                 sx={{ fontSize: 48, color: theme => theme.palette.primary.main, mb: 2 }}
               />
-              <Typography variant="h5" sx={{ mb: 2, color: '#fff' }}>
+              <Typography variant='h5' sx={{ mb: 2, color: '#fff' }}>
                 Our Vision
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -72,7 +72,7 @@ const About: React.FC = () => {
               <EmojiEventsIcon
                 sx={{ fontSize: 48, color: theme => theme.palette.primary.main, mb: 2 }}
               />
-              <Typography variant="h5" sx={{ mb: 2, color: '#fff' }}>
+              <Typography variant='h5' sx={{ mb: 2, color: '#fff' }}>
                 Our Mission
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -87,7 +87,7 @@ const About: React.FC = () => {
               <GroupsIcon
                 sx={{ fontSize: 48, color: theme => theme.palette.primary.main, mb: 2 }}
               />
-              <Typography variant="h5" sx={{ mb: 2, color: '#fff' }}>
+              <Typography variant='h5' sx={{ mb: 2, color: '#fff' }}>
                 Our Community
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -99,7 +99,7 @@ const About: React.FC = () => {
         </Grid>
 
         <Box sx={{ mb: 10 }}>
-          <Typography variant="h3" sx={{ mb: 4, color: '#fff' }}>
+          <Typography variant='h3' sx={{ mb: 4, color: '#fff' }}>
             Our Story
           </Typography>
           <Typography
@@ -131,7 +131,7 @@ const About: React.FC = () => {
         </Box>
 
         <Box>
-          <Typography variant="h3" sx={{ mb: 4, color: '#fff' }}>
+          <Typography variant='h3' sx={{ mb: 4, color: '#fff' }}>
             The Future
           </Typography>
           <Typography

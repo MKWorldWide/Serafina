@@ -18,14 +18,14 @@ function App() {
     <Authenticator>
       {({ signOut }) => (
         <Router>
-          <div className="min-h-screen bg-gray-100">
+          <div className='min-h-screen bg-gray-100'>
             <Navigation signOut={signOut} />
-            <main className="container mx-auto px-4 py-8">
+            <main className='container mx-auto px-4 py-8'>
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/games" element={<Games />} />
-                <Route path="/games/:id" element={<GameDetails />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path='/' element={<Home />} />
+                <Route path='/games' element={<Games />} />
+                <Route path='/games/:id' element={<GameDetails />} />
+                <Route path='/profile' element={<Profile />} />
               </Routes>
             </main>
           </div>
@@ -35,4 +35,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

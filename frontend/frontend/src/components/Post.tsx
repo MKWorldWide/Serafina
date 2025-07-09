@@ -119,12 +119,12 @@ const Post: React.FC<PostProps> = ({ post, onDelete }) => {
           )
         }
         title={
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+          <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
             {post.author.username}
           </Typography>
         }
         subheader={
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          <Typography variant='caption' sx={{ color: 'text.secondary' }}>
             {new Date(post.createdAt).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -135,14 +135,14 @@ const Post: React.FC<PostProps> = ({ post, onDelete }) => {
       />
 
       <CardContent>
-        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+        <Typography variant='body1' sx={{ whiteSpace: 'pre-wrap' }}>
           {post.content}
         </Typography>
       </CardContent>
 
       {post.imageUrl && (
         <Box sx={{ px: 2, pb: 2 }}>
-          <PostImage src={post.imageUrl} alt="Post" />
+          <PostImage src={post.imageUrl} alt='Post' />
         </Box>
       )}
 

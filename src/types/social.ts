@@ -208,4 +208,4 @@ export interface IChatError extends Error {
   code: string;
   details?: Record<string, unknown>;
   retry?: boolean;
-} 
+}

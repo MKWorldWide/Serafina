@@ -58,7 +58,7 @@ const FeedPage = () => {
         avatar: 'https://mui.com/static/images/avatar/2.jpg',
         verified: true,
       },
-      content: 'We\'re hiring! Looking for Unity developers with 3+ years of experience.',
+      content: "We're hiring! Looking for Unity developers with 3+ years of experience.",
       type: 'job_posting',
       likes: 45,
       comments: 12,
@@ -111,26 +111,22 @@ const FeedPage = () => {
     }
   };
 
-  const handleLike = async (postId) => {
+  const handleLike = async postId => {
     try {
       // For now, just update local state
       // await feedService.likePost(postId, user?.id);
-      setPosts(posts.map(post => 
-        post.id === postId 
-          ? { ...post, likes: post.likes + 1 }
-          : post
-      ));
+      setPosts(posts.map(post => (post.id === postId ? { ...post, likes: post.likes + 1 } : post)));
     } catch (err) {
       console.error('Error liking post:', err);
     }
   };
 
-  const getPostTypeIcon = (type) => {
+  const getPostTypeIcon = type => {
     switch (type) {
       case 'team_request':
-        return <GamingIcon color="primary" />;
+        return <GamingIcon color='primary' />;
       case 'job_posting':
-        return <WorkIcon color="secondary" />;
+        return <WorkIcon color='secondary' />;
       default:
         return null;
     }
@@ -138,9 +134,9 @@ const FeedPage = () => {
 
   if (error) {
     return (
-      <Container maxWidth="md">
+      <Container maxWidth='md'>
         <Box py={4}>
-          <Alert severity="error" onClose={() => setError(null)}>
+          <Alert severity='error' onClose={() => setError(null)}>
             {error}
           </Alert>
         </Box>
@@ -149,7 +145,7 @@ const FeedPage = () => {
   }
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth='md'>
       <Box py={4}>
         {/* Create Post */}
         <Card sx={{ mb: 4 }}>
@@ -160,13 +156,13 @@ const FeedPage = () => {
               rows={3}
               placeholder="What's on your gaming mind?"
               value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-              variant="outlined"
+              onChange={e => setNewPost(e.target.value)}
+              variant='outlined'
             />
-            <Box display="flex" justifyContent="flex-end" mt={2}>
+            <Box display='flex' justifyContent='flex-end' mt={2}>
               <Button
-                variant="contained"
-                color="primary"
+                variant='contained'
+                color='primary'
                 onClick={handlePostSubmit}
                 disabled={!newPost.trim() || !user}
               >
@@ -178,12 +174,12 @@ const FeedPage = () => {
 
         {/* Feed */}
         {isLoading ? (
-          <Box display="flex" justifyContent="center" my={4}>
+          <Box display='flex' justifyContent='center' my={4}>
             <CircularProgress />
           </Box>
         ) : (
           <Grid container spacing={2}>
-            {posts.map((post) => (
+            {posts.map(post => (
               <Grid item xs={12} key={post.id}>
                 <Card>
                   <CardHeader
@@ -193,12 +189,12 @@ const FeedPage = () => {
                       </Avatar>
                     }
                     title={
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Typography variant="subtitle1" fontWeight="bold">
+                      <Box display='flex' alignItems='center' gap={1}>
+                        <Typography variant='subtitle1' fontWeight='bold'>
                           {post.user.username}
                         </Typography>
                         {post.user.verified && (
-                          <Chip size="small" color="primary" label="Verified" />
+                          <Chip size='small' color='primary' label='Verified' />
                         )}
                       </Box>
                     }
@@ -206,16 +202,11 @@ const FeedPage = () => {
                     action={getPostTypeIcon(post.type)}
                   />
                   <CardContent>
-                    <Typography variant="body1">{post.content}</Typography>
+                    <Typography variant='body1'>{post.content}</Typography>
                     {post.user.games && (
                       <Box mt={1}>
-                        {post.user.games.map((game) => (
-                          <Chip
-                            key={game}
-                            label={game}
-                            size="small"
-                            sx={{ mr: 1 }}
-                          />
+                        {post.user.games.map(game => (
+                          <Chip key={game} label={game} size='small' sx={{ mr: 1 }} />
                         ))}
                       </Box>
                     )}
@@ -225,13 +216,13 @@ const FeedPage = () => {
                     <IconButton onClick={() => handleLike(post.id)}>
                       <FavoriteIcon />
                     </IconButton>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant='body2' color='text.secondary'>
                       {post.likes}
                     </Typography>
                     <IconButton>
                       <CommentIcon />
                     </IconButton>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant='body2' color='text.secondary'>
                       {post.comments}
                     </Typography>
                     <IconButton>
@@ -248,4 +239,4 @@ const FeedPage = () => {
   );
 };
 
-export default FeedPage; 
+export default FeedPage;

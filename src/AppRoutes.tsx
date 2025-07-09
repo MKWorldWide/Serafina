@@ -26,23 +26,23 @@ const GameAnalytics = lazy(() => import('./components/GameAnalytics'));
 
 // Enhanced loading fallback component with Framer Motion
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
+  <div className='flex items-center justify-center min-h-screen'>
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col items-center space-y-4"
+      className='flex flex-col items-center space-y-4'
     >
-      <motion.div 
-        className="h-16 w-16 border-4 rounded-full border-primary border-t-transparent"
+      <motion.div
+        className='h-16 w-16 border-4 rounded-full border-primary border-t-transparent'
         animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
       />
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="text-gray-700 font-medium"
+        className='text-gray-700 font-medium'
       >
         Loading...
       </motion.p>
@@ -56,28 +56,28 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const { isAuthenticated } = useUser();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+  return isAuthenticated ? <>{children}</> : <Navigate to='/login' />;
 };
 
 export default function AppRoutes() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className='min-h-screen bg-gray-50'>
       <ErrorBoundary>
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode='wait'>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/token" element={<Token />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/games" element={<Games />} />
-              <Route path="/games/:id" element={<GameDetails />} />
+              <Route path='/' element={<Home />} />
+              <Route path='/about' element={<About />} />
+              <Route path='/token' element={<Token />} />
+              <Route path='/login' element={<Login />} />
+              <Route path='/register' element={<Register />} />
+              <Route path='/games' element={<Games />} />
+              <Route path='/games/:id' element={<GameDetails />} />
 
               {/* Protected Routes */}
               <Route
-                path="/feed"
+                path='/feed'
                 element={
                   <PrivateRoute>
                     <Feed />
@@ -85,67 +85,67 @@ export default function AppRoutes() {
                 }
               />
               <Route
-                path="/messages"
+                path='/messages'
                 element={
                   <PrivateRoute>
-                    <div className="pt-16">
+                    <div className='pt-16'>
                       <Messaging />
                     </div>
                   </PrivateRoute>
                 }
               />
               <Route
-                path="/forums"
+                path='/forums'
                 element={
                   <PrivateRoute>
-                    <div className="pt-16">
+                    <div className='pt-16'>
                       <Forums />
                     </div>
                   </PrivateRoute>
                 }
               />
               <Route
-                path="/achievements"
+                path='/achievements'
                 element={
                   <PrivateRoute>
-                    <div className="pt-16">
+                    <div className='pt-16'>
                       <Achievements />
                     </div>
                   </PrivateRoute>
                 }
               />
               <Route
-                path="/tournaments"
+                path='/tournaments'
                 element={
                   <PrivateRoute>
-                    <div className="pt-16">
+                    <div className='pt-16'>
                       <Tournaments />
                     </div>
                   </PrivateRoute>
                 }
               />
               <Route
-                path="/jobs"
+                path='/jobs'
                 element={
                   <PrivateRoute>
-                    <div className="pt-16">
+                    <div className='pt-16'>
                       <Jobs />
                     </div>
                   </PrivateRoute>
                 }
               />
               <Route
-                path="/analytics"
+                path='/analytics'
                 element={
                   <PrivateRoute>
-                    <div className="pt-16">
+                    <div className='pt-16'>
                       <GameAnalytics />
                     </div>
                   </PrivateRoute>
                 }
               />
               <Route
-                path="/profile"
+                path='/profile'
                 element={
                   <PrivateRoute>
                     <Profile />
@@ -153,10 +153,10 @@ export default function AppRoutes() {
                 }
               />
               <Route
-                path="/settings/notifications"
+                path='/settings/notifications'
                 element={
                   <PrivateRoute>
-                    <div className="pt-16">
+                    <div className='pt-16'>
                       <NotificationSettings />
                     </div>
                   </PrivateRoute>
@@ -168,4 +168,4 @@ export default function AppRoutes() {
       </ErrorBoundary>
     </div>
   );
-} 
+}

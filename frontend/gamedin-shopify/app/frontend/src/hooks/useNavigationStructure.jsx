@@ -1,6 +1,12 @@
-import { useState, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { HomeMajor, GameControllerMajor, CustomersMajor, AnalyticsMajor, SettingsMajor } from "@shopify/polaris-icons";
+import { useState, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  HomeMajor,
+  GameControllerMajor,
+  CustomersMajor,
+  AnalyticsMajor,
+  SettingsMajor,
+} from '@shopify/polaris-icons';
 
 /**
  * Custom hook for managing navigation structure and mobile navigation state
@@ -13,7 +19,7 @@ export function useNavigationStructure() {
 
   // Toggle mobile navigation visibility
   const toggleMobileNavigationActive = useCallback(
-    () => setMobileNavigationActive((active) => !active),
+    () => setMobileNavigationActive(active => !active),
     [],
   );
 
@@ -78,4 +84,4 @@ export function useNavigationStructure() {
   };
 }
 
-export default useNavigationStructure; 
+export default useNavigationStructure;

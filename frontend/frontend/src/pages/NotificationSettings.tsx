@@ -34,7 +34,7 @@ const defaultPreferences: INotificationPreferences = {
     FRIEND_REQUEST: true,
     MESSAGE: true,
     GAME_INVITE: true,
-    SYSTEM: true
+    SYSTEM: true,
   },
   sounds: true,
   doNotDisturb: {
@@ -54,7 +54,7 @@ const NotificationSettings: React.FC = () => {
 
   const handleChange = (
     key: keyof INotificationPreferences | keyof INotificationPreferences['types'],
-    value: boolean
+    value: boolean,
   ) => {
     if (key in preferences.types) {
       setPreferences(prev => ({
@@ -112,18 +112,18 @@ const NotificationSettings: React.FC = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Container maxWidth="md" sx={{ py: 4 }}>
+      <Container maxWidth='md' sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant='h4' gutterBottom>
             Notification Settings
           </Typography>
-          <Typography color="text.secondary">
+          <Typography color='text.secondary'>
             Customize how and when you want to receive notifications
           </Typography>
         </Box>
 
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Notification Channels
           </Typography>
           <FormGroup>
@@ -187,7 +187,7 @@ const NotificationSettings: React.FC = () => {
         </Box>
 
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant='h6' gutterBottom>
             Notification Types
           </Typography>
           <FormGroup>
@@ -209,7 +209,7 @@ const NotificationSettings: React.FC = () => {
         <Box sx={{ mb: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
             <TimeIcon />
-            <Typography variant="h6">Do Not Disturb</Typography>
+            <Typography variant='h6'>Do Not Disturb</Typography>
           </Box>
           <FormGroup>
             <FormControlLabel
@@ -227,17 +227,17 @@ const NotificationSettings: React.FC = () => {
                   }
                 />
               }
-              label="Enable Do Not Disturb"
+              label='Enable Do Not Disturb'
             />
             {preferences.doNotDisturb.enabled && (
               <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
                 <TimePicker
-                  label="From"
+                  label='From'
                   value={new Date(`2000-01-01T${preferences.doNotDisturb.from}`)}
                   onChange={newValue => handleTimeChange('from', newValue)}
                 />
                 <TimePicker
-                  label="To"
+                  label='To'
                   value={new Date(`2000-01-01T${preferences.doNotDisturb.to}`)}
                   onChange={newValue => handleTimeChange('to', newValue)}
                 />
@@ -247,10 +247,10 @@ const NotificationSettings: React.FC = () => {
         </Box>
 
         <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-          <Button variant="outlined" onClick={handleReset}>
+          <Button variant='outlined' onClick={handleReset}>
             Reset to Default
           </Button>
-          <Button variant="contained" onClick={handleSave}>
+          <Button variant='contained' onClick={handleSave}>
             Save Changes
           </Button>
         </Box>

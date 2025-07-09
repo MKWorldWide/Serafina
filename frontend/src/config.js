@@ -12,17 +12,17 @@ const config = {
       domain: process.env.VITE_COOKIE_DOMAIN || 'localhost',
       path: '/',
       expires: 365,
-      secure: process.env.NODE_ENV === 'production'
-    }
+      secure: process.env.NODE_ENV === 'production',
+    },
   },
   API: {
     endpoints: [
       {
         name: 'api',
-        endpoint: process.env.VITE_API_URL || 'http://localhost:4000'
-      }
-    ]
-  }
+        endpoint: process.env.VITE_API_URL || 'http://localhost:4000',
+      },
+    ],
+  },
 };
 
-export default config; 
+export default config;

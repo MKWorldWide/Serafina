@@ -210,15 +210,15 @@ const Messaging: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">Please sign in to view messages</p>
+      <div className='text-center py-8'>
+        <p className='text-gray-600'>Please sign in to view messages</p>
       </div>
     );
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box display="flex" gap={2} height="calc(100vh - 100px)">
+    <Container maxWidth='lg'>
+      <Box display='flex' gap={2} height='calc(100vh - 100px)'>
         {/* Conversations List */}
         <Paper
           sx={{
@@ -231,8 +231,8 @@ const Messaging: React.FC = () => {
           <Box p={2}>
             <TextField
               fullWidth
-              size="small"
-              placeholder="Search conversations..."
+              size='small'
+              placeholder='Search conversations...'
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               InputProps={{
@@ -243,7 +243,7 @@ const Messaging: React.FC = () => {
           <Divider />
           <List sx={{ overflow: 'auto', height: 'calc(100% - 80px)' }}>
             {loading && !conversationId ? (
-              <Box display="flex" justifyContent="center" my={4}>
+              <Box display='flex' justifyContent='center' my={4}>
                 <CircularProgress />
               </Box>
             ) : (
@@ -261,9 +261,9 @@ const Messaging: React.FC = () => {
                     <ListItemAvatar>
                       {otherParticipant.status === 'online' ? (
                         <OnlineBadge
-                          overlap="circular"
+                          overlap='circular'
                           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                          variant="dot"
+                          variant='dot'
                         >
                           <Avatar src={otherParticipant.avatarUrl} />
                         </OnlineBadge>
@@ -273,12 +273,12 @@ const Messaging: React.FC = () => {
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Box display="flex" justifyContent="space-between">
+                        <Box display='flex' justifyContent='space-between'>
                           <Typography>{otherParticipant.username}</Typography>
                           {conversation.unreadCount > 0 && (
                             <Badge
                               badgeContent={conversation.unreadCount}
-                              color="primary"
+                              color='primary'
                               sx={{ ml: 1 }}
                             />
                           )}
@@ -287,8 +287,8 @@ const Messaging: React.FC = () => {
                       secondary={
                         conversation.lastMessage && (
                           <Typography
-                            variant="body2"
-                            color="textSecondary"
+                            variant='body2'
+                            color='textSecondary'
                             noWrap
                             sx={{ maxWidth: 200 }}
                           >
@@ -311,13 +311,13 @@ const Messaging: React.FC = () => {
         {conversationId ? (
           <ChatContainer sx={{ flex: 1 }}>
             {/* Chat Header */}
-            <Box p={2} display="flex" alignItems="center" borderBottom={1} borderColor="divider">
+            <Box p={2} display='flex' alignItems='center' borderBottom={1} borderColor='divider'>
               {selectedConversation && (
                 <>
                   <OnlineBadge
-                    overlap="circular"
+                    overlap='circular'
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    variant="dot"
+                    variant='dot'
                     invisible={
                       selectedConversation.participants.find(p => p.id !== user?.id)?.status !==
                       'online'
@@ -330,10 +330,10 @@ const Messaging: React.FC = () => {
                     />
                   </OnlineBadge>
                   <Box ml={2}>
-                    <Typography variant="h6">
+                    <Typography variant='h6'>
                       {selectedConversation.participants.find(p => p.id !== user?.id)?.username}
                     </Typography>
-                    <Typography variant="caption" color="textSecondary">
+                    <Typography variant='caption' color='textSecondary'>
                       {selectedConversation.participants.find(p => p.id !== user?.id)?.status ===
                       'online'
                         ? 'Online'
@@ -347,14 +347,14 @@ const Messaging: React.FC = () => {
             {/* Messages */}
             <MessageList>
               {loading ? (
-                <Box display="flex" justifyContent="center" my={4}>
+                <Box display='flex' justifyContent='center' my={4}>
                   <CircularProgress />
                 </Box>
               ) : (
                 messages.map(message => (
                   <MessageBubble key={message.id} isOwn={message.sender.id === user?.id}>
-                    <Typography variant="body1">{message.content}</Typography>
-                    <Typography variant="caption" color="inherit" sx={{ opacity: 0.7 }}>
+                    <Typography variant='body1'>{message.content}</Typography>
+                    <Typography variant='caption' color='inherit' sx={{ opacity: 0.7 }}>
                       {new Date(message.timestamp).toLocaleTimeString()}
                     </Typography>
                   </MessageBubble>
@@ -364,16 +364,16 @@ const Messaging: React.FC = () => {
             </MessageList>
 
             {/* Message Input */}
-            <Box p={2} component="form" onSubmit={handleSendMessage}>
+            <Box p={2} component='form' onSubmit={handleSendMessage}>
               <TextField
                 fullWidth
-                placeholder="Type a message..."
+                placeholder='Type a message...'
                 value={newMessage}
                 onChange={e => setNewMessage(e.target.value)}
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton type="submit" disabled={!newMessage.trim()} color="primary">
+                    <InputAdornment position='end'>
+                      <IconButton type='submit' disabled={!newMessage.trim()} color='primary'>
                         <SendIcon />
                       </IconButton>
                     </InputAdornment>
@@ -385,13 +385,13 @@ const Messaging: React.FC = () => {
         ) : (
           <Box
             flex={1}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            bgcolor="rgba(8, 95, 128, 0.1)"
-            borderRadius="15px"
+            display='flex'
+            justifyContent='center'
+            alignItems='center'
+            bgcolor='rgba(8, 95, 128, 0.1)'
+            borderRadius='15px'
           >
-            <Typography variant="h6" color="textSecondary">
+            <Typography variant='h6' color='textSecondary'>
               Select a conversation to start chatting
             </Typography>
           </Box>

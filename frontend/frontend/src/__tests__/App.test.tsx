@@ -14,8 +14,8 @@ jest.mock('../aws-exports', () => ({
     aws_user_pools_web_client_id: 'test-client-id',
     aws_appsync_graphqlEndpoint: 'https://test.appsync-api.us-east-1.amazonaws.com/graphql',
     aws_appsync_region: 'us-east-1',
-    aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS'
-  }
+    aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+  },
 }));
 
 // Mock react-router-dom
@@ -24,14 +24,10 @@ jest.mock('react-router-dom', () => {
   return {
     ...actual,
     BrowserRouter: ({ children }: { children: React.ReactNode }) => {
-      return (
-        <actual.MemoryRouter>
-          {children}
-        </actual.MemoryRouter>
-      );
+      return <actual.MemoryRouter>{children}</actual.MemoryRouter>;
     },
     Routes: actual.Routes,
-    Route: actual.Route
+    Route: actual.Route,
   };
 });
 
@@ -43,10 +39,10 @@ describe('App', () => {
 
   it('renders without crashing', () => {
     render(<App />);
-    
+
     // Verify that the navigation is rendered
     expect(screen.getByText('GameDin')).toBeInTheDocument();
     // Verify that the sign in button is shown when not authenticated
     expect(screen.getByText('Sign In')).toBeInTheDocument();
   });
-}); 
+});

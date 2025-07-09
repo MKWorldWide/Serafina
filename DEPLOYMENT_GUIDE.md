@@ -7,16 +7,19 @@ This guide covers deploying the GameDin Discord bot to AWS infrastructure with G
 ## 📋 Prerequisites
 
 ### AWS Setup
+
 - AWS CLI installed and configured
 - AWS account with appropriate permissions
 - Domain name (optional, for custom endpoints)
 
 ### GitHub Setup
+
 - GitHub repository with the bot code
 - GitHub Actions enabled
 - GitHub Secrets configured
 
 ### Discord Setup
+
 - Discord bot token
 - Discord client ID
 - Bot permissions configured
@@ -39,6 +42,7 @@ This guide covers deploying the GameDin Discord bot to AWS infrastructure with G
 ### 2. AWS Infrastructure Components
 
 The deployment creates:
+
 - **EC2 Instances**: Auto-scaling group for bot instances
 - **Load Balancer**: Application Load Balancer for traffic distribution
 - **RDS Database**: PostgreSQL database for bot data
@@ -50,6 +54,7 @@ The deployment creates:
 ### 3. Environment Variables
 
 Required environment variables:
+
 ```bash
 DISCORD_TOKEN=your_discord_bot_token
 DISCORD_CLIENT_ID=your_discord_client_id
@@ -95,6 +100,7 @@ SNYK_TOKEN=your_snyk_token
 ### 3. CI/CD Pipeline
 
 The pipeline includes:
+
 - **Testing**: Linting, type checking, unit tests
 - **Security**: Vulnerability scanning with Snyk
 - **Building**: TypeScript compilation
@@ -156,6 +162,7 @@ docker run -d \
 ### 3. Alerts
 
 Configured alerts for:
+
 - High CPU usage (>80%)
 - High memory usage (>85%)
 - Bot disconnection
@@ -262,6 +269,7 @@ aws rds restore-db-instance-from-db-snapshot \
 ## 📞 Support
 
 For deployment issues:
+
 1. Check the troubleshooting section
 2. Review CloudWatch logs
 3. Contact the development team
@@ -272,4 +280,4 @@ For deployment issues:
 - **v1.0.0**: Initial deployment setup
 - **v1.1.0**: Added GitHub Actions CI/CD
 - **v1.2.0**: Enhanced monitoring and alerts
-- **v1.3.0**: Multi-environment support 
+- **v1.3.0**: Multi-environment support

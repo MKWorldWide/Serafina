@@ -23,6 +23,6 @@ export const mapCognitoUserToIUser = (user: AuthUser): IUser => {
     name: user.username,
     picture: '/default-avatar.png',
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   };
-}; 
+};

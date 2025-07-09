@@ -48,17 +48,17 @@ export const Achievements = () => {
 
   return (
     <Box p={4}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant='h4' gutterBottom>
         Your Achievements
       </Typography>
       <Grid container spacing={3}>
-        {achievements.map((achievement) => (
+        {achievements.map(achievement => (
           <Grid item xs={12} sm={6} md={4} key={achievement.id}>
             <Paper sx={{ p: 2 }}>
-              <Typography variant="h6">{achievement.name}</Typography>
-              <Typography color="textSecondary">{achievement.description}</Typography>
+              <Typography variant='h6'>{achievement.name}</Typography>
+              <Typography color='textSecondary'>{achievement.description}</Typography>
               {achievement.unlocked && (
-                <Typography variant="caption" color="success.main">
+                <Typography variant='caption' color='success.main'>
                   Unlocked on {new Date(achievement.unlockedAt!).toLocaleDateString()}
                 </Typography>
               )}
@@ -70,4 +70,4 @@ export const Achievements = () => {
   );
 };
 
-export default Achievements; 
+export default Achievements;

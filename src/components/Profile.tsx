@@ -15,37 +15,40 @@ export const Profile = () => {
   return (
     <Box p={4}>
       <Grid container spacing={4}>
-        <Grid item xs={12} md={4} textAlign="center">
+        <Grid item xs={12} md={4} textAlign='center'>
           <Avatar
-            src={user.attributes?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
+            src={
+              user.attributes?.picture ||
+              `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`
+            }
             alt={user.attributes?.name || user.username}
             sx={{ width: 200, height: 200, mx: 'auto', mb: 2 }}
           />
-          <Button variant="contained" color="primary">
+          <Button variant='contained' color='primary'>
             Edit Profile
           </Button>
         </Grid>
         <Grid item xs={12} md={8}>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant='h4' gutterBottom>
             {user.attributes?.name || user.username}
           </Typography>
-          <Typography variant="body1" color="textSecondary" gutterBottom>
+          <Typography variant='body1' color='textSecondary' gutterBottom>
             {user.attributes?.email}
           </Typography>
-          <Typography variant="body1" paragraph>
+          <Typography variant='body1' paragraph>
             Bio coming soon...
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Paper sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="h6">0</Typography>
-                <Typography color="textSecondary">Followers</Typography>
+                <Typography variant='h6'>0</Typography>
+                <Typography color='textSecondary'>Followers</Typography>
               </Paper>
             </Grid>
             <Grid item xs={6}>
               <Paper sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="h6">0</Typography>
-                <Typography color="textSecondary">Following</Typography>
+                <Typography variant='h6'>0</Typography>
+                <Typography color='textSecondary'>Following</Typography>
               </Paper>
             </Grid>
           </Grid>
@@ -55,4 +58,4 @@ export const Profile = () => {
   );
 };
 
-export default Profile; 
+export default Profile;

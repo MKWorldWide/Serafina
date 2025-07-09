@@ -60,10 +60,11 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Welcome to GameDin</h1>
-      <p className="text-lg text-gray-700">
-        Your personal gaming companion. Track your games, connect with friends, and discover new adventures.
+    <div className='max-w-7xl mx-auto'>
+      <h1 className='text-4xl font-bold text-gray-900 mb-8'>Welcome to GameDin</h1>
+      <p className='text-lg text-gray-700'>
+        Your personal gaming companion. Track your games, connect with friends, and discover new
+        adventures.
       </p>
     </div>
   );

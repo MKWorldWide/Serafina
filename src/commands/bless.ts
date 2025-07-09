@@ -1,13 +1,19 @@
-import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, ChatInputCommandInteraction, PermissionFlagsBits } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  CommandInteraction,
+  EmbedBuilder,
+  ChatInputCommandInteraction,
+  PermissionFlagsBits,
+} from 'discord.js';
 import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
 const affirmations = [
-  "May your gaming journey be filled with joy and victory! 🌟",
+  'May your gaming journey be filled with joy and victory! 🌟',
   "The Sovereign's light guides your path to greatness! ✨",
-  "Your presence brings harmony to our community! 💫",
-  "May your skills shine brighter than the stars! 🌠",
-  "The divine energy flows through your gameplay! 🌈"
+  'Your presence brings harmony to our community! 💫',
+  'May your skills shine brighter than the stars! 🌠',
+  'The divine energy flows through your gameplay! 🌈',
 ];
 
 const command: Command = {
@@ -15,10 +21,8 @@ const command: Command = {
     .setName('bless')
     .setDescription('Receive a divine blessing from the Sovereign')
     .addUserOption(option =>
-      option
-        .setName('target')
-        .setDescription('The user to bless (optional)')
-        .setRequired(false))
+      option.setName('target').setDescription('The user to bless (optional)').setRequired(false),
+    )
     .toJSON(),
 
   async execute(interaction: CommandInteraction) {
@@ -32,7 +36,7 @@ const command: Command = {
       .setDescription(`${blessing}`)
       .addFields(
         { name: 'Blessed User', value: target.toString(), inline: true },
-        { name: 'Blessed By', value: interaction.user.toString(), inline: true }
+        { name: 'Blessed By', value: interaction.user.toString(), inline: true },
       )
       .setTimestamp()
       .setFooter({ text: 'GameDin - A Sacred Gaming Community' });
@@ -40,7 +44,7 @@ const command: Command = {
     await interaction.reply({ embeds: [embed] });
   },
 
-  cooldown: 60 // 1 minute cooldown
+  cooldown: 60, // 1 minute cooldown
 };
 
-export default command; 
+export default command;

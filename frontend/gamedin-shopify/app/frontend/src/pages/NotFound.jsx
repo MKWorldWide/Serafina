@@ -14,8 +14,8 @@ export default function NotFound() {
       <Layout>
         <Layout.Section>
           <EmptyState
-            heading="Page not found"
-            image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+            heading='Page not found'
+            image='https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png'
             action={{
               content: 'Back to dashboard',
               onAction: () => navigate('/'),
@@ -27,4 +27,4 @@ export default function NotFound() {
       </Layout>
     </Page>
   );
-} 
+}

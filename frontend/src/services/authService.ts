@@ -1,6 +1,6 @@
 /**
  * Authentication Service
- * 
+ *
  * This service manages user authentication, JWT tokens, and session management.
  * It implements secure practices including:
  * - Short-lived access tokens with automatic refresh
@@ -78,37 +78,40 @@ let authListeners: Array<(user: User | null) => void> = [];
  */
 const storeAuthData = async (response: LoginResponse): Promise<void> => {
   const { accessToken, refreshToken, user } = response;
-  
+
   // Store access token in memory for immediate use
   localStorage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(accessToken));
-  
+
   // Store user in memory and localStorage
   currentUser = user;
   localStorage.setItem(USER_KEY, JSON.stringify(user));
-  
+
   // Store refreshToken in HttpOnly cookie (handled by backend)
   // We keep a record of its expiration for refresh timing
-  localStorage.setItem(REFRESH_TOKEN_KEY, JSON.stringify({
-    expiresAt: refreshToken.expiresAt
-  }));
-  
+  localStorage.setItem(
+    REFRESH_TOKEN_KEY,
+    JSON.stringify({
+      expiresAt: refreshToken.expiresAt,
+    }),
+  );
+
   // Store user data in IndexedDB for offline access
   try {
     await indexedDBService.setCache(
-      indexedDBService.STORE.USERS, 
+      indexedDBService.STORE.USERS,
       {
         ...user,
-        lastUpdated: Date.now()
+        lastUpdated: Date.now(),
       },
-      30 * 24 * 60 * 60 * 1000 // 30 days cache
+      30 * 24 * 60 * 60 * 1000, // 30 days cache
     );
   } catch (error) {
     console.error('Failed to store user data in IndexedDB:', error);
   }
-  
+
   // Schedule token refresh
   scheduleTokenRefresh(accessToken.expiresAt);
-  
+
   // Notify listeners about authentication state change
   notifyAuthStateChanged();
 };
@@ -119,22 +122,22 @@ const storeAuthData = async (response: LoginResponse): Promise<void> => {
 const clearAuthData = (): void => {
   // Clear from memory
   currentUser = null;
-  
+
   // Clear from localStorage
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
-  
+
   // Clear refresh timer
   if (refreshTimer) {
     clearTimeout(refreshTimer);
     refreshTimer = null;
   }
-  
+
   // Reset refresh state
   isRefreshing = false;
   refreshPromise = null;
-  
+
   // Notify listeners about authentication state change
   notifyAuthStateChanged();
 };
@@ -147,21 +150,20 @@ const scheduleTokenRefresh = (expiresAt: number): void => {
   if (refreshTimer) {
     clearTimeout(refreshTimer);
   }
-  
+
   const now = Date.now();
   const expiresIn = expiresAt - now;
-  
+
   // Refresh the token 1 minute before it expires
   const refreshTime = Math.max(0, expiresIn - 60 * 1000);
-  
+
   refreshTimer = setTimeout(() => {
-    refreshAccessToken()
-      .catch(error => {
-        console.error('Token refresh failed:', error);
-        // If refresh fails, redirect to login
-        clearAuthData();
-        window.location.href = '/login?expired=true';
-      });
+    refreshAccessToken().catch(error => {
+      console.error('Token refresh failed:', error);
+      // If refresh fails, redirect to login
+      clearAuthData();
+      window.location.href = '/login?expired=true';
+    });
   }, refreshTime);
 };
 
@@ -182,20 +184,20 @@ const notifyAuthStateChanged = (): void => {
  * Initialize the authentication service by loading stored data
  */
 export const initAuth = (): Promise<User | null> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     try {
       // Try to load user from localStorage
       const userJson = localStorage.getItem(USER_KEY);
       const tokenJson = localStorage.getItem(ACCESS_TOKEN_KEY);
       const refreshJson = localStorage.getItem(REFRESH_TOKEN_KEY);
-      
+
       if (userJson && tokenJson && refreshJson) {
         const user = JSON.parse(userJson) as User;
         const accessToken = JSON.parse(tokenJson) as AuthToken;
         const refreshToken = JSON.parse(refreshJson) as { expiresAt: number };
-        
+
         currentUser = user;
-        
+
         // Check if access token is expired
         const now = Date.now();
         if (accessToken.expiresAt <= now) {
@@ -236,7 +238,7 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
       body: JSON.stringify(credentials),
       credentials: 'include', // Send cookies
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw {
@@ -245,27 +247,24 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
         status: response.status,
       };
     }
-    
-    const data = await response.json() as LoginResponse;
+
+    const data = (await response.json()) as LoginResponse;
     await storeAuthData(data);
-    
+
     return data.user;
   } catch (error) {
     if (!navigator.onLine) {
       // If offline, add to queue for later and throw a specific error
-      await addToOfflineQueue(
-        `${config.apiBaseUrl}/auth/login`,
-        'POST',
-        credentials
-      );
-      
+      await addToOfflineQueue(`${config.apiBaseUrl}/auth/login`, 'POST', credentials);
+
       throw {
-        message: 'Cannot login while offline. Your login will be attempted when you are back online.',
+        message:
+          'Cannot login while offline. Your login will be attempted when you are back online.',
         code: 'auth/offline',
         status: 503,
       };
     }
-    
+
     throw error;
   }
 };
@@ -284,7 +283,7 @@ export const register = async (credentials: RegisterCredentials): Promise<User> 
       body: JSON.stringify(credentials),
       credentials: 'include', // Send cookies
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw {
@@ -293,20 +292,21 @@ export const register = async (credentials: RegisterCredentials): Promise<User> 
         status: response.status,
       };
     }
-    
-    const data = await response.json() as LoginResponse;
+
+    const data = (await response.json()) as LoginResponse;
     await storeAuthData(data);
-    
+
     return data.user;
   } catch (error) {
     if (!navigator.onLine) {
       throw {
-        message: 'Cannot register while offline. Please try again when you have an internet connection.',
+        message:
+          'Cannot register while offline. Please try again when you have an internet connection.',
         code: 'auth/offline',
         status: 503,
       };
     }
-    
+
     throw error;
   }
 };
@@ -320,7 +320,7 @@ export const refreshAccessToken = async (): Promise<AuthToken | null> => {
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
   }
-  
+
   // Start the refresh process
   isRefreshing = true;
   refreshPromise = (async () => {
@@ -329,38 +329,35 @@ export const refreshAccessToken = async (): Promise<AuthToken | null> => {
         method: 'POST',
         credentials: 'include', // Send the httpOnly refresh token cookie
       });
-      
+
       if (!response.ok) {
         throw new Error('Token refresh failed');
       }
-      
+
       const data = await response.json();
       const { accessToken, user } = data;
-      
+
       // Update the access token in storage
       localStorage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(accessToken));
-      
+
       // Update user if provided
       if (user) {
         currentUser = user;
         localStorage.setItem(USER_KEY, JSON.stringify(user));
-        
+
         // Update in IndexedDB
-        await indexedDBService.setCache(
-          indexedDBService.STORE.USERS,
-          {
-            ...user,
-            lastUpdated: Date.now()
-          }
-        );
-        
+        await indexedDBService.setCache(indexedDBService.STORE.USERS, {
+          ...user,
+          lastUpdated: Date.now(),
+        });
+
         // Notify listeners
         notifyAuthStateChanged();
       }
-      
+
       // Schedule the next refresh
       scheduleTokenRefresh(accessToken.expiresAt);
-      
+
       return accessToken;
     } catch (error) {
       console.error('Failed to refresh token:', error);
@@ -372,7 +369,7 @@ export const refreshAccessToken = async (): Promise<AuthToken | null> => {
       refreshPromise = null;
     }
   })();
-  
+
   return refreshPromise;
 };
 
@@ -383,20 +380,20 @@ export const refreshAccessToken = async (): Promise<AuthToken | null> => {
 export const getAccessToken = async (): Promise<string | null> => {
   try {
     const tokenJson = localStorage.getItem(ACCESS_TOKEN_KEY);
-    
+
     if (!tokenJson) {
       return null;
     }
-    
+
     const accessToken = JSON.parse(tokenJson) as AuthToken;
     const now = Date.now();
-    
+
     // If the token is expired or about to expire (within 10 seconds), refresh it
     if (accessToken.expiresAt <= now + 10000) {
       const newToken = await refreshAccessToken();
       return newToken?.token || null;
     }
-    
+
     return accessToken.token;
   } catch (error) {
     console.error('Error getting access token:', error);
@@ -436,7 +433,7 @@ export const logout = async (): Promise<void> => {
 export const oauthLogin = (provider: string, redirect: string = window.location.pathname): void => {
   const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
   const state = encodeURIComponent(JSON.stringify({ redirect }));
-  
+
   window.location.href = `${config.apiBaseUrl}/auth/${provider}?redirect_uri=${redirectUri}&state=${state}`;
 };
 
@@ -445,7 +442,10 @@ export const oauthLogin = (provider: string, redirect: string = window.location.
  * @param code Authorization code from OAuth provider
  * @param state State parameter from OAuth flow
  */
-export const processOAuthCallback = async (code: string, state: string): Promise<{ user: User, redirect: string }> => {
+export const processOAuthCallback = async (
+  code: string,
+  state: string,
+): Promise<{ user: User; redirect: string }> => {
   try {
     const response = await fetch(`${config.apiBaseUrl}/auth/callback`, {
       method: 'POST',
@@ -455,7 +455,7 @@ export const processOAuthCallback = async (code: string, state: string): Promise
       body: JSON.stringify({ code, state }),
       credentials: 'include', // Send cookies
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw {
@@ -464,13 +464,13 @@ export const processOAuthCallback = async (code: string, state: string): Promise
         status: response.status,
       };
     }
-    
-    const data = await response.json() as LoginResponse & { redirect: string };
+
+    const data = (await response.json()) as LoginResponse & { redirect: string };
     await storeAuthData(data);
-    
+
     return {
       user: data.user,
-      redirect: data.redirect || '/'
+      redirect: data.redirect || '/',
     };
   } catch (error) {
     console.error('OAuth callback processing failed:', error);
@@ -491,12 +491,12 @@ export const hasRole = (role: string): boolean => {
  * @param listener Function to call when auth state changes
  * @returns Unsubscribe function
  */
-export const onAuthStateChanged = (listener: (user: User | null) => void): () => void => {
+export const onAuthStateChanged = (listener: (user: User | null) => void): (() => void) => {
   authListeners.push(listener);
-  
+
   // Call with current state immediately
   listener(currentUser);
-  
+
   // Return unsubscribe function
   return () => {
     authListeners = authListeners.filter(l => l !== listener);
@@ -522,7 +522,7 @@ export const resetPassword = async (email: string): Promise<void> => {
     },
     body: JSON.stringify({ email }),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw {
@@ -544,17 +544,17 @@ export const updateProfile = async (updates: Partial<User>): Promise<User> => {
       code: 'auth/unauthenticated',
     };
   }
-  
+
   try {
     const token = await getAccessToken();
-    
+
     if (!token) {
       throw {
         message: 'User not authenticated',
         code: 'auth/unauthenticated',
       };
     }
-    
+
     const response = await fetch(`${config.apiBaseUrl}/user/profile`, {
       method: 'PATCH',
       headers: {
@@ -564,7 +564,7 @@ export const updateProfile = async (updates: Partial<User>): Promise<User> => {
       body: JSON.stringify(updates),
       credentials: 'include', // Send cookies
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw {
@@ -573,60 +573,50 @@ export const updateProfile = async (updates: Partial<User>): Promise<User> => {
         status: response.status,
       };
     }
-    
-    const updatedUser = await response.json() as User;
-    
+
+    const updatedUser = (await response.json()) as User;
+
     // Update current user and storage
     currentUser = updatedUser;
     localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
-    
+
     // Update in IndexedDB
-    await indexedDBService.setCache(
-      indexedDBService.STORE.USERS,
-      {
-        ...updatedUser,
-        lastUpdated: Date.now()
-      }
-    );
-    
+    await indexedDBService.setCache(indexedDBService.STORE.USERS, {
+      ...updatedUser,
+      lastUpdated: Date.now(),
+    });
+
     // Notify listeners
     notifyAuthStateChanged();
-    
+
     return updatedUser;
   } catch (error) {
     if (!navigator.onLine) {
       // If offline, add to queue for later
-      await addToOfflineQueue(
-        `${config.apiBaseUrl}/user/profile`,
-        'PATCH',
-        updates
-      );
-      
+      await addToOfflineQueue(`${config.apiBaseUrl}/user/profile`, 'PATCH', updates);
+
       // Apply optimistic update locally
       const optimisticUser = {
         ...currentUser,
         ...updates,
         updatedAt: new Date().toISOString(),
       } as User;
-      
+
       currentUser = optimisticUser;
       localStorage.setItem(USER_KEY, JSON.stringify(optimisticUser));
-      
+
       // Update in IndexedDB
-      await indexedDBService.setCache(
-        indexedDBService.STORE.USERS,
-        {
-          ...optimisticUser,
-          lastUpdated: Date.now()
-        }
-      );
-      
+      await indexedDBService.setCache(indexedDBService.STORE.USERS, {
+        ...optimisticUser,
+        lastUpdated: Date.now(),
+      });
+
       // Notify listeners
       notifyAuthStateChanged();
-      
+
       return optimisticUser;
     }
-    
+
     throw error;
   }
 };
@@ -646,26 +636,26 @@ export const checkRateLimit = async (operation: string): Promise<boolean> => {
       body: JSON.stringify({ operation }),
       credentials: 'include', // Send cookies
     });
-    
+
     // If rate limited, throw an error
     if (response.status === 429) {
       const data = await response.json();
-      
+
       throw {
         message: data.message || 'Too many requests. Please try again later.',
         code: 'auth/rate-limited',
         status: 429,
-        retryAfter: parseInt(response.headers.get('Retry-After') || '60', 10)
+        retryAfter: parseInt(response.headers.get('Retry-After') || '60', 10),
       };
     }
-    
+
     // Otherwise, we're good to go
     return true;
   } catch (error) {
     if ((error as any).code === 'auth/rate-limited') {
       throw error;
     }
-    
+
     // If there's a network error or we're offline, assume no rate limiting
     console.warn('Rate limit check failed, assuming not rate limited', error);
     return true;
@@ -687,5 +677,5 @@ export default {
   processOAuthCallback,
   resetPassword,
   updateProfile,
-  checkRateLimit
-}; 
+  checkRateLimit,
+};

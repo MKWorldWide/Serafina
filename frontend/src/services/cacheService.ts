@@ -1,6 +1,6 @@
 /**
  * Cache Service
- * 
+ *
  * This service manages offline data persistence using IndexedDB.
  * It provides methods for storing, retrieving, and synchronizing data
  * when the application is offline, ensuring a seamless user experience.
@@ -19,7 +19,7 @@ export const STORE = {
   GAMES: 'games',
   EVENTS: 'events',
   QUEUE: 'offlineQueue', // For storing operations to execute when back online
-  META: 'cacheMeta' // For storing metadata about cached items
+  META: 'cacheMeta', // For storing metadata about cached items
 };
 
 // Meta information about cached data
@@ -48,50 +48,50 @@ interface QueuedOperation {
 export const initDatabase = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    
-    request.onerror = (event) => {
+
+    request.onerror = event => {
       console.error('IndexedDB error:', event);
       reject(new Error('Failed to open IndexedDB'));
     };
-    
-    request.onsuccess = (event) => {
+
+    request.onsuccess = event => {
       const db = (event.target as IDBOpenDBRequest).result;
       resolve(db);
     };
-    
-    request.onupgradeneeded = (event) => {
+
+    request.onupgradeneeded = event => {
       const db = (event.target as IDBOpenDBRequest).result;
-      
+
       // Create stores for each data type if they don't exist
       if (!db.objectStoreNames.contains(STORE.CONVERSATIONS)) {
         db.createObjectStore(STORE.CONVERSATIONS, { keyPath: 'id' });
       }
-      
+
       if (!db.objectStoreNames.contains(STORE.MESSAGES)) {
         const messageStore = db.createObjectStore(STORE.MESSAGES, { keyPath: 'id' });
         messageStore.createIndex('byConversation', 'conversationId', { unique: false });
       }
-      
+
       if (!db.objectStoreNames.contains(STORE.USERS)) {
         db.createObjectStore(STORE.USERS, { keyPath: 'id' });
       }
-      
+
       if (!db.objectStoreNames.contains(STORE.FRIENDS)) {
         db.createObjectStore(STORE.FRIENDS, { keyPath: 'id' });
       }
-      
+
       if (!db.objectStoreNames.contains(STORE.GAMES)) {
         db.createObjectStore(STORE.GAMES, { keyPath: 'id' });
       }
-      
+
       if (!db.objectStoreNames.contains(STORE.EVENTS)) {
         db.createObjectStore(STORE.EVENTS, { keyPath: 'id' });
       }
-      
+
       if (!db.objectStoreNames.contains(STORE.QUEUE)) {
         db.createObjectStore(STORE.QUEUE, { keyPath: 'id' });
       }
-      
+
       if (!db.objectStoreNames.contains(STORE.META)) {
         db.createObjectStore(STORE.META, { keyPath: 'key' });
       }
@@ -119,36 +119,36 @@ const getDB = async (): Promise<IDBDatabase> => {
  * @param staleTime Optional stale time in milliseconds
  */
 export const setCache = async <T>(
-  storeName: string, 
-  data: T, 
+  storeName: string,
+  data: T,
   expiry = 24 * 60 * 60 * 1000, // 24 hours default
-  staleTime?: number
+  staleTime?: number,
 ): Promise<T> => {
   try {
     const db = await getDB();
     const key = (data as any).id;
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([storeName, STORE.META], 'readwrite');
       const store = transaction.objectStore(storeName);
       const metaStore = transaction.objectStore(STORE.META);
-      
+
       // Store the data
       const request = store.put(data);
-      
+
       // Store metadata about the cached item
       const metaRequest = metaStore.put({
         key: `${storeName}:${key}`,
         timestamp: Date.now(),
         expiry,
-        staleTime
+        staleTime,
       });
-      
+
       transaction.oncomplete = () => {
         resolve(data);
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Cache transaction error:', event);
         reject(new Error('Failed to store data in cache'));
       };
@@ -165,55 +165,58 @@ export const setCache = async <T>(
  * @param id The record ID to retrieve
  * @returns The cached data or null if not found
  */
-export const getCache = async <T>(storeName: string, id: string): Promise<{ data: T | null, isStale: boolean }> => {
+export const getCache = async <T>(
+  storeName: string,
+  id: string,
+): Promise<{ data: T | null; isStale: boolean }> => {
   try {
     const db = await getDB();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([storeName, STORE.META], 'readonly');
       const store = transaction.objectStore(storeName);
       const metaStore = transaction.objectStore(STORE.META);
-      
+
       // Get the data
       const request = store.get(id);
-      
+
       // Get metadata about the cached item
       const metaRequest = metaStore.get(`${storeName}:${id}`);
-      
+
       let data: T | null = null;
       let meta: CacheMeta | null = null;
-      
-      request.onsuccess = (event) => {
+
+      request.onsuccess = event => {
         data = (event.target as IDBRequest).result;
       };
-      
-      metaRequest.onsuccess = (event) => {
+
+      metaRequest.onsuccess = event => {
         meta = (event.target as IDBRequest).result;
       };
-      
+
       transaction.oncomplete = () => {
         if (!data || !meta) {
           resolve({ data: null, isStale: false });
           return;
         }
-        
+
         const now = Date.now();
         const expired = meta.timestamp + meta.expiry < now;
-        
+
         if (expired) {
           // If expired, remove from cache
           removeCache(storeName, id).catch(console.error);
           resolve({ data: null, isStale: false });
           return;
         }
-        
+
         // Check if data is stale (needs refreshing but still usable)
         const isStale = meta.staleTime ? meta.timestamp + meta.staleTime < now : false;
-        
+
         resolve({ data, isStale });
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Cache transaction error:', event);
         reject(new Error('Failed to get data from cache'));
       };
@@ -232,23 +235,23 @@ export const getCache = async <T>(storeName: string, id: string): Promise<{ data
 export const removeCache = async (storeName: string, id: string): Promise<void> => {
   try {
     const db = await getDB();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([storeName, STORE.META], 'readwrite');
       const store = transaction.objectStore(storeName);
       const metaStore = transaction.objectStore(STORE.META);
-      
+
       // Remove the data
       store.delete(id);
-      
+
       // Remove metadata
       metaStore.delete(`${storeName}:${id}`);
-      
+
       transaction.oncomplete = () => {
         resolve();
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Cache transaction error:', event);
         reject(new Error('Failed to remove data from cache'));
       };
@@ -266,38 +269,38 @@ export const removeCache = async (storeName: string, id: string): Promise<void> 
 export const clearCache = async (storeName: string): Promise<void> => {
   try {
     const db = await getDB();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([storeName, STORE.META], 'readwrite');
       const store = transaction.objectStore(storeName);
       const metaStore = transaction.objectStore(STORE.META);
-      
+
       // Clear all data from the store
       store.clear();
-      
+
       // Get all metadata entries
       const metaRequest = metaStore.openCursor();
-      
-      metaRequest.onsuccess = (event) => {
+
+      metaRequest.onsuccess = event => {
         const cursor = (event.target as IDBRequest).result;
-        
+
         if (cursor) {
           const key = cursor.value.key;
-          
+
           // If the metadata entry is for this store, delete it
           if (key.startsWith(`${storeName}:`)) {
             metaStore.delete(key);
           }
-          
+
           cursor.continue();
         }
       };
-      
+
       transaction.oncomplete = () => {
         resolve();
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Cache transaction error:', event);
         reject(new Error('Failed to clear cache'));
       };
@@ -316,37 +319,37 @@ export const clearCache = async (storeName: string): Promise<void> => {
  */
 export const queryCacheByPredicate = async <T>(
   storeName: string,
-  predicate: (item: T) => boolean
+  predicate: (item: T) => boolean,
 ): Promise<T[]> => {
   try {
     const db = await getDB();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(storeName, 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.openCursor();
-      
+
       const results: T[] = [];
-      
-      request.onsuccess = (event) => {
+
+      request.onsuccess = event => {
         const cursor = (event.target as IDBRequest).result;
-        
+
         if (cursor) {
           const item = cursor.value as T;
-          
+
           if (predicate(item)) {
             results.push(item);
           }
-          
+
           cursor.continue();
         }
       };
-      
+
       transaction.oncomplete = () => {
         resolve(results);
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Cache transaction error:', event);
         reject(new Error('Failed to query cache'));
       };
@@ -365,11 +368,11 @@ export const addToOfflineQueue = async (
   endpoint: string,
   method: string,
   body?: any,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
 ): Promise<QueuedOperation> => {
   try {
     const db = await getDB();
-    
+
     const operation: QueuedOperation = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: Date.now(),
@@ -377,20 +380,20 @@ export const addToOfflineQueue = async (
       method,
       body,
       headers,
-      attempts: 0
+      attempts: 0,
     };
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE.QUEUE, 'readwrite');
       const store = transaction.objectStore(STORE.QUEUE);
-      
+
       const request = store.add(operation);
-      
+
       transaction.oncomplete = () => {
         resolve(operation);
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Queue transaction error:', event);
         reject(new Error('Failed to add operation to queue'));
       };
@@ -407,18 +410,18 @@ export const addToOfflineQueue = async (
 export const getOfflineQueue = async (): Promise<QueuedOperation[]> => {
   try {
     const db = await getDB();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE.QUEUE, 'readonly');
       const store = transaction.objectStore(STORE.QUEUE);
       const request = store.getAll();
-      
-      request.onsuccess = (event) => {
+
+      request.onsuccess = event => {
         const operations = (event.target as IDBRequest).result as QueuedOperation[];
         resolve(operations);
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Queue transaction error:', event);
         reject(new Error('Failed to get offline queue'));
       };
@@ -436,18 +439,18 @@ export const getOfflineQueue = async (): Promise<QueuedOperation[]> => {
 export const removeFromOfflineQueue = async (id: string): Promise<void> => {
   try {
     const db = await getDB();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE.QUEUE, 'readwrite');
       const store = transaction.objectStore(STORE.QUEUE);
-      
+
       const request = store.delete(id);
-      
+
       transaction.oncomplete = () => {
         resolve();
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Queue transaction error:', event);
         reject(new Error('Failed to remove operation from queue'));
       };
@@ -465,18 +468,18 @@ export const removeFromOfflineQueue = async (id: string): Promise<void> => {
 export const updateOfflineQueueItem = async (operation: QueuedOperation): Promise<void> => {
   try {
     const db = await getDB();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE.QUEUE, 'readwrite');
       const store = transaction.objectStore(STORE.QUEUE);
-      
+
       const request = store.put(operation);
-      
+
       transaction.oncomplete = () => {
         resolve();
       };
-      
-      transaction.onerror = (event) => {
+
+      transaction.onerror = event => {
         console.error('Queue transaction error:', event);
         reject(new Error('Failed to update operation in queue'));
       };
@@ -500,5 +503,5 @@ export default {
   getOfflineQueue,
   removeFromOfflineQueue,
   updateOfflineQueueItem,
-  STORE
-}; 
+  STORE,
+};

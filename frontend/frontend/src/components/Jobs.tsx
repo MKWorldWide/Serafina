@@ -161,18 +161,18 @@ const Jobs: React.FC = () => {
   });
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 3 }}>
+    <Container maxWidth='lg' sx={{ mt: 3 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Gaming Industry Jobs
         </Typography>
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2} alignItems='center'>
           <Grid item xs>
             <TextField
               fullWidth
-              size="small"
-              placeholder="Search jobs..."
+              size='small'
+              placeholder='Search jobs...'
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               InputProps={{
@@ -181,38 +181,38 @@ const Jobs: React.FC = () => {
             />
           </Grid>
           <Grid item>
-            <FormControl size="small" sx={{ minWidth: 150, mr: 2 }}>
+            <FormControl size='small' sx={{ minWidth: 150, mr: 2 }}>
               <InputLabel>Category</InputLabel>
               <Select
                 value={selectedCategory}
-                label="Category"
+                label='Category'
                 onChange={e => setSelectedCategory(e.target.value)}
               >
-                <MenuItem value="all">All Categories</MenuItem>
-                <MenuItem value="gaming">Gaming</MenuItem>
-                <MenuItem value="esports">Esports</MenuItem>
-                <MenuItem value="content">Content Creation</MenuItem>
-                <MenuItem value="development">Game Development</MenuItem>
-                <MenuItem value="management">Management</MenuItem>
+                <MenuItem value='all'>All Categories</MenuItem>
+                <MenuItem value='gaming'>Gaming</MenuItem>
+                <MenuItem value='esports'>Esports</MenuItem>
+                <MenuItem value='content'>Content Creation</MenuItem>
+                <MenuItem value='development'>Game Development</MenuItem>
+                <MenuItem value='management'>Management</MenuItem>
               </Select>
             </FormControl>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
+            <FormControl size='small' sx={{ minWidth: 150 }}>
               <InputLabel>Type</InputLabel>
               <Select
                 value={selectedType}
-                label="Type"
+                label='Type'
                 onChange={e => setSelectedType(e.target.value)}
               >
-                <MenuItem value="all">All Types</MenuItem>
-                <MenuItem value="full-time">Full-time</MenuItem>
-                <MenuItem value="part-time">Part-time</MenuItem>
-                <MenuItem value="contract">Contract</MenuItem>
-                <MenuItem value="freelance">Freelance</MenuItem>
+                <MenuItem value='all'>All Types</MenuItem>
+                <MenuItem value='full-time'>Full-time</MenuItem>
+                <MenuItem value='part-time'>Part-time</MenuItem>
+                <MenuItem value='contract'>Contract</MenuItem>
+                <MenuItem value='freelance'>Freelance</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid item>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateJob}>
+            <Button variant='contained' startIcon={<AddIcon />} onClick={handleCreateJob}>
               Post Job
             </Button>
           </Grid>
@@ -230,70 +230,70 @@ const Jobs: React.FC = () => {
                     <Avatar src={job.company.logo} sx={{ width: 64, height: 64 }} />
                   </Grid>
                   <Grid item xs>
-                    <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                    <Box display='flex' justifyContent='space-between' alignItems='flex-start'>
                       <Box>
-                        <Typography variant="h5" gutterBottom>
+                        <Typography variant='h5' gutterBottom>
                           {job.title}
                         </Typography>
-                        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+                        <Typography variant='subtitle1' color='textSecondary' gutterBottom>
                           {job.company.name}
                         </Typography>
                       </Box>
-                      <Box display="flex" gap={1}>
-                        <CategoryChip label={job.skills[0]} size="small" category={job.skills[0]} />
-                        <Chip label={job.type} size="small" variant="outlined" />
+                      <Box display='flex' gap={1}>
+                        <CategoryChip label={job.skills[0]} size='small' category={job.skills[0]} />
+                        <Chip label={job.type} size='small' variant='outlined' />
                       </Box>
                     </Box>
 
                     <Grid container spacing={2} sx={{ mb: 2 }}>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <LocationOnIcon color="action" />
-                          <Typography variant="body2">{job.company.location}</Typography>
+                        <Box display='flex' alignItems='center' gap={1}>
+                          <LocationOnIcon color='action' />
+                          <Typography variant='body2'>{job.company.location}</Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <AttachMoneyIcon color="action" />
-                          <Typography variant="body2">
+                        <Box display='flex' alignItems='center' gap={1}>
+                          <AttachMoneyIcon color='action' />
+                          <Typography variant='body2'>
                             {job.salary.currency} {job.salary.min.toLocaleString()} -{' '}
                             {job.salary.max.toLocaleString()}
                           </Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <WorkIcon color="action" />
-                          <Typography variant="body2">{job.skills.join(', ')}</Typography>
+                        <Box display='flex' alignItems='center' gap={1}>
+                          <WorkIcon color='action' />
+                          <Typography variant='body2'>{job.skills.join(', ')}</Typography>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <AccessTimeIcon color="action" />
-                          <Typography variant="body2">
+                        <Box display='flex' alignItems='center' gap={1}>
+                          <AccessTimeIcon color='action' />
+                          <Typography variant='body2'>
                             Posted {new Date(job.postedAt).toLocaleDateString()}
                           </Typography>
                         </Box>
                       </Grid>
                     </Grid>
 
-                    <Typography variant="body2" paragraph>
+                    <Typography variant='body2' paragraph>
                       {job.description}
                     </Typography>
 
-                    <Box display="flex" gap={1} flexWrap="wrap">
+                    <Box display='flex' gap={1} flexWrap='wrap'>
                       {job.skills.map((skill, index) => (
-                        <Chip key={index} label={skill} size="small" variant="outlined" />
+                        <Chip key={index} label={skill} size='small' variant='outlined' />
                       ))}
                     </Box>
                   </Grid>
                 </Grid>
               </CardContent>
               <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
-                <Button variant="outlined" size="small">
+                <Button variant='outlined' size='small'>
                   View Details
                 </Button>
-                <Button variant="contained" size="small">
+                <Button variant='contained' size='small'>
                   Apply Now
                 </Button>
               </CardActions>
@@ -306,62 +306,62 @@ const Jobs: React.FC = () => {
       <Dialog
         open={createDialogOpen}
         onClose={() => setCreateDialogOpen(false)}
-        maxWidth="md"
+        maxWidth='md'
         fullWidth
       >
         <DialogTitle>Post a Job</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
-            <TextField fullWidth label="Job Title" margin="normal" />
-            <TextField fullWidth label="Company Name" margin="normal" />
+            <TextField fullWidth label='Job Title' margin='normal' />
+            <TextField fullWidth label='Company Name' margin='normal' />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth margin="normal">
+                <FormControl fullWidth margin='normal'>
                   <InputLabel>Category</InputLabel>
-                  <Select label="Category">
-                    <MenuItem value="gaming">Gaming</MenuItem>
-                    <MenuItem value="esports">Esports</MenuItem>
-                    <MenuItem value="content">Content Creation</MenuItem>
-                    <MenuItem value="development">Game Development</MenuItem>
-                    <MenuItem value="management">Management</MenuItem>
+                  <Select label='Category'>
+                    <MenuItem value='gaming'>Gaming</MenuItem>
+                    <MenuItem value='esports'>Esports</MenuItem>
+                    <MenuItem value='content'>Content Creation</MenuItem>
+                    <MenuItem value='development'>Game Development</MenuItem>
+                    <MenuItem value='management'>Management</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth margin="normal">
+                <FormControl fullWidth margin='normal'>
                   <InputLabel>Job Type</InputLabel>
-                  <Select label="Job Type">
-                    <MenuItem value="full-time">Full-time</MenuItem>
-                    <MenuItem value="part-time">Part-time</MenuItem>
-                    <MenuItem value="contract">Contract</MenuItem>
-                    <MenuItem value="freelance">Freelance</MenuItem>
+                  <Select label='Job Type'>
+                    <MenuItem value='full-time'>Full-time</MenuItem>
+                    <MenuItem value='part-time'>Part-time</MenuItem>
+                    <MenuItem value='contract'>Contract</MenuItem>
+                    <MenuItem value='freelance'>Freelance</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
             </Grid>
-            <TextField fullWidth label="Location" margin="normal" />
+            <TextField fullWidth label='Location' margin='normal' />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField fullWidth label="Minimum Salary" type="number" margin="normal" />
+                <TextField fullWidth label='Minimum Salary' type='number' margin='normal' />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField fullWidth label="Maximum Salary" type="number" margin="normal" />
+                <TextField fullWidth label='Maximum Salary' type='number' margin='normal' />
               </Grid>
             </Grid>
-            <TextField fullWidth label="Description" multiline rows={4} margin="normal" />
+            <TextField fullWidth label='Description' multiline rows={4} margin='normal' />
             <TextField
               fullWidth
-              label="Requirements (one per line)"
+              label='Requirements (one per line)'
               multiline
               rows={4}
-              margin="normal"
+              margin='normal'
             />
-            <TextField fullWidth label="Skills (comma separated)" margin="normal" />
+            <TextField fullWidth label='Skills (comma separated)' margin='normal' />
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={() => setCreateDialogOpen(false)}>
+          <Button variant='contained' onClick={() => setCreateDialogOpen(false)}>
             Post Job
           </Button>
         </DialogActions>

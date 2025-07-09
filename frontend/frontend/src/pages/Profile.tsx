@@ -23,7 +23,7 @@ export default function Profile({}: ProfileProps) {
 
   if (!user) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+      <Box display='flex' justifyContent='center' alignItems='center' minHeight='100vh'>
         <Typography>Please sign in to view your profile.</Typography>
       </Box>
     );
@@ -34,34 +34,34 @@ export default function Profile({}: ProfileProps) {
       <Paper sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
-            <Box display="flex" flexDirection="column" alignItems="center">
+            <Box display='flex' flexDirection='column' alignItems='center'>
               <Avatar
                 src={user.attributes?.picture || '/default-avatar.png'}
                 alt={user.username}
                 sx={{ width: 150, height: 150, mb: 2 }}
               />
-              <Typography variant="h5" gutterBottom>
+              <Typography variant='h5' gutterBottom>
                 {user.attributes?.name || user.username}
-                </Typography>
-              <Typography variant="body2" color="textSecondary" gutterBottom>
+              </Typography>
+              <Typography variant='body2' color='textSecondary' gutterBottom>
                 {user.attributes?.email}
               </Typography>
-              <Button variant="contained" color="primary" onClick={handleEditProfile}>
-                  Edit Profile
-                </Button>
+              <Button variant='contained' color='primary' onClick={handleEditProfile}>
+                Edit Profile
+              </Button>
             </Box>
           </Grid>
           <Grid item xs={12} md={8}>
             {/* Add profile content here */}
-                </Grid>
-            </Grid>
-                  </Paper>
+          </Grid>
+        </Grid>
+      </Paper>
 
       <EditProfileDialog
         open={isEditDialogOpen}
         onClose={handleCloseEditDialog}
         user={user}
-        onSave={(updatedProfile) => {
+        onSave={updatedProfile => {
           setProfile(updatedProfile);
           handleCloseEditDialog();
         }}

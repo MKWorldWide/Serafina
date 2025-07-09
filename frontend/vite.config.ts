@@ -7,12 +7,12 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   server: {
     port: 3000,
-    host: true
+    host: true,
   },
   build: {
     outDir: 'dist',
@@ -21,8 +21,8 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: true,
-        drop_debugger: true
-      }
-    }
-  }
+        drop_debugger: true,
+      },
+    },
+  },
 });

@@ -1,16 +1,16 @@
 /**
  * 🎮 GameDin Discord Bot - AI Provider Base
- * 
+ *
  * Base interface and abstract class for AI providers that will be extended
  * by specific implementations (AthenaMist, Mistral, OpenAI).
- * 
+ *
  * Features:
  * - Abstract base class for AI providers
  * - TypeScript interfaces for type safety
  * - Error handling and logging
  * - Rate limiting and cost tracking
  * - Quantum documentation and usage tracking
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -85,7 +85,7 @@ export enum AIErrorType {
   QUOTA_EXCEEDED = 'QUOTA_EXCEEDED',
   MODEL_UNAVAILABLE = 'MODEL_UNAVAILABLE',
   NETWORK_ERROR = 'NETWORK_ERROR',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 /**
@@ -100,7 +100,7 @@ export class AIProviderError extends Error {
     message: string,
     type: AIErrorType = AIErrorType.UNKNOWN,
     retryable: boolean = false,
-    cost: number = 0
+    cost: number = 0,
   ) {
     super(message);
     this.name = 'AIProviderError';
@@ -137,7 +137,7 @@ export abstract class BaseAIProvider implements AIProvider {
     this._name = name;
     this.apiKey = apiKey;
     this.logger = logger || new Logger(`AIProvider:${name}`);
-    
+
     this.stats = {
       provider: name,
       totalRequests: 0,
@@ -145,7 +145,7 @@ export abstract class BaseAIProvider implements AIProvider {
       totalCost: 0,
       averageLatency: 0,
       errors: 0,
-      lastUsed: null
+      lastUsed: null,
     };
   }
 
@@ -173,24 +173,26 @@ export abstract class BaseAIProvider implements AIProvider {
    */
   async generateResponse(params: AIRequestParams): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     try {
       this.logger.debug(`Generating response for user ${params.userId} in guild ${params.guildId}`);
-      
+
       // Validate request
       this.validateRequest(params);
-      
+
       // Get model configuration
       const model = this.getModelConfig(params.model);
-      
+
       // Generate response
       const response = await this.generateResponseInternal(params, model);
-      
+
       // Update statistics
       this.updateStats(response, Date.now() - startTime);
-      
-      this.logger.info(`Generated response using ${model.name}, tokens: ${response.tokensUsed}, cost: $${response.cost.toFixed(4)}`);
-      
+
+      this.logger.info(
+        `Generated response using ${model.name}, tokens: ${response.tokensUsed}, cost: $${response.cost.toFixed(4)}`,
+      );
+
       return response;
     } catch (error) {
       this.handleError(error, Date.now() - startTime);
@@ -216,7 +218,7 @@ export abstract class BaseAIProvider implements AIProvider {
       totalCost: 0,
       averageLatency: 0,
       errors: 0,
-      lastUsed: null
+      lastUsed: null,
     };
     this.logger.info('Statistics reset');
   }
@@ -276,7 +278,7 @@ export abstract class BaseAIProvider implements AIProvider {
     this.stats.totalTokens += response.tokensUsed;
     this.stats.totalCost += response.cost;
     this.stats.lastUsed = new Date();
-    
+
     // Update average latency
     this.stats.averageLatency = (this.stats.averageLatency + latency) / 2;
   }
@@ -287,7 +289,7 @@ export abstract class BaseAIProvider implements AIProvider {
   protected handleError(error: any, latency: number): void {
     this.stats.errors++;
     this.stats.lastUsed = new Date();
-    
+
     if (error instanceof AIProviderError) {
       this.logger.error(`AI provider error (${error.type}): ${error.message}`);
     } else {
@@ -310,6 +312,6 @@ export abstract class BaseAIProvider implements AIProvider {
    */
   protected abstract generateResponseInternal(
     params: AIRequestParams,
-    model: AIModelConfig
+    model: AIModelConfig,
   ): Promise<AIResponse>;
-} 
+}

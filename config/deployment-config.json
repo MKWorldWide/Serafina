@@ -15,9 +15,7 @@
         "frontend": {
           "phases": {
             "build": {
-              "commands": [
-                "npm run build:development"
-              ]
+              "commands": ["npm run build:development"]
             }
           }
         }
@@ -38,9 +36,7 @@
         "frontend": {
           "phases": {
             "build": {
-              "commands": [
-                "npm run build:staging"
-              ]
+              "commands": ["npm run build:staging"]
             }
           }
         }
@@ -61,9 +57,7 @@
         "frontend": {
           "phases": {
             "build": {
-              "commands": [
-                "npm run build:production"
-              ]
+              "commands": ["npm run build:production"]
             }
           }
         }
@@ -124,4 +118,4 @@
       }
     ]
   }
-} 
+}

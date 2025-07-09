@@ -113,7 +113,13 @@ export interface FeedState {
 
 export interface WebSocketMessage {
   id: string;
-  type: 'ACTIVITY_CREATE' | 'ACTIVITY_UPDATE' | 'ACTIVITY_DELETE' | 'MESSAGE_CREATE' | 'MESSAGE_UPDATE' | 'MESSAGE_DELETE';
+  type:
+    | 'ACTIVITY_CREATE'
+    | 'ACTIVITY_UPDATE'
+    | 'ACTIVITY_DELETE'
+    | 'MESSAGE_CREATE'
+    | 'MESSAGE_UPDATE'
+    | 'MESSAGE_DELETE';
   data: {
     activity?: IActivity;
     activityId?: string;

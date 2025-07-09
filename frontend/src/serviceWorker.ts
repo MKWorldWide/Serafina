@@ -1,12 +1,12 @@
 /**
  * Service Worker for GameDin
- * 
+ *
  * This service worker provides offline capabilities for the application through:
  * - Precaching of essential application assets
  * - Runtime caching of API requests
  * - Background sync for offline operations
  * - Cache management and expiration
- * 
+ *
  * Powered by Workbox (https://developers.google.com/web/tools/workbox)
  */
 
@@ -30,7 +30,7 @@ const apiCacheName = 'api-cache-v1';
 const apiExpirationPlugin = new ExpirationPlugin({
   maxEntries: 50, // Maximum number of entries to cache
   maxAgeSeconds: 24 * 60 * 60, // 1 day
-  purgeOnQuotaError: true // Automatically purge when storage quota is exceeded
+  purgeOnQuotaError: true, // Automatically purge when storage quota is exceeded
 });
 
 // Create a background sync instance for offline message sending
@@ -44,15 +44,15 @@ const messageSyncPlugin = new BackgroundSyncPlugin('message-queue', {
         console.log('Replayed message synchronization successfully!');
       } catch (error) {
         console.error('Replay failed for message request', error);
-        
+
         // If the request failed, put it back in the queue
         await queue.unshiftRequest(entry);
-        
+
         // Re-throw the error to trigger a retry
         throw error;
       }
     }
-  }
+  },
 });
 
 // Cache API routes with a network-first strategy
@@ -61,22 +61,24 @@ registerRoute(
   ({ url }) => url.pathname.startsWith('/api/'),
   new NetworkFirst({
     cacheName: apiCacheName,
-    plugins: [apiExpirationPlugin]
-  })
+    plugins: [apiExpirationPlugin],
+  }),
 );
 
 // Cache GraphQL queries with a stale-while-revalidate strategy
 registerRoute(
-  ({ url }) => url.pathname.includes('/graphql') && url.searchParams.get('operationName') === 'query',
+  ({ url }) =>
+    url.pathname.includes('/graphql') && url.searchParams.get('operationName') === 'query',
   new StaleWhileRevalidate({
     cacheName: 'graphql-queries-cache',
-    plugins: [apiExpirationPlugin]
-  })
+    plugins: [apiExpirationPlugin],
+  }),
 );
 
 // Cache GraphQL mutations with background sync for offline support
 registerRoute(
-  ({ url }) => url.pathname.includes('/graphql') && url.searchParams.get('operationName') === 'mutation',
+  ({ url }) =>
+    url.pathname.includes('/graphql') && url.searchParams.get('operationName') === 'mutation',
   async ({ event }) => {
     const fetchEvent = event as FetchEvent;
     try {
@@ -88,18 +90,23 @@ registerRoute(
       await messageSyncPlugin.fetchDidFail.call(messageSyncPlugin, {
         request: fetchEvent.request.clone(),
         event: fetchEvent,
-        state: {}
+        state: {},
       });
-      
+
       // Return a mock success response for better UX
-      return new Response(JSON.stringify({
-        data: null,
-        errors: [{ message: 'Currently offline. Your changes will sync when you are back online.' }]
-      }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          data: null,
+          errors: [
+            { message: 'Currently offline. Your changes will sync when you are back online.' },
+          ],
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
     }
-  }
+  },
 );
 
 // Cache images with a cache-first strategy
@@ -111,10 +118,10 @@ registerRoute(
       new ExpirationPlugin({
         maxEntries: 60,
         maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-        purgeOnQuotaError: true
-      })
-    ]
-  })
+        purgeOnQuotaError: true,
+      }),
+    ],
+  }),
 );
 
 // Cache fonts with a cache-first strategy
@@ -126,27 +133,25 @@ registerRoute(
       new ExpirationPlugin({
         maxEntries: 30,
         maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
-        purgeOnQuotaError: true
-      })
-    ]
-  })
+        purgeOnQuotaError: true,
+      }),
+    ],
+  }),
 );
 
 // Cache static assets with a stale-while-revalidate strategy
 registerRoute(
-  ({ request }) => 
-    request.destination === 'script' || 
-    request.destination === 'style',
+  ({ request }) => request.destination === 'script' || request.destination === 'style',
   new StaleWhileRevalidate({
     cacheName: 'static-resources',
     plugins: [
       new ExpirationPlugin({
         maxEntries: 60,
         maxAgeSeconds: 24 * 60 * 60, // 1 day
-        purgeOnQuotaError: true
-      })
-    ]
-  })
+        purgeOnQuotaError: true,
+      }),
+    ],
+  }),
 );
 
 // This handles single-page application navigation
@@ -160,27 +165,27 @@ const navigationRoute = new NavigationRoute(handler, {
     // Exclude GraphQL endpoints
     new RegExp('^/graphql'),
     // Exclude asset files
-    new RegExp('\\.(css|js|png|jpg|jpeg|gif|svg|ico)$')
-  ]
+    new RegExp('\\.(css|js|png|jpg|jpeg|gif|svg|ico)$'),
+  ],
 });
 registerRoute(navigationRoute);
 
 // Listen for message events to skip waiting
-self.addEventListener('message', (event) => {
+self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
 // Handle fetch failures for offline detection
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   const request = event.request;
-  
+
   // Only handle API and GraphQL fetch failures
   if (!request.url.includes('/api/') && !request.url.includes('/graphql')) {
     return;
   }
-  
+
   event.respondWith(
     fetch(request).catch(() => {
       // If we're offline and not a mutation, try to serve from cache
@@ -190,15 +195,18 @@ self.addEventListener('fetch', (event) => {
       ) {
         return caches.match(request);
       }
-      
+
       // Otherwise, return an error response
-      return new Response(JSON.stringify({
-        error: 'You are currently offline',
-        isOffline: true
-      }), {
-        status: 503,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    })
+      return new Response(
+        JSON.stringify({
+          error: 'You are currently offline',
+          isOffline: true,
+        }),
+        {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+    }),
   );
-}); 
+});

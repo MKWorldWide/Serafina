@@ -13,8 +13,8 @@ const mockNotifications: INotification[] = [
     sender: {
       id: '123',
       username: 'John Doe',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John'
-    }
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+    },
   },
   {
     id: '2',
@@ -25,13 +25,13 @@ const mockNotifications: INotification[] = [
     sender: {
       id: '456',
       username: 'Jane Smith',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane'
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane',
     },
     metadata: {
       gameId: '789',
-      gameName: 'Fortnite'
-    }
-  }
+      gameName: 'Fortnite',
+    },
+  },
 ];
 
 const NotificationsContext = createContext<NotificationsContextType>({
@@ -65,11 +65,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [user]);
 
   const markAsRead = async (notificationId: string) => {
-    setNotifications(prev =>
-      prev.map(n =>
-        n.id === notificationId ? { ...n, read: true } : n
-      )
-    );
+    setNotifications(prev => prev.map(n => (n.id === notificationId ? { ...n, read: true } : n)));
     setUnreadCount(prev => Math.max(0, prev - 1));
   };
 

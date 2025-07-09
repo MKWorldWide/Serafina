@@ -7,13 +7,16 @@ import { useMemo } from 'react';
  */
 const useNavigationStructure = () => {
   // Memoize the navigation items to prevent unnecessary re-renders
-  const navigationItems = useMemo(() => [
-    { name: 'Dashboard', path: '/' },
-    { name: 'Products', path: '/products' },
-    { name: 'Customers', path: '/customers' }
-  ], []);
+  const navigationItems = useMemo(
+    () => [
+      { name: 'Dashboard', path: '/' },
+      { name: 'Products', path: '/products' },
+      { name: 'Customers', path: '/customers' },
+    ],
+    [],
+  );
 
   return { navigationItems };
 };
 
-export default useNavigationStructure; 
+export default useNavigationStructure;

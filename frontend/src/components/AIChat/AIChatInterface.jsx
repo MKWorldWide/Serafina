@@ -29,7 +29,8 @@ const AIChatInterface = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Hello! I\'m GameDin\'s AI Moderator. I can help you with:\n\n• Finding gaming partners\n• Game recommendations\n• Platform guidance\n• Issue resolution\n\nHow can I assist you today?',
+      content:
+        "Hello! I'm GameDin's AI Moderator. I can help you with:\n\n• Finding gaming partners\n• Game recommendations\n• Platform guidance\n• Issue resolution\n\nHow can I assist you today?",
     },
   ]);
   const [input, setInput] = useState('');
@@ -77,13 +78,13 @@ const AIChatInterface = () => {
 
   const handleRetry = async () => {
     if (messages.length < 2) return;
-    
+
     const lastUserMessage = messages[messages.length - 2];
     if (lastUserMessage.role !== 'user') return;
 
     setError(null);
     setIsLoading(true);
-    
+
     try {
       const response = await aiModerator.processUserMessage(lastUserMessage.content);
       setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: response }]);
@@ -95,7 +96,7 @@ const AIChatInterface = () => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = e => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -107,7 +108,8 @@ const AIChatInterface = () => {
     setMessages([
       {
         role: 'assistant',
-        content: 'Hello! I\'m GameDin\'s AI Moderator. I can help you with:\n\n• Finding gaming partners\n• Game recommendations\n• Platform guidance\n• Issue resolution\n\nHow can I assist you today?',
+        content:
+          "Hello! I'm GameDin's AI Moderator. I can help you with:\n\n• Finding gaming partners\n• Game recommendations\n• Platform guidance\n• Issue resolution\n\nHow can I assist you today?",
       },
     ]);
     setError(null);
@@ -115,9 +117,9 @@ const AIChatInterface = () => {
 
   return (
     <>
-      <Tooltip title="AI Assistant" placement="left">
+      <Tooltip title='AI Assistant' placement='left'>
         <Fab
-          color="primary"
+          color='primary'
           onClick={() => setIsOpen(true)}
           sx={{
             position: 'fixed',
@@ -130,7 +132,7 @@ const AIChatInterface = () => {
       </Tooltip>
 
       <Drawer
-        anchor="right"
+        anchor='right'
         open={isOpen}
         onClose={() => setIsOpen(false)}
         PaperProps={{
@@ -164,12 +166,12 @@ const AIChatInterface = () => {
               <BotIcon />
             </Avatar>
             <Box flex={1}>
-              <Typography variant="h6">AI Moderator</Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='h6'>AI Moderator</Typography>
+              <Typography variant='body2' color='text.secondary'>
                 Here to help 24/7
               </Typography>
             </Box>
-            <IconButton onClick={handleReset} title="Reset conversation">
+            <IconButton onClick={handleReset} title='Reset conversation'>
               <RefreshIcon />
             </IconButton>
             <IconButton onClick={() => setIsOpen(false)}>
@@ -191,7 +193,7 @@ const AIChatInterface = () => {
             {messages.map((message, index) => (
               <Stack
                 key={index}
-                direction="row"
+                direction='row'
                 spacing={2}
                 alignSelf={message.role === 'user' ? 'flex-end' : 'flex-start'}
                 sx={{ maxWidth: '80%' }}
@@ -215,20 +217,15 @@ const AIChatInterface = () => {
                         : theme.palette.text.primary,
                   }}
                 >
-                  <Typography
-                    variant="body1"
-                    sx={{ whiteSpace: 'pre-wrap' }}
-                  >
+                  <Typography variant='body1' sx={{ whiteSpace: 'pre-wrap' }}>
                     {message.content}
                   </Typography>
                 </Paper>
-                {message.role === 'user' && (
-                  <Avatar src={user?.avatar} alt={user?.username} />
-                )}
+                {message.role === 'user' && <Avatar src={user?.avatar} alt={user?.username} />}
               </Stack>
             ))}
             {isLoading && (
-              <Box display="flex" alignItems="center" gap={1} alignSelf="flex-start">
+              <Box display='flex' alignItems='center' gap={1} alignSelf='flex-start'>
                 <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
                   <BotIcon />
                 </Avatar>
@@ -237,13 +234,9 @@ const AIChatInterface = () => {
             )}
             {error && (
               <Alert
-                severity="error"
+                severity='error'
                 action={
-                  <IconButton
-                    color="inherit"
-                    size="small"
-                    onClick={handleRetry}
-                  >
+                  <IconButton color='inherit' size='small' onClick={handleRetry}>
                     <RefreshIcon />
                   </IconButton>
                 }
@@ -262,21 +255,21 @@ const AIChatInterface = () => {
               borderRadius: 0,
             }}
           >
-            <Box display="flex" gap={1}>
+            <Box display='flex' gap={1}>
               <TextField
                 fullWidth
                 multiline
                 maxRows={4}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={e => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                variant="outlined"
-                size="small"
+                placeholder='Type your message...'
+                variant='outlined'
+                size='small'
                 disabled={isLoading}
               />
               <IconButton
-                color="primary"
+                color='primary'
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
               >
@@ -290,4 +283,4 @@ const AIChatInterface = () => {
   );
 };
 
-export default AIChatInterface; 
+export default AIChatInterface;

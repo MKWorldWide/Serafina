@@ -1,8 +1,8 @@
 /**
  * 🎮 GameDin Discord Bot - Deploy Commands (Simplified)
- * 
+ *
  * This script deploys slash commands to Discord.
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -18,17 +18,17 @@ const commands = [
   {
     name: 'setup',
     description: 'Initialize server channels and categories',
-    default_member_permissions: '8' // Administrator
+    default_member_permissions: '8', // Administrator
   },
   {
     name: 'ping',
     description: 'Check if the bot is online',
-    default_member_permissions: null
+    default_member_permissions: null,
   },
   {
     name: 'help',
     description: 'Show available commands',
-    default_member_permissions: null
+    default_member_permissions: null,
   },
   {
     name: 'warn',
@@ -39,26 +39,26 @@ const commands = [
         name: 'user',
         description: 'The user to warn',
         type: 6, // User type
-        required: true
+        required: true,
       },
       {
         name: 'reason',
         description: 'Reason for the warning',
         type: 3, // String type
-        required: true
-      }
-    ]
+        required: true,
+      },
+    ],
   },
   {
     name: 'xp',
     description: 'Check your XP level',
-    default_member_permissions: null
+    default_member_permissions: null,
   },
   {
     name: 'leaderboard',
     description: 'Show XP leaderboard',
-    default_member_permissions: null
-  }
+    default_member_permissions: null,
+  },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env['DISCORD_TOKEN']!);
@@ -77,20 +77,14 @@ const rest = new REST({ version: '10' }).setToken(process.env['DISCORD_TOKEN']!)
 
     if (guildId) {
       // Deploy to specific guild (faster for development)
-      await rest.put(
-        Routes.applicationGuildCommands(clientId, guildId),
-        { body: commands },
-      );
+      await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
       console.log(`✅ Successfully reloaded application (/) commands for guild ${guildId}.`);
     } else {
       // Deploy globally (slower, but works for all guilds)
-      await rest.put(
-        Routes.applicationCommands(clientId),
-        { body: commands },
-      );
+      await rest.put(Routes.applicationCommands(clientId), { body: commands });
       console.log('✅ Successfully reloaded application (/) commands globally.');
     }
   } catch (error) {
     console.error('❌ Error deploying commands:', error);
   }
-})(); 
+})();

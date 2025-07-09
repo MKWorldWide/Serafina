@@ -3,6 +3,7 @@
 ## Pre-Deployment Checklist
 
 ### Testing & QA
+
 - [ ] Run all unit tests: `npm run test`
 - [ ] Run integration tests: `npm run test:integration`
 - [ ] Run E2E tests: `npm run test:e2e`
@@ -14,6 +15,7 @@
 - [ ] Verify all animations and transitions
 
 ### Security
+
 - [ ] Run security audit: `npm audit`
 - [ ] Verify Cognito MFA configuration
 - [ ] Check WAF rules and rate limits
@@ -24,6 +26,7 @@
 - [ ] Test CORS settings
 
 ### Performance
+
 - [ ] Run Lighthouse audit
 - [ ] Check bundle size: `npm run analyze`
 - [ ] Verify CDN configuration
@@ -34,6 +37,7 @@
 - [ ] Check DynamoDB performance
 
 ### Configuration
+
 - [ ] Verify environment variables
 - [ ] Check feature flag configuration
 - [ ] Verify AWS region settings
@@ -45,6 +49,7 @@
 ## Deployment Process
 
 ### 1. Staging Deployment
+
 ```bash
 # Switch to staging environment
 amplify env checkout staging
@@ -60,6 +65,7 @@ amplify console
 ```
 
 ### 2. Production Deployment
+
 ```bash
 # Switch to production environment
 amplify env checkout prod
@@ -74,6 +80,7 @@ amplify status
 ## Post-Deployment Verification
 
 ### Frontend
+
 - [ ] Verify homepage loads
 - [ ] Test authentication flow
 - [ ] Check game search functionality
@@ -83,6 +90,7 @@ amplify status
 - [ ] Check achievements system
 
 ### Backend
+
 - [ ] Monitor Lambda executions
 - [ ] Check API Gateway metrics
 - [ ] Verify DynamoDB operations
@@ -91,6 +99,7 @@ amplify status
 - [ ] Verify SNS notifications
 
 ### Performance Monitoring
+
 - [ ] Set up custom CloudWatch dashboard
 - [ ] Configure performance alarms
 - [ ] Monitor error rates
@@ -102,17 +111,20 @@ amplify status
 If issues are detected:
 
 1. Identify the problem:
+
 ```bash
 amplify status
 amplify console
 ```
 
 2. Roll back to previous version:
+
 ```bash
 amplify rollback
 ```
 
 3. Verify rollback:
+
 ```bash
 amplify status
 npm run test:smoke
@@ -121,12 +133,14 @@ npm run test:smoke
 ## Feature Flag Management
 
 ### Gradual Rollout
+
 1. Enable features in LaunchDarkly dashboard
 2. Monitor feature adoption
 3. Check error rates
 4. Adjust rollout percentage
 
 ### Emergency Shutdown
+
 1. Access LaunchDarkly dashboard
 2. Disable problematic feature
 3. Monitor metrics for improvement
@@ -134,6 +148,7 @@ npm run test:smoke
 ## Monitoring & Alerts
 
 ### CloudWatch Alarms
+
 - Error Rate > 1%
 - Latency > 500ms
 - Lambda Throttles
@@ -141,6 +156,7 @@ npm run test:smoke
 - API Gateway 5XX
 
 ### SNS Notifications
+
 - Critical Errors
 - Performance Degradation
 - Security Alerts
@@ -180,4 +196,4 @@ aws cloudwatch get-metric-statistics
 - [CloudWatch Documentation](https://docs.aws.amazon.com/cloudwatch)
 - [DynamoDB Best Practices](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html)
 - [WAF Security Guidelines](https://docs.aws.amazon.com/waf)
-- [Feature Flag Management](https://launchdarkly.com/documentation) 
+- [Feature Flag Management](https://launchdarkly.com/documentation)

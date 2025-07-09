@@ -1,12 +1,6 @@
 import { useState, FormEvent } from 'react';
-import {
-  Box,
-  IconButton,
-  TextField,
-} from '@mui/material';
-import {
-  Send as SendIcon,
-} from '@mui/icons-material';
+import { Box, IconButton, TextField } from '@mui/material';
+import { Send as SendIcon } from '@mui/icons-material';
 
 interface MessageInputProps {
   onSubmit: (content: string) => void;
@@ -25,7 +19,7 @@ export default function MessageInput({ onSubmit }: MessageInputProps) {
 
   return (
     <Box
-      component="form"
+      component='form'
       onSubmit={handleSubmit}
       sx={{
         display: 'flex',
@@ -34,10 +28,10 @@ export default function MessageInput({ onSubmit }: MessageInputProps) {
     >
       <TextField
         fullWidth
-        placeholder="Type a message..."
+        placeholder='Type a message...'
         value={content}
-        onChange={(e) => setContent(e.target.value)}
-        size="small"
+        onChange={e => setContent(e.target.value)}
+        size='small'
         sx={{
           '& .MuiOutlinedInput-root': {
             borderRadius: 3,
@@ -45,8 +39,8 @@ export default function MessageInput({ onSubmit }: MessageInputProps) {
         }}
       />
       <IconButton
-        type="submit"
-        color="primary"
+        type='submit'
+        color='primary'
         disabled={!content.trim()}
         sx={{
           alignSelf: 'center',

@@ -9,10 +9,10 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const user = useStore(state => state.user);
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to='/login' replace />;
   }
 
   return <>{children}</>;
 };
 
-export default ProtectedRoute; 
+export default ProtectedRoute;

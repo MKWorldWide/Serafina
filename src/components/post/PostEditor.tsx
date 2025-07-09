@@ -26,7 +26,7 @@ export default function PostEditor({ onSubmit }: PostEditorProps) {
 
   return (
     <Box
-      component="form"
+      component='form'
       onSubmit={handleSubmit}
       sx={{
         display: 'flex',
@@ -43,19 +43,15 @@ export default function PostEditor({ onSubmit }: PostEditorProps) {
         rows={4}
         placeholder="What's on your mind?"
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={e => setContent(e.target.value)}
         disabled={isSubmitting}
         fullWidth
       />
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={!content.trim() || isSubmitting}
-        >
+        <Button type='submit' variant='contained' disabled={!content.trim() || isSubmitting}>
           {isSubmitting ? 'Posting...' : 'Post'}
         </Button>
       </Box>
     </Box>
   );
-} 
+}

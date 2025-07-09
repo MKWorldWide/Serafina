@@ -1,23 +1,30 @@
 /**
  * 🎮 GameDin Discord Bot - AthenaMist Provider
- * 
+ *
  * AthenaMist AI API provider implementation for the Discord bot AI system.
  * Supports AthenaMist models with comprehensive error handling, rate limiting,
  * and cost tracking.
- * 
+ *
  * Features:
  * - Support for AthenaMist models
  * - Rate limiting and error handling
  * - Cost tracking and usage statistics
  * - TypeScript interfaces for type safety
  * - Quantum documentation and usage tracking
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
  */
 
-import { BaseAIProvider, AIRequestParams, AIResponse, AIModelConfig, AIErrorType, AIProviderError } from '../AIProvider';
+import {
+  BaseAIProvider,
+  AIRequestParams,
+  AIResponse,
+  AIModelConfig,
+  AIErrorType,
+  AIProviderError,
+} from '../AIProvider';
 import { Logger } from '../../Logger';
 
 /**
@@ -90,7 +97,7 @@ export class AthenaMistProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.000001 // $0.001 per 1K tokens (estimated)
+      costPerToken: 0.000001, // $0.001 per 1K tokens (estimated)
     });
 
     // AthenaMist 13B
@@ -101,7 +108,7 @@ export class AthenaMistProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.000002 // $0.002 per 1K tokens (estimated)
+      costPerToken: 0.000002, // $0.002 per 1K tokens (estimated)
     });
 
     // AthenaMist 70B
@@ -112,7 +119,7 @@ export class AthenaMistProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.000005 // $0.005 per 1K tokens (estimated)
+      costPerToken: 0.000005, // $0.005 per 1K tokens (estimated)
     });
 
     this.logger.info(`Initialized ${this.models.size} AthenaMist models`);
@@ -123,7 +130,7 @@ export class AthenaMistProvider extends BaseAIProvider {
    */
   protected async generateResponseInternal(
     params: AIRequestParams,
-    model: AIModelConfig
+    model: AIModelConfig,
   ): Promise<AIResponse> {
     const requestBody: AthenaMistRequest = {
       model: model.name,
@@ -132,25 +139,25 @@ export class AthenaMistProvider extends BaseAIProvider {
       temperature: params.temperature ?? model.temperature,
       top_p: params.topP ?? model.topP,
       frequency_penalty: params.frequencyPenalty ?? model.frequencyPenalty,
-      presence_penalty: params.presencePenalty ?? model.presencePenalty
+      presence_penalty: params.presencePenalty ?? model.presencePenalty,
     };
 
     try {
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
         await this.handleAPIError(response);
       }
 
-      const data = await response.json() as AthenaMistResponse;
-      
+      const data = (await response.json()) as AthenaMistResponse;
+
       if (!data.choices || data.choices.length === 0) {
         throw new AIProviderError('No response generated', AIErrorType.UNKNOWN);
       }
@@ -173,18 +180,18 @@ export class AthenaMistProvider extends BaseAIProvider {
         metadata: {
           finishReason: data.choices[0]?.finish_reason || 'unknown',
           promptTokens: data.usage?.prompt_tokens || 0,
-          completionTokens: data.usage?.completion_tokens || 0
-        }
+          completionTokens: data.usage?.completion_tokens || 0,
+        },
       };
     } catch (error) {
       if (error instanceof AIProviderError) {
         throw error;
       }
-      
+
       throw new AIProviderError(
         `AthenaMist API error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         AIErrorType.NETWORK_ERROR,
-        true
+        true,
       );
     }
   }
@@ -199,7 +206,7 @@ export class AthenaMistProvider extends BaseAIProvider {
     if (params.systemPrompt) {
       messages.push({
         role: 'system',
-        content: params.systemPrompt
+        content: params.systemPrompt,
       });
     }
 
@@ -207,14 +214,14 @@ export class AthenaMistProvider extends BaseAIProvider {
     if (params.context) {
       messages.push({
         role: 'system',
-        content: `Context: ${params.context}`
+        content: `Context: ${params.context}`,
       });
     }
 
     // Add user prompt
     messages.push({
       role: 'user',
-      content: params.prompt
+      content: params.prompt,
     });
 
     return messages;
@@ -229,9 +236,9 @@ export class AthenaMistProvider extends BaseAIProvider {
     let retryable = false;
 
     try {
-      const errorData = await response.json() as any;
+      const errorData = (await response.json()) as any;
       errorMessage = errorData?.error?.message || errorMessage;
-      
+
       // Map AthenaMist error codes to our error types
       switch (response.status) {
         case 401:
@@ -283,7 +290,7 @@ export class AthenaMistProvider extends BaseAIProvider {
       name: this.name,
       models: Array.from(this.models.keys()),
       baseUrl: this.baseUrl,
-      defaultModel: this.defaultModel
+      defaultModel: this.defaultModel,
     };
   }
-} 
+}

@@ -1,6 +1,6 @@
 /**
  * User Migration Module
- * 
+ *
  * Handles migration of user accounts from AWS Cognito to Shopify Customers
  */
 
@@ -61,7 +61,7 @@ function initialize(options) {
 
   // Create clients
   const cognito = new AWS.CognitoIdentityServiceProvider();
-  
+
   return { cognito };
 }
 
@@ -93,7 +93,7 @@ async function fetchAwsUsers(cognito, options) {
       paginationToken = response.PaginationToken;
 
       logMessage(`Fetched ${response.Users.length} users from Cognito. Total: ${users.length}`);
-      
+
       // For dry runs, limit the number of users to speed up testing
       if (options.dryRun && users.length >= 10) {
         logMessage('Dry run mode - limiting to 10 users for testing');
@@ -140,10 +140,13 @@ function mapUserToCustomer(cognitoUser) {
           key: 'game_preferences',
           value: JSON.stringify(preferences),
           type: 'json_string',
-          namespace: 'gamedin'
+          namespace: 'gamedin',
         });
       } catch (e) {
-        logMessage(`Error parsing game preferences for user ${attributes['email']}: ${e.message}`, 'warning');
+        logMessage(
+          `Error parsing game preferences for user ${attributes['email']}: ${e.message}`,
+          'warning',
+        );
       }
     }
 
@@ -153,7 +156,7 @@ function mapUserToCustomer(cognitoUser) {
         key: 'user_type',
         value: attributes['custom:user_type'],
         type: 'string',
-        namespace: 'gamedin'
+        namespace: 'gamedin',
       });
     }
 
@@ -165,12 +168,15 @@ function mapUserToCustomer(cognitoUser) {
           customer.phone = phoneNumber.formatInternational();
         }
       } catch (e) {
-        logMessage(`Error formatting phone number for user ${customer.email}: ${e.message}`, 'warning');
+        logMessage(
+          `Error formatting phone number for user ${customer.email}: ${e.message}`,
+          'warning',
+        );
       }
     }
 
     return {
-      customer
+      customer,
     };
   } catch (error) {
     logMessage(`Error mapping user to customer: ${error.message}`, 'error');
@@ -183,7 +189,9 @@ function mapUserToCustomer(cognitoUser) {
  */
 async function createShopifyCustomer(customer, session, options) {
   if (options.dryRun) {
-    logMessage(`[DRY RUN] Would create customer: ${customer.first_name} ${customer.last_name} (${customer.email})`);
+    logMessage(
+      `[DRY RUN] Would create customer: ${customer.first_name} ${customer.last_name} (${customer.email})`,
+    );
     return { success: true, id: 'dry-run-id' };
   }
 
@@ -195,15 +203,18 @@ async function createShopifyCustomer(customer, session, options) {
       type: 'json',
     });
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       id: response.body.customer.id,
-      customer: response.body.customer 
+      customer: response.body.customer,
     };
   } catch (error) {
     // Handle specific Shopify errors
     if (error.response) {
-      logMessage(`Shopify API error creating customer ${customer.email}: ${JSON.stringify(error.response.body)}`, 'error');
+      logMessage(
+        `Shopify API error creating customer ${customer.email}: ${JSON.stringify(error.response.body)}`,
+        'error',
+      );
     } else {
       logMessage(`Error creating Shopify customer ${customer.email}: ${error.message}`, 'error');
     }
@@ -216,54 +227,54 @@ async function createShopifyCustomer(customer, session, options) {
  */
 async function migrate(options) {
   logMessage('Starting user migration...');
-  
+
   const result = {
     processed: 0,
     success: 0,
     errors: 0,
-    mappings: []
+    mappings: [],
   };
 
   try {
     // Initialize AWS and Shopify connections
     const { cognito } = initialize(options);
-    
+
     // Get an offline session (in a real scenario, use a real authenticated session)
     const session = {
       shop: options.shopifyStore || process.env.SHOPIFY_SHOP,
-      accessToken: process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN
+      accessToken: process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN,
     };
 
     // Fetch users from AWS Cognito
     const users = await fetchAwsUsers(cognito, options);
     logMessage(`Found ${users.length} users to migrate`);
-    
+
     result.processed = users.length;
-    
+
     // Process each user
     for (const cognitoUser of users) {
       try {
         const cognitoUsername = cognitoUser.Username;
         const userEmail = cognitoUser.Attributes.find(attr => attr.Name === 'email')?.Value;
-        
+
         logMessage(`Processing user: ${userEmail || cognitoUsername}`);
-        
+
         // Map Cognito user to Shopify customer
         const { customer } = mapUserToCustomer(cognitoUser);
-        
+
         // Create customer in Shopify
         const createResult = await createShopifyCustomer(customer, session, options);
-        
+
         if (createResult.success) {
           result.success++;
-          
+
           // Store mapping for reference
           result.mappings.push({
             cognitoUsername,
             shopifyCustomerId: createResult.id,
-            email: customer.email
+            email: customer.email,
           });
-          
+
           logMessage(`Successfully migrated user ${customer.email}`);
         } else {
           result.errors++;
@@ -274,14 +285,16 @@ async function migrate(options) {
         logMessage(`Error processing user ${cognitoUser.Username}: ${error.message}`, 'error');
       }
     }
-    
+
     // Save user mapping file
     if (!options.dryRun && result.mappings.length > 0) {
       fs.writeFileSync(USER_MAPPING_FILE, JSON.stringify(result.mappings, null, 2));
       logMessage(`User mapping saved to ${USER_MAPPING_FILE}`);
     }
-    
-    logMessage(`User migration completed. Processed: ${result.processed}, Success: ${result.success}, Errors: ${result.errors}`);
+
+    logMessage(
+      `User migration completed. Processed: ${result.processed}, Success: ${result.success}, Errors: ${result.errors}`,
+    );
     return result;
   } catch (error) {
     logMessage(`Migration failed: ${error.message}`, 'error');
@@ -294,77 +307,86 @@ async function migrate(options) {
  */
 async function validate(options) {
   logMessage('Starting user data validation...');
-  
+
   const result = {
     processed: 0,
     valid: 0,
     invalid: 0,
-    issues: []
+    issues: [],
   };
 
   try {
     // Initialize AWS and Shopify connections
     const { cognito } = initialize(options);
-    
+
     // Fetch users from AWS Cognito
     const users = await fetchAwsUsers(cognito, options);
     logMessage(`Found ${users.length} users to validate`);
-    
+
     result.processed = users.length;
-    
+
     // Validate each user
     for (const cognitoUser of users) {
       try {
         const userEmail = cognitoUser.Attributes.find(attr => attr.Name === 'email')?.Value;
-        
+
         logMessage(`Validating user: ${userEmail || cognitoUser.Username}`);
-        
+
         // Check required attributes
         const hasEmail = Boolean(userEmail);
-        const hasFirstName = Boolean(cognitoUser.Attributes.find(attr => attr.Name === 'given_name')?.Value);
-        const hasLastName = Boolean(cognitoUser.Attributes.find(attr => attr.Name === 'family_name')?.Value);
-        
+        const hasFirstName = Boolean(
+          cognitoUser.Attributes.find(attr => attr.Name === 'given_name')?.Value,
+        );
+        const hasLastName = Boolean(
+          cognitoUser.Attributes.find(attr => attr.Name === 'family_name')?.Value,
+        );
+
         // Validate email format
         const validEmailFormat = hasEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail);
-        
+
         if (hasEmail && hasFirstName && hasLastName && validEmailFormat) {
           result.valid++;
           logMessage(`User ${userEmail} is valid`);
         } else {
           result.invalid++;
-          
+
           const issues = [];
           if (!hasEmail) issues.push('Missing email');
           if (!validEmailFormat && hasEmail) issues.push('Invalid email format');
           if (!hasFirstName) issues.push('Missing first name');
           if (!hasLastName) issues.push('Missing last name');
-          
+
           result.issues.push({
             username: cognitoUser.Username,
             email: userEmail,
-            issues
+            issues,
           });
-          
-          logMessage(`User ${userEmail || cognitoUser.Username} has validation issues: ${issues.join(', ')}`, 'warning');
+
+          logMessage(
+            `User ${userEmail || cognitoUser.Username} has validation issues: ${issues.join(', ')}`,
+            'warning',
+          );
         }
       } catch (error) {
         result.invalid++;
         logMessage(`Error validating user ${cognitoUser.Username}: ${error.message}`, 'error');
         result.issues.push({
           username: cognitoUser.Username,
-          issues: ['Error during validation: ' + error.message]
+          issues: ['Error during validation: ' + error.message],
         });
       }
     }
-    
+
     // Save validation issues to file
     if (result.issues.length > 0) {
       const issuesFile = path.resolve(__dirname, '../data/user-validation-issues.json');
       fs.writeFileSync(issuesFile, JSON.stringify(result.issues, null, 2));
       logMessage(`Validation issues saved to ${issuesFile}`);
     }
-    
-    logMessage(`User validation completed. Processed: ${result.processed}, Valid: ${result.valid}, Invalid: ${result.invalid}`);
+
+    logMessage(
+      `User validation completed. Processed: ${result.processed}, Valid: ${result.valid}, Invalid: ${result.invalid}`,
+    );
     return result;
   } catch (error) {
     logMessage(`Validation failed: ${error.message}`, 'error');
@@ -374,5 +396,5 @@ async function validate(options) {
 
 module.exports = {
   migrate,
-  validate
-}; 
+  validate,
+};

@@ -39,64 +39,67 @@ export default function Products({ showToast }) {
   });
 
   // Fetch products with filters, search, and pagination
-  const fetchProducts = useCallback(async (page = 1) => {
-    setLoading(true);
-    setError(null);
+  const fetchProducts = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      // Build query parameters
-      const params = new URLSearchParams();
-      params.append('page', page);
-      params.append('limit', 10);
-      
-      // Add search query if present
-      if (searchValue) {
-        params.append('query', searchValue);
-      }
-      
-      // Add sort parameter
-      if (sortValue) {
-        const [field, direction] = sortValue.split('-');
-        params.append('sort_by', field);
-        params.append('sort_order', direction);
-      }
-      
-      // Add filters
-      appliedFilters.forEach(filter => {
-        if (filter.key === 'status') {
-          params.append('status', filter.value);
-        } else if (filter.key === 'genre') {
-          params.append('genre', filter.value);
-        } else if (filter.key === 'price_range') {
-          const [min, max] = filter.value.split('-');
-          if (min) params.append('price_min', min);
-          if (max) params.append('price_max', max);
+      try {
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.append('page', page);
+        params.append('limit', 10);
+
+        // Add search query if present
+        if (searchValue) {
+          params.append('query', searchValue);
         }
-      });
 
-      // Fetch products from API
-      const response = await fetch(`/api/products?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error(`Products request failed with status ${response.status}`);
+        // Add sort parameter
+        if (sortValue) {
+          const [field, direction] = sortValue.split('-');
+          params.append('sort_by', field);
+          params.append('sort_order', direction);
+        }
+
+        // Add filters
+        appliedFilters.forEach(filter => {
+          if (filter.key === 'status') {
+            params.append('status', filter.value);
+          } else if (filter.key === 'genre') {
+            params.append('genre', filter.value);
+          } else if (filter.key === 'price_range') {
+            const [min, max] = filter.value.split('-');
+            if (min) params.append('price_min', min);
+            if (max) params.append('price_max', max);
+          }
+        });
+
+        // Fetch products from API
+        const response = await fetch(`/api/products?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error(`Products request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Update state with fetched data
+        setProducts(data.products || []);
+        setPagination({
+          hasNextPage: data.pagination?.hasNextPage || false,
+          hasPreviousPage: data.pagination?.hasPreviousPage || false,
+          currentPage: page,
+        });
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError(err.message);
+        showToast(err.message, { error: true });
+      } finally {
+        setLoading(false);
       }
-      
-      const data = await response.json();
-      
-      // Update state with fetched data
-      setProducts(data.products || []);
-      setPagination({
-        hasNextPage: data.pagination?.hasNextPage || false,
-        hasPreviousPage: data.pagination?.hasPreviousPage || false,
-        currentPage: page,
-      });
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      setError(err.message);
-      showToast(err.message, { error: true });
-    } finally {
-      setLoading(false);
-    }
-  }, [searchValue, sortValue, appliedFilters, showToast]);
+    },
+    [searchValue, sortValue, appliedFilters, showToast],
+  );
 
   // Fetch products on component mount and when dependencies change
   useEffect(() => {
@@ -104,12 +107,12 @@ export default function Products({ showToast }) {
   }, [fetchProducts, pagination.currentPage]);
 
   // Handle filter changes
-  const handleFiltersChange = useCallback((filters) => {
+  const handleFiltersChange = useCallback(filters => {
     setAppliedFilters(filters);
   }, []);
 
   // Handle search value changes
-  const handleSearchChange = useCallback((value) => {
+  const handleSearchChange = useCallback(value => {
     setSearchValue(value);
   }, []);
 
@@ -119,15 +122,21 @@ export default function Products({ showToast }) {
   }, [fetchProducts]);
 
   // Handle sort value changes
-  const handleSortChange = useCallback((value) => {
-    setSortValue(value);
-    fetchProducts(1);
-  }, [fetchProducts]);
+  const handleSortChange = useCallback(
+    value => {
+      setSortValue(value);
+      fetchProducts(1);
+    },
+    [fetchProducts],
+  );
 
   // Handle pagination
-  const handlePaginationChange = useCallback((newPage) => {
-    fetchProducts(newPage);
-  }, [fetchProducts]);
+  const handlePaginationChange = useCallback(
+    newPage => {
+      fetchProducts(newPage);
+    },
+    [fetchProducts],
+  );
 
   // Filter configuration
   const filters = [
@@ -137,7 +146,7 @@ export default function Products({ showToast }) {
       filter: (
         <Filters.ResourceList
           resourceName={{ singular: 'status', plural: 'statuses' }}
-          filterKey="status"
+          filterKey='status'
           options={[
             { label: 'Active', value: 'active' },
             { label: 'Draft', value: 'draft' },
@@ -152,7 +161,7 @@ export default function Products({ showToast }) {
       filter: (
         <Filters.ResourceList
           resourceName={{ singular: 'genre', plural: 'genres' }}
-          filterKey="genre"
+          filterKey='genre'
           options={[
             { label: 'Action', value: 'action' },
             { label: 'Adventure', value: 'adventure' },
@@ -171,7 +180,7 @@ export default function Products({ showToast }) {
       filter: (
         <Filters.ResourceList
           resourceName={{ singular: 'price range', plural: 'price ranges' }}
-          filterKey="price_range"
+          filterKey='price_range'
           options={[
             { label: 'Under $20', value: '0-20' },
             { label: '$20 - $50', value: '20-50' },
@@ -186,12 +195,12 @@ export default function Products({ showToast }) {
   // Render loading state
   if (loading && pagination.currentPage === 1) {
     return (
-      <Page title="Games">
+      <Page title='Games'>
         <Layout>
           <Layout.Section>
             <Card>
               <Card.Section>
-                <SkeletonDisplayText size="small" />
+                <SkeletonDisplayText size='small' />
                 <SkeletonBodyText lines={8} />
               </Card.Section>
             </Card>
@@ -204,12 +213,12 @@ export default function Products({ showToast }) {
   // Render error state
   if (error && products.length === 0) {
     return (
-      <Page title="Games">
+      <Page title='Games'>
         <Layout>
           <Layout.Section>
             <Banner
-              title="There was an error loading games"
-              status="critical"
+              title='There was an error loading games'
+              status='critical'
               action={{ content: 'Try again', onAction: () => fetchProducts(1) }}
             >
               <p>{error}</p>
@@ -222,7 +231,7 @@ export default function Products({ showToast }) {
 
   return (
     <Page
-      title="Games"
+      title='Games'
       primaryAction={{
         content: 'Add Game',
         onAction: () => navigate('/products/new'),
@@ -263,8 +272,8 @@ export default function Products({ showToast }) {
               onSortChange={handleSortChange}
               emptyState={
                 <EmptyState
-                  heading="No games found"
-                  image=""
+                  heading='No games found'
+                  image=''
                   action={{ content: 'Add Game', onAction: () => navigate('/products/new') }}
                 >
                   <p>Add games to your store or try changing your search filters.</p>
@@ -291,15 +300,12 @@ export default function Products({ showToast }) {
   function renderItem(item) {
     const { id, title, images, status, product_type, variants, metafields } = item;
     const media = (
-      <Thumbnail
-        source={images && images.length > 0 ? images[0].src : ''}
-        alt={title}
-      />
+      <Thumbnail source={images && images.length > 0 ? images[0].src : ''} alt={title} />
     );
 
     // Extract price from variants
     const price = variants && variants.length > 0 ? variants[0].price : '0.00';
-    
+
     // Extract genre from metafields
     const genre = metafields?.find(m => m.key === 'genre')?.value || '';
 
@@ -319,26 +325,26 @@ export default function Products({ showToast }) {
         <LegacyStack>
           <LegacyStack.Item fill>
             <h3>
-              <TextStyle variation="strong">{title}</TextStyle>
+              <TextStyle variation='strong'>{title}</TextStyle>
             </h3>
             <div>
-              {product_type && <TextStyle variation="subdued">{product_type}</TextStyle>}
+              {product_type && <TextStyle variation='subdued'>{product_type}</TextStyle>}
               {genre && (
                 <>
                   <span style={{ margin: '0 0.5em' }}>•</span>
-                  <TextStyle variation="subdued">{genre}</TextStyle>
+                  <TextStyle variation='subdued'>{genre}</TextStyle>
                 </>
               )}
             </div>
           </LegacyStack.Item>
           <LegacyStack.Item>
-            <LegacyStack vertical spacing="tight">
+            <LegacyStack vertical spacing='tight'>
               <Badge status={statusBadgeStatus}>{status}</Badge>
-              <TextStyle variation="strong">${price}</TextStyle>
+              <TextStyle variation='strong'>${price}</TextStyle>
             </LegacyStack>
           </LegacyStack.Item>
         </LegacyStack>
       </ResourceList.Item>
     );
   }
-} 
+}

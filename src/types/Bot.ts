@@ -1,9 +1,9 @@
 /**
  * 🎮 GameDin Discord Bot - Core Type Definitions
- * 
+ *
  * This file contains comprehensive TypeScript interfaces and types for the GameDin Discord bot.
  * These types ensure type safety, improve code organization, and provide better developer experience.
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -90,35 +90,35 @@ export enum ErrorCode {
   CONFIG_MISSING_TOKEN = 'CONFIG_MISSING_TOKEN',
   CONFIG_INVALID_PERMISSIONS = 'CONFIG_INVALID_PERMISSIONS',
   CONFIG_DATABASE_CONNECTION = 'CONFIG_DATABASE_CONNECTION',
-  
+
   // Command Errors
   COMMAND_NOT_FOUND = 'COMMAND_NOT_FOUND',
   COMMAND_PERMISSION_DENIED = 'COMMAND_PERMISSION_DENIED',
   COMMAND_COOLDOWN_ACTIVE = 'COMMAND_COOLDOWN_ACTIVE',
   COMMAND_INVALID_ARGS = 'COMMAND_INVALID_ARGS',
   COMMAND_EXECUTION_FAILED = 'COMMAND_EXECUTION_FAILED',
-  
+
   // Service Errors
   SERVICE_INITIALIZATION_FAILED = 'SERVICE_INITIALIZATION_FAILED',
   SERVICE_DATABASE_ERROR = 'SERVICE_DATABASE_ERROR',
   SERVICE_RATE_LIMIT_EXCEEDED = 'SERVICE_RATE_LIMIT_EXCEEDED',
-  
+
   // Discord API Errors
   DISCORD_API_ERROR = 'DISCORD_API_ERROR',
   DISCORD_PERMISSION_ERROR = 'DISCORD_PERMISSION_ERROR',
   DISCORD_RATE_LIMIT = 'DISCORD_RATE_LIMIT',
   DISCORD_CHANNEL_NOT_FOUND = 'DISCORD_CHANNEL_NOT_FOUND',
   DISCORD_ROLE_NOT_FOUND = 'DISCORD_ROLE_NOT_FOUND',
-  
+
   // Validation Errors
   VALIDATION_INVALID_INPUT = 'VALIDATION_INVALID_INPUT',
   VALIDATION_MISSING_REQUIRED = 'VALIDATION_MISSING_REQUIRED',
   VALIDATION_OUT_OF_RANGE = 'VALIDATION_OUT_OF_RANGE',
-  
+
   // System Errors
   SYSTEM_MEMORY_ERROR = 'SYSTEM_MEMORY_ERROR',
   SYSTEM_NETWORK_ERROR = 'SYSTEM_NETWORK_ERROR',
-  SYSTEM_UNKNOWN_ERROR = 'SYSTEM_UNKNOWN_ERROR'
+  SYSTEM_UNKNOWN_ERROR = 'SYSTEM_UNKNOWN_ERROR',
 }
 
 /**
@@ -142,7 +142,7 @@ export class BotError extends Error {
     code: ErrorCode,
     context?: Record<string, any>,
     userMessage?: string,
-    recoverable: boolean = true
+    recoverable: boolean = true,
   ) {
     super(message);
     this.name = 'BotError';
@@ -237,20 +237,20 @@ export interface BaseService {
   readonly isInitialized: boolean;
   /** Service configuration */
   readonly config?: Record<string, any>;
-  
+
   /**
    * Initialize the service
    * @param config Service configuration
    * @returns Promise that resolves when initialization is complete
    */
   initialize(config?: Record<string, any> | undefined): Promise<void>;
-  
+
   /**
    * Shutdown the service gracefully
    * @returns Promise that resolves when shutdown is complete
    */
   shutdown(): Promise<void>;
-  
+
   /**
    * Get service health status
    * @returns Service health information
@@ -284,31 +284,31 @@ export interface ServiceHealth {
 export interface ServerManager extends BaseService {
   /** Associated guild/server */
   readonly guild: any;
-  
+
   /**
    * Initialize server structure
    * @returns Promise that resolves when initialization is complete
    */
   initializeServer(): Promise<void>;
-  
+
   /**
    * Create or update server roles
    * @returns Promise that resolves when roles are created
    */
   createRoles(): Promise<void>;
-  
+
   /**
    * Create or update server channels
    * @returns Promise that resolves when channels are created
    */
   createCategoriesAndChannels(): Promise<void>;
-  
+
   /**
    * Get welcome message for new members
    * @returns Promise that resolves to welcome message
    */
   getWelcomeMessage(): Promise<string>;
-  
+
   /**
    * Assign default role to member
    * @param memberId Discord member ID
@@ -328,14 +328,14 @@ export interface AutoModerator extends BaseService {
    * @returns Promise that resolves when moderation is complete
    */
   handleMessage(message: any): Promise<void>;
-  
+
   /**
    * Check if message contains inappropriate content
    * @param content Message content to check
    * @returns Promise that resolves to moderation result
    */
   checkContent(content: string): Promise<ModerationResult>;
-  
+
   /**
    * Check for spam patterns
    * @param userId User ID to check
@@ -355,7 +355,7 @@ export interface XPManager extends BaseService {
    * @returns Promise that resolves when XP is processed
    */
   handleMessage(member: any): Promise<void>;
-  
+
   /**
    * Handle voice channel join
    * @param member Guild member who joined voice
@@ -363,14 +363,14 @@ export interface XPManager extends BaseService {
    * @returns Promise that resolves when voice XP is processed
    */
   handleVoiceJoin(member: any, channelId: string): Promise<void>;
-  
+
   /**
    * Handle voice channel leave
    * @param member Guild member who left voice
    * @returns Promise that resolves when voice XP is processed
    */
   handleVoiceLeave(member: any): Promise<void>;
-  
+
   /**
    * Get user XP and level information
    * @param userId User ID to get info for
@@ -422,13 +422,7 @@ export interface SpamResult {
 /**
  * Available moderation actions
  */
-export type ModerationAction = 
-  | 'none'
-  | 'warn'
-  | 'delete'
-  | 'mute'
-  | 'kick'
-  | 'ban';
+export type ModerationAction = 'none' | 'warn' | 'delete' | 'mute' | 'kick' | 'ban';
 
 // ============================================================================
 // XP SYSTEM TYPES
@@ -467,9 +461,7 @@ export interface UserXPData {
  * Result wrapper for operations that may fail
  * Provides consistent error handling pattern
  */
-export type Result<T, E = BotError> = 
-  | { success: true; data: T }
-  | { success: false; error: E };
+export type Result<T, E = BotError> = { success: true; data: T } | { success: false; error: E };
 
 /**
  * Async result wrapper for async operations
@@ -500,4 +492,4 @@ export type EventHandler<T = any> = (data: T) => Promise<void> | void;
  * Command handler function type
  * Provides consistent command handling pattern
  */
-export type CommandHandler = (interaction: any) => Promise<void>; 
+export type CommandHandler = (interaction: any) => Promise<void>;

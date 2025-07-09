@@ -9,7 +9,10 @@ const SPAM_WINDOW = 5000; // 5 seconds
 
 // Toxic words filter (basic example)
 const toxicWords = [
-  'hate', 'stupid', 'dumb', 'idiot', // Add more as needed
+  'hate',
+  'stupid',
+  'dumb',
+  'idiot', // Add more as needed
 ];
 
 export const event: Event = {
@@ -33,7 +36,7 @@ export const event: Event = {
         await message.delete();
         await message.channel.send({
           content: `${message.author}, please slow down your messages. 🌊`,
-          allowedMentions: { users: [userId] }
+          allowedMentions: { users: [userId] },
         });
         logger.warn(`Spam detected from user ${message.author.tag} (${userId})`);
         return;
@@ -52,7 +55,7 @@ export const event: Event = {
         await message.delete();
         await message.channel.send({
           content: `${message.author}, let's keep the vibes positive! 💫`,
-          allowedMentions: { users: [userId] }
+          allowedMentions: { users: [userId] },
         });
         logger.warn(`Toxic message detected from user ${message.author.tag} (${userId})`);
         return;
@@ -64,9 +67,8 @@ export const event: Event = {
       // - XP/leveling system
       // - Custom command handling
       // - AI-powered responses
-
     } catch (error) {
       logger.error('Error in messageCreate event:', error);
     }
-  }
-}; 
+  },
+};

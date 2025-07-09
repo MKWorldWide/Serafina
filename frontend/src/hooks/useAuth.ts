@@ -1,6 +1,6 @@
 /**
  * Authentication Hook
- * 
+ *
  * This hook provides a clean interface for authentication operations,
  * abstracting the underlying AWS Amplify Auth implementation.
  * It uses the auth slice of the store for state management.
@@ -85,4 +85,4 @@ export const useAuth = (): UseAuthReturn => {
     resendConfirmationCode: storeResendConfirmationCode,
     confirmSignUp: storeConfirmSignUp,
   };
-}; 
+};

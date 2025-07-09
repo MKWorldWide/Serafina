@@ -17,7 +17,7 @@ export const useAuth = () => {
         throw new Error(error.response?.data?.message || 'Login failed');
       }
     },
-    [setUser]
+    [setUser],
   );
 
   const register = useCallback(
@@ -32,7 +32,7 @@ export const useAuth = () => {
         throw new Error(error.response?.data?.message || 'Registration failed');
       }
     },
-    [setUser]
+    [setUser],
   );
 
   const logout = useCallback(() => {

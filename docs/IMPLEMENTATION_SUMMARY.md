@@ -137,4 +137,4 @@ This document summarizes the implementation of the GameDin Shopify migration pro
 5. **Deployment**
    - Configure CI/CD pipeline
    - Set up production environment
-   - Implement monitoring and logging 
+   - Implement monitoring and logging

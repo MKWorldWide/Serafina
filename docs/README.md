@@ -1,6 +1,7 @@
-# GameDin 🎮🚀  
+# GameDin 🎮🚀
+
 **The Professional Network for the Gaming Ecosystem**  
-*"Where Headshots Meet Handshakes"*  
+_"Where Headshots Meet Handshakes"_
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/yourusername/gamedin/main.yml)](https://github.com/yourusername/gamedin/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -8,48 +9,55 @@
 
 <img src="[https://github.com/yourusername/gamedin/blob/main/design/gamedin-logo.png?raw=true](https://i.ibb.co/yBFtPhVp/image-fx-1.png)" width="200" align="right">
 
-## 🌟 Overview  
+## 🌟 Overview
+
 GameDin revolutionizes professional networking for the gaming universe:
-- **🎮 Gamers:** Showcase skills, find teams/clans, track stats  
-- **👩💻 Developers:** Portfolio showcase, job opportunities, collab hub  
-- **🏆 eSports Pros:** Sponsorship deals, tournament tracking, fan engagement  
-- **👩👦 Parents:** Monitor gaming habits, connect with other gaming parents  
+
+- **🎮 Gamers:** Showcase skills, find teams/clans, track stats
+- **👩💻 Developers:** Portfolio showcase, job opportunities, collab hub
+- **🏆 eSports Pros:** Sponsorship deals, tournament tracking, fan engagement
+- **👩👦 Parents:** Monitor gaming habits, connect with other gaming parents
 
 Think LinkedIn meets Twitch meets Discord - but with salary negotiations and mom-approved privacy controls.
 
 ---
 
-## 🚀 Key Features  
+## 🚀 Key Features
 
-### **For Players**  
-- **Gamer CV™** with verified stats (K/D ratios, rank history, hero mastery)  
-- **Team Finder** with AI-powered matchmaking  
-- **Tournament Calendar** with auto-import from major platforms  
-- **Streamer Mode** (integrated Twitch/OBS overlays)  
+### **For Players**
 
-### **For Developers**  
-- **Code Portfolio** (GitHub/Lab integration)  
-- **Game Jam Hub** with real-time collaboration  
-- **Job Board** (Remote gaming jobs with crypto payment options)  
-- **Bug Bounty System** for indie games  
+- **Gamer CV™** with verified stats (K/D ratios, rank history, hero mastery)
+- **Team Finder** with AI-powered matchmaking
+- **Tournament Calendar** with auto-import from major platforms
+- **Streamer Mode** (integrated Twitch/OBS overlays)
 
-### **For eSports**  
-- **Sponsor Marketplace**  
-- **Team Analytics Dashboard**  
-- **Merch Store Integrations**  
-- **VOD Review System**  
+### **For Developers**
 
-### **For Parents**  
-- **Parental Dashboard** (screen time analytics, purchase monitoring)  
-- **Gaming Literacy Courses** ("Understanding Loot Boxes 101")  
-- **Safe Chat** filters  
-- **Local Clan Finder** (IRL meetup verification system)  
+- **Code Portfolio** (GitHub/Lab integration)
+- **Game Jam Hub** with real-time collaboration
+- **Job Board** (Remote gaming jobs with crypto payment options)
+- **Bug Bounty System** for indie games
 
-### **Core Features**  
-- **Achievement-Based Networking** (Unlock recruiter contacts by reaching Diamond rank)  
-- **Gaming News Feed** (With Twitch/Youtube embed support)  
-- **AR Business Cards** (Scan QR codes to exchange gamer tags IRL)  
-- **Salary Benchmark Tool** (Compare esports salaries by region/role)  
+### **For eSports**
+
+- **Sponsor Marketplace**
+- **Team Analytics Dashboard**
+- **Merch Store Integrations**
+- **VOD Review System**
+
+### **For Parents**
+
+- **Parental Dashboard** (screen time analytics, purchase monitoring)
+- **Gaming Literacy Courses** ("Understanding Loot Boxes 101")
+- **Safe Chat** filters
+- **Local Clan Finder** (IRL meetup verification system)
+
+### **Core Features**
+
+- **Achievement-Based Networking** (Unlock recruiter contacts by reaching Diamond rank)
+- **Gaming News Feed** (With Twitch/Youtube embed support)
+- **AR Business Cards** (Scan QR codes to exchange gamer tags IRL)
+- **Salary Benchmark Tool** (Compare esports salaries by region/role)
 
 ---
 
@@ -76,11 +84,13 @@ A modern social platform for gamers to find teammates and connect with fellow pl
 ## Getting Started
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Start the development server:
+
 ```bash
 # Terminal 1: Start the Vite dev server
 npm run dev
@@ -135,16 +145,19 @@ A social gaming platform built with React, TypeScript, and Material-UI.
 ## Development
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Start the development server:
+
 ```bash
 npm run dev
 ```
 
 3. Build for production:
+
 ```bash
 npm run build
 ```
@@ -206,22 +219,26 @@ A modern, serverless gaming platform built with AWS Amplify, React, and GraphQL.
 ## Local Development Setup
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/gamedin.xyz.git
    cd gamedin.xyz
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Initialize Amplify:
+
    ```bash
    amplify init
    ```
 
 4. Push the backend to AWS:
+
    ```bash
    amplify push
    ```
@@ -245,6 +262,7 @@ REACT_APP_PERSONALIZE_TRACKING_ID=your-tracking-id
 ## Testing
 
 - Run unit tests:
+
   ```bash
   npm run test
   ```
@@ -259,6 +277,7 @@ REACT_APP_PERSONALIZE_TRACKING_ID=your-tracking-id
 The application is automatically deployed through AWS Amplify's CI/CD pipeline when changes are pushed to the main branch.
 
 Manual deployment:
+
 ```bash
 amplify push
 ```

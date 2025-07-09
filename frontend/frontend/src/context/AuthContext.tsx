@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           name: currentUser.username,
           picture: '/default-avatar.png',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
         setUser(mappedUser);
         showToast('Successfully logged in', 'success');
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           name: currentUser.username,
           picture: '/default-avatar.png',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
         setUser(mappedUser);
       } catch (err) {
@@ -86,7 +86,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [showToast]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout, setUser, setLoading, setError }}>
+    <AuthContext.Provider
+      value={{ user, loading, error, login, logout, setUser, setLoading, setError }}
+    >
       {children}
     </AuthContext.Provider>
   );

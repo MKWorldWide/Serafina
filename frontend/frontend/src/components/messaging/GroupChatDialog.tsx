@@ -28,7 +28,12 @@ import {
   PersonRemove as RemovePersonIcon,
   AdminPanelSettings as AdminIcon,
 } from '@mui/icons-material';
-import { IUser, IConversation, IConversationParticipant, GroupParticipant } from '../../types/social';
+import {
+  IUser,
+  IConversation,
+  IConversationParticipant,
+  GroupParticipant,
+} from '../../types/social';
 import useStore from '../../store/useStore';
 
 interface GroupChatDialogProps {
@@ -46,16 +51,14 @@ const GroupChatDialog: React.FC<GroupChatDialogProps> = ({
   onCreateGroup,
   availableUsers,
   existingGroup,
-  currentUser
+  currentUser,
 }) => {
   const [groupName, setGroupName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const handleToggleUser = (userId: string) => {
-    setSelectedUsers((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
+    setSelectedUsers(prev =>
+      prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId],
     );
   };
 
@@ -73,32 +76,27 @@ const GroupChatDialog: React.FC<GroupChatDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth='sm' fullWidth>
       <DialogTitle>Create Group Chat</DialogTitle>
       <DialogContent>
         <Box sx={{ mb: 3 }}>
           <TextField
             autoFocus
-            margin="dense"
-            label="Group Name"
+            margin='dense'
+            label='Group Name'
             fullWidth
             value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
+            onChange={e => setGroupName(e.target.value)}
           />
         </Box>
-        <Typography variant="subtitle1" gutterBottom>
+        <Typography variant='subtitle1' gutterBottom>
           Select Participants
         </Typography>
         <List sx={{ width: '100%', maxHeight: 300, overflow: 'auto' }}>
-          {availableUsers.map((user) => (
-            <ListItem
-                        key={user.id}
-              dense
-              button
-              onClick={() => handleToggleUser(user.id)}
-            >
+          {availableUsers.map(user => (
+            <ListItem key={user.id} dense button onClick={() => handleToggleUser(user.id)}>
               <Checkbox
-                edge="start"
+                edge='start'
                 checked={selectedUsers.includes(user.id)}
                 tabIndex={-1}
                 disableRipple
@@ -116,7 +114,7 @@ const GroupChatDialog: React.FC<GroupChatDialogProps> = ({
         <Button
           onClick={handleSubmit}
           disabled={!groupName.trim() || selectedUsers.length === 0}
-          color="primary"
+          color='primary'
         >
           Create Group
         </Button>

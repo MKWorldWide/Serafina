@@ -34,7 +34,7 @@ export class XPManager {
         lastMessageTime: currentTime,
         lastVoiceTime: 0,
         totalMessages: 0,
-        totalVoiceTime: 0
+        totalVoiceTime: 0,
       });
     }
 
@@ -63,7 +63,7 @@ export class XPManager {
   async handleVoiceJoin(member: GuildMember, channelId: string): Promise<void> {
     this.voiceUsers.set(member.id, {
       joinTime: Date.now(),
-      channelId
+      channelId,
     });
 
     logger.debug(`${member.user.tag} joined voice channel ${channelId}`);
@@ -85,7 +85,7 @@ export class XPManager {
 
     for (const [userId, voiceData] of this.voiceUsers.entries()) {
       const timeInVoice = currentTime - voiceData.joinTime;
-      
+
       // Add XP every minute
       if (timeInVoice >= 60000) {
         const member = await this.getMember(userId);
@@ -99,7 +99,7 @@ export class XPManager {
 
   private async addVoiceXP(member: GuildMember, timeInVoice: number): Promise<void> {
     const userId = member.id;
-    
+
     if (!this.userXP.has(userId)) {
       this.userXP.set(userId, {
         userId,
@@ -108,13 +108,13 @@ export class XPManager {
         lastMessageTime: 0,
         lastVoiceTime: 0,
         totalMessages: 0,
-        totalVoiceTime: 0
+        totalVoiceTime: 0,
       });
     }
 
     const userData = this.userXP.get(userId)!;
     const xpGained = Math.floor(timeInVoice / 60000) * SERVER_CONFIG.xp.voiceXpPerMinute;
-    
+
     userData.xp += xpGained;
     userData.totalVoiceTime += timeInVoice;
 
@@ -130,22 +130,32 @@ export class XPManager {
     return Math.floor(xp / SERVER_CONFIG.xp.levelMultiplier);
   }
 
-  private async handleLevelUp(member: GuildMember, userData: UserXP, newLevel: number): Promise<void> {
+  private async handleLevelUp(
+    member: GuildMember,
+    userData: UserXP,
+    newLevel: number,
+  ): Promise<void> {
     try {
       // Create level up embed
       const embed = new EmbedBuilder()
         .setTitle('🎉 Level Up!')
-        .setColor(0x00FF00)
+        .setColor(0x00ff00)
         .setDescription(`Congratulations ${member.user}! You've reached level **${newLevel}**!`)
         .addFields(
           { name: 'Total XP', value: userData.xp.toString(), inline: true },
           { name: 'Messages Sent', value: userData.totalMessages.toString(), inline: true },
-          { name: 'Voice Time', value: this.formatVoiceTime(userData.totalVoiceTime), inline: true }
+          {
+            name: 'Voice Time',
+            value: this.formatVoiceTime(userData.totalVoiceTime),
+            inline: true,
+          },
         )
         .setTimestamp();
 
       // Send to general chat
-      const generalChat = member.guild.channels.cache.find(c => c.name === 'gaming-chat') as TextChannel;
+      const generalChat = member.guild.channels.cache.find(
+        c => c.name === 'gaming-chat',
+      ) as TextChannel;
       if (generalChat) {
         await generalChat.send({ embeds: [embed] });
       }
@@ -165,7 +175,7 @@ export class XPManager {
       { level: 10, roleName: '🎨 Creator' },
       { level: 25, roleName: '🌟 Veteran' },
       { level: 50, roleName: '💎 Elite' },
-      { level: 100, roleName: '👑 Legend' }
+      { level: 100, roleName: '👑 Legend' },
     ];
 
     for (const reward of roleRewards) {
@@ -173,14 +183,18 @@ export class XPManager {
         const role = member.guild.roles.cache.find(r => r.name === reward.roleName);
         if (role && !member.roles.cache.has(role.id)) {
           await member.roles.add(role);
-          
+
           const rewardEmbed = new EmbedBuilder()
             .setTitle('🏆 Role Unlocked!')
-            .setColor(0xFFD700)
-            .setDescription(`Congratulations ${member.user}! You've unlocked the **${reward.roleName}** role!`)
+            .setColor(0xffd700)
+            .setDescription(
+              `Congratulations ${member.user}! You've unlocked the **${reward.roleName}** role!`,
+            )
             .setTimestamp();
 
-          const generalChat = member.guild.channels.cache.find(c => c.name === 'gaming-chat') as TextChannel;
+          const generalChat = member.guild.channels.cache.find(
+            c => c.name === 'gaming-chat',
+          ) as TextChannel;
           if (generalChat) {
             await generalChat.send({ embeds: [rewardEmbed] });
           }
@@ -194,7 +208,7 @@ export class XPManager {
   private formatVoiceTime(ms: number): string {
     const hours = Math.floor(ms / (1000 * 60 * 60));
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     }
@@ -224,4 +238,4 @@ export class XPManager {
   resetUserXP(userId: string): void {
     this.userXP.delete(userId);
   }
-} 
+}

@@ -32,29 +32,25 @@ export const Feed = ({ activities }: FeedProps) => {
   };
 
   return (
-    <div className="feed">
+    <div className='feed'>
       <h2>Activity Feed</h2>
-      <div className="activity-list">
-        {activities.map((activity) => (
-          <div key={activity.id} className="activity-item">
-            <div className="activity-icon">
-              {getActivityIcon(activity.type)}
-            </div>
-            <div className="activity-content">
-              <div className="activity-header">
-                <div className="user-info">
+      <div className='activity-list'>
+        {activities.map(activity => (
+          <div key={activity.id} className='activity-item'>
+            <div className='activity-icon'>{getActivityIcon(activity.type)}</div>
+            <div className='activity-content'>
+              <div className='activity-header'>
+                <div className='user-info'>
                   <img
                     src={activity.user.picture || activity.user.avatar}
                     alt={activity.user.username}
-                    className="user-avatar"
+                    className='user-avatar'
                   />
-                  <span className="username">{activity.user.name || activity.user.username}</span>
+                  <span className='username'>{activity.user.name || activity.user.username}</span>
                 </div>
-                <span className="timestamp">
-                  {new Date(activity.timestamp).toLocaleString()}
-                </span>
+                <span className='timestamp'>{new Date(activity.timestamp).toLocaleString()}</span>
               </div>
-              <p className="activity-text">{activity.content}</p>
+              <p className='activity-text'>{activity.content}</p>
             </div>
           </div>
         ))}
@@ -70,9 +66,7 @@ export default function Feed() {
     return (
       <Box sx={{ p: 4 }}>
         <Paper sx={{ p: 3, textAlign: 'center' }}>
-          <Typography variant="h6">
-            Please sign in to view your feed
-          </Typography>
+          <Typography variant='h6'>Please sign in to view your feed</Typography>
         </Paper>
       </Box>
     );
@@ -82,17 +76,19 @@ export default function Feed() {
     <Box sx={{ p: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <PostEditor onSubmit={async (content) => {
-            // TODO: Implement post submission
-            console.log('New post:', content);
-          }} />
+          <PostEditor
+            onSubmit={async content => {
+              // TODO: Implement post submission
+              console.log('New post:', content);
+            }}
+          />
         </Grid>
         <Grid item xs={12}>
           <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               No posts yet
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant='body1' color='text.secondary'>
               Start following other gamers or create your first post!
             </Typography>
           </Paper>
@@ -100,4 +96,4 @@ export default function Feed() {
       </Grid>
     </Box>
   );
-} 
+}

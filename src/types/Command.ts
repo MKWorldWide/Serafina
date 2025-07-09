@@ -1,7 +1,15 @@
-import { Collection, ChatInputCommandInteraction, SlashCommandBuilder, RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js';
+import {
+  Collection,
+  ChatInputCommandInteraction,
+  SlashCommandBuilder,
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+} from 'discord.js';
 
 export interface Command {
-  data: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup"> | RESTPostAPIChatInputApplicationCommandsJSONBody;
+  data:
+    | SlashCommandBuilder
+    | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
+    | RESTPostAPIChatInputApplicationCommandsJSONBody;
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
   cooldown?: number;
 }
@@ -12,4 +20,4 @@ declare module 'discord.js' {
     commands: Collection<string, Command>;
     cooldowns: Collection<string, Collection<string, number>>;
   }
-} 
+}

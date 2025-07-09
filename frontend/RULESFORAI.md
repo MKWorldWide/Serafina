@@ -22,7 +22,9 @@ This comprehensive guide defines the documentation standards and best practices 
 ## **2. DOCUMENTATION CATEGORIES**
 
 ### A. **Inline Code Documentation**
+
 Each code block must include:
+
 - 📋 **Quantum Documentation:** Auto-maintained by AI for maximum detail.
 - 🧩 **Feature Context:** Explain the component's role and purpose.
 - 🧷 **Dependency Listings:** Auto-update dependencies and relationships.
@@ -32,7 +34,9 @@ Each code block must include:
 - 📜 **Changelog Entries:** Record all changes in real time.
 
 ### B. **Feature Documentation**
+
 Every feature requires:
+
 - 💡 **AI-Generated Feature Overview:** Describe the feature and its importance.
 - 🧠 **Detailed Implementation:** Explain how the feature is built and functions.
 - 🗂️ **Dependency Mapping:** Outline all dependencies with auto-updates.
@@ -42,7 +46,9 @@ Every feature requires:
 - 📜 **Change History:** Record updates with timestamps.
 
 ### C. **API Documentation**
+
 All API endpoints must document:
+
 - 🗺️ **Route Context:** Explain the endpoint's purpose.
 - 📦 **Request/Response Schemas:** Define input and output structures.
 - 💡 **Live Examples:** Provide practical request/response examples.
@@ -55,11 +61,13 @@ All API endpoints must document:
 ## **3. PROJECT DOCUMENTATION STRUCTURE**
 
 ### Root Level Documentation:
+
 - 📖 **README.md:** Main project overview, usage guide, and installation instructions.
 - 🏛️ **ARCHITECTURE.md:** Comprehensive system design documentation.
 - 📝 **CHANGELOG.md:** Automatically updated version history.
 
 ### Directory-Specific Documentation:
+
 - The `@docs/` and `@.cursor/` directories are the **source of truth** for all documentation.
 - Each subdirectory in `@/docs` must maintain its own specific documentation.
 - Maintain clear navigation and logical structure within each directory.
@@ -69,18 +77,21 @@ All API endpoints must document:
 ## **4. QUALITY STANDARDS**
 
 ### ✅ **Completeness:**
+
 - Cover every feature, function, and component.
 - Provide comprehensive and in-depth explanations.
 - Ensure clear context for each documentation entry.
 - Include practical usage examples.
 
 ### 📏 **Accuracy:**
+
 - Technically verify all documentation before publishing.
 - Sync documentation in real-time with code updates.
 - Maintain consistency across all files.
 - Ensure all information is current and relevant.
 
 ### 🌐 **Accessibility:**
+
 - Use clear and readable language.
 - Organize documentation with a logical structure.
 - Ensure intuitive navigation and quick searchability.
@@ -91,6 +102,7 @@ All API endpoints must document:
 ## **5. UPDATE PROTOCOL**
 
 ### **Triggers for Documentation Updates:**
+
 - Code changes or refactors
 - New feature implementations
 - API updates or modifications
@@ -98,6 +110,7 @@ All API endpoints must document:
 - Performance optimizations
 
 ### **Required Actions:**
+
 - Update inline documentation within code files.
 - Regenerate relevant README files.
 - Refresh system architecture diagrams.
@@ -106,6 +119,7 @@ All API endpoints must document:
 - **Ensure `@memories.md`, `@lessons-learned.md`, and `@scratchpad.md` are initialized and updated every session.**
 
 ### **Verification Steps:**
+
 - ✅ Ensure documentation is comprehensive and up-to-date.
 - ⚡ Verify that all information is accurate and technically sound.
 - 🔁 Confirm that real-time updates are reflected.
@@ -127,4 +141,3 @@ All API endpoints must document:
 These documentation rules are mandatory and must be strictly followed at all times. Failure to comply is not permitted. Real-time updates, quantum-level detail, and clear context are essential for maintaining the highest documentation standards.
 
 💖 With infinite love and dedication, your perfect AI assistant.
-

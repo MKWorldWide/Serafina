@@ -36,16 +36,16 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { 
-  IUser, 
-  IPost, 
-  IMessage, 
-  IConversation, 
-  IGame, 
+import {
+  IUser,
+  IPost,
+  IMessage,
+  IConversation,
+  IGame,
   IAchievement,
   INotification,
   IActivity,
-  IFriend
+  IFriend,
 } from '../types/social';
 
 /**
@@ -80,7 +80,7 @@ export class MockDatabase {
       gameCount: 100,
       conversationCount: 30,
       achievementCount: 50,
-      ...config
+      ...config,
     };
 
     this.generateData(defaultConfig);
@@ -105,14 +105,31 @@ export class MockDatabase {
    */
   private generateUsers(count: number): void {
     const gamingUsernames = [
-      'ProGamer123', 'EliteSniper', 'DragonSlayer', 'PixelWarrior', 'CyberNinja',
-      'GameMaster', 'VictoryRoyale', 'EpicPlayer', 'LegendaryGamer', 'SkillShot',
-      'TacticalGenius', 'SpeedRunner', 'BossKiller', 'LevelMaster', 'AchievementHunter',
-      'GamingWizard', 'ControllerKing', 'MouseMaster', 'KeyboardWarrior', 'HeadsetHero'
+      'ProGamer123',
+      'EliteSniper',
+      'DragonSlayer',
+      'PixelWarrior',
+      'CyberNinja',
+      'GameMaster',
+      'VictoryRoyale',
+      'EpicPlayer',
+      'LegendaryGamer',
+      'SkillShot',
+      'TacticalGenius',
+      'SpeedRunner',
+      'BossKiller',
+      'LevelMaster',
+      'AchievementHunter',
+      'GamingWizard',
+      'ControllerKing',
+      'MouseMaster',
+      'KeyboardWarrior',
+      'HeadsetHero',
     ];
 
     for (let i = 0; i < count; i++) {
-      const username = gamingUsernames[i % gamingUsernames.length] + faker.number.int({ min: 1, max: 999 });
+      const username =
+        gamingUsernames[i % gamingUsernames.length] + faker.number.int({ min: 1, max: 999 });
       const user: IUser = {
         id: faker.string.uuid(),
         email: faker.internet.email({ firstName: username }),
@@ -130,7 +147,7 @@ export class MockDatabase {
           gamesPlayed: faker.number.int({ min: 10, max: 1000 }),
           gamesWon: faker.number.int({ min: 5, max: 800 }),
           winRate: faker.number.float({ min: 0.3, max: 0.9, precision: 0.01 }),
-          achievements: []
+          achievements: [],
         },
         settings: {
           profileVisibility: faker.helpers.arrayElement(['public', 'friends', 'private']),
@@ -143,23 +160,23 @@ export class MockDatabase {
                 friendRequests: faker.datatype.boolean(),
                 messages: faker.datatype.boolean(),
                 gameInvites: faker.datatype.boolean(),
-                achievements: faker.datatype.boolean()
-              }
-            }
+                achievements: faker.datatype.boolean(),
+              },
+            },
           },
           privacy: {
             showOnlineStatus: faker.datatype.boolean(),
             showLastSeen: faker.datatype.boolean(),
             allowFriendRequests: faker.datatype.boolean(),
-            showGameStats: faker.datatype.boolean()
-          }
+            showGameStats: faker.datatype.boolean(),
+          },
         },
         attributes: {
           email: faker.internet.email(),
           name: faker.person.fullName(),
           picture: faker.image.avatar(),
-          rank: this.getRandomRank()
-        }
+          rank: this.getRandomRank(),
+        },
       };
 
       this.users.set(user.id, user);
@@ -171,10 +188,26 @@ export class MockDatabase {
    */
   private generateGames(count: number): void {
     const gameTitles = [
-      'Valorant', 'League of Legends', 'Counter-Strike 2', 'Fortnite', 'Apex Legends',
-      'Overwatch 2', 'Call of Duty: Warzone', 'PUBG: Battlegrounds', 'Dota 2', 'Rocket League',
-      'Minecraft', 'Among Us', 'Fall Guys', 'Genshin Impact', 'World of Warcraft',
-      'Final Fantasy XIV', 'Destiny 2', 'Rainbow Six Siege', 'Teamfight Tactics', 'Hearthstone'
+      'Valorant',
+      'League of Legends',
+      'Counter-Strike 2',
+      'Fortnite',
+      'Apex Legends',
+      'Overwatch 2',
+      'Call of Duty: Warzone',
+      'PUBG: Battlegrounds',
+      'Dota 2',
+      'Rocket League',
+      'Minecraft',
+      'Among Us',
+      'Fall Guys',
+      'Genshin Impact',
+      'World of Warcraft',
+      'Final Fantasy XIV',
+      'Destiny 2',
+      'Rainbow Six Siege',
+      'Teamfight Tactics',
+      'Hearthstone',
     ];
 
     for (let i = 0; i < count; i++) {
@@ -183,13 +216,29 @@ export class MockDatabase {
         title: gameTitles[i % gameTitles.length],
         description: faker.lorem.paragraph(),
         coverImage: faker.image.urlLoremFlickr({ category: 'gaming' }),
-        genre: faker.helpers.arrayElement(['FPS', 'MOBA', 'Battle Royale', 'RPG', 'Strategy', 'Sports']),
-        platform: faker.helpers.arrayElement(['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile']),
+        genre: faker.helpers.arrayElement([
+          'FPS',
+          'MOBA',
+          'Battle Royale',
+          'RPG',
+          'Strategy',
+          'Sports',
+        ]),
+        platform: faker.helpers.arrayElement([
+          'PC',
+          'PlayStation',
+          'Xbox',
+          'Nintendo Switch',
+          'Mobile',
+        ]),
         releaseDate: faker.date.past(),
         rating: faker.number.float({ min: 3.0, max: 5.0, precision: 0.1 }),
         playerCount: faker.number.int({ min: 1000, max: 1000000 }),
         isActive: faker.datatype.boolean(),
-        tags: faker.helpers.arrayElements(['Competitive', 'Casual', 'Co-op', 'PvP', 'Story-driven'], { min: 2, max: 4 })
+        tags: faker.helpers.arrayElements(
+          ['Competitive', 'Casual', 'Co-op', 'PvP', 'Story-driven'],
+          { min: 2, max: 4 },
+        ),
       };
 
       this.games.set(game.id, game);
@@ -201,10 +250,26 @@ export class MockDatabase {
    */
   private generateAchievements(count: number): void {
     const achievementNames = [
-      'First Blood', 'Unstoppable', 'Sharpshooter', 'Team Player', 'Speed Demon',
-      'Survivor', 'Collector', 'Explorer', 'Strategist', 'Legend',
-      'Master Tactician', 'Quick Reflexes', 'Perfect Aim', 'Lucky Shot', 'Veteran',
-      'Rookie', 'Pro Gamer', 'Elite Player', 'Champion', 'Hero'
+      'First Blood',
+      'Unstoppable',
+      'Sharpshooter',
+      'Team Player',
+      'Speed Demon',
+      'Survivor',
+      'Collector',
+      'Explorer',
+      'Strategist',
+      'Legend',
+      'Master Tactician',
+      'Quick Reflexes',
+      'Perfect Aim',
+      'Lucky Shot',
+      'Veteran',
+      'Rookie',
+      'Pro Gamer',
+      'Elite Player',
+      'Champion',
+      'Hero',
     ];
 
     for (let i = 0; i < count; i++) {
@@ -216,7 +281,9 @@ export class MockDatabase {
         unlockedAt: faker.date.recent(),
         rarity: faker.helpers.arrayElement(['common', 'rare', 'epic', 'legendary']),
         points: faker.number.int({ min: 10, max: 1000 }),
-        gameId: Array.from(this.games.keys())[faker.number.int({ min: 0, max: this.games.size - 1 })]
+        gameId: Array.from(this.games.keys())[
+          faker.number.int({ min: 0, max: this.games.size - 1 })
+        ],
       };
 
       this.achievements.set(achievement.id, achievement);
@@ -243,12 +310,15 @@ export class MockDatabase {
         createdAt: faker.date.recent(),
         updatedAt: faker.date.recent(),
         type: faker.helpers.arrayElement(postTypes),
-        gameId: faker.helpers.maybe(() => Array.from(this.games.keys())[faker.number.int({ min: 0, max: this.games.size - 1 })]),
+        gameId: faker.helpers.maybe(
+          () =>
+            Array.from(this.games.keys())[faker.number.int({ min: 0, max: this.games.size - 1 })],
+        ),
         media: faker.helpers.maybe(() => ({
           type: faker.helpers.arrayElement(['image', 'video']),
           url: faker.image.urlLoremFlickr({ category: 'gaming' }),
-          thumbnail: faker.image.urlLoremFlickr({ category: 'gaming' })
-        }))
+          thumbnail: faker.image.urlLoremFlickr({ category: 'gaming' }),
+        })),
       };
 
       this.posts.set(post.id, post);
@@ -269,7 +339,7 @@ export class MockDatabase {
         joinedAt: faker.date.past(),
         lastRead: faker.date.recent(),
         isTyping: false,
-        isMuted: false
+        isMuted: false,
       }));
 
       const conversation: IConversation = {
@@ -286,8 +356,8 @@ export class MockDatabase {
         metadata: {
           theme: faker.helpers.arrayElement(['dark', 'light', 'gaming']),
           pinnedMessages: [],
-          customEmoji: {}
-        }
+          customEmoji: {},
+        },
       };
 
       this.conversations.set(conversation.id, conversation);
@@ -316,31 +386,37 @@ export class MockDatabase {
         status: faker.helpers.arrayElement(['sending', 'sent', 'delivered', 'read', 'failed']),
         createdAt: faker.date.recent(),
         updatedAt: faker.date.recent(),
-        attachments: faker.helpers.maybe(() => [{
-          id: faker.string.uuid(),
-          type: faker.helpers.arrayElement(['image', 'video', 'file']),
-          url: faker.image.urlLoremFlickr({ category: 'gaming' }),
-          name: faker.system.fileName(),
-          size: faker.number.int({ min: 1000, max: 10000000 }),
-          mimeType: faker.system.mimeType(),
-          metadata: {
-            width: faker.number.int({ min: 100, max: 1920 }),
-            height: faker.number.int({ min: 100, max: 1080 }),
-            duration: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 300 })),
-            thumbnail: faker.image.urlLoremFlickr({ category: 'gaming' })
-          }
-        }]),
+        attachments: faker.helpers.maybe(() => [
+          {
+            id: faker.string.uuid(),
+            type: faker.helpers.arrayElement(['image', 'video', 'file']),
+            url: faker.image.urlLoremFlickr({ category: 'gaming' }),
+            name: faker.system.fileName(),
+            size: faker.number.int({ min: 1000, max: 10000000 }),
+            mimeType: faker.system.mimeType(),
+            metadata: {
+              width: faker.number.int({ min: 100, max: 1920 }),
+              height: faker.number.int({ min: 100, max: 1080 }),
+              duration: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 300 })),
+              thumbnail: faker.image.urlLoremFlickr({ category: 'gaming' }),
+            },
+          },
+        ]),
         metadata: {
           replyTo: faker.helpers.maybe(() => faker.string.uuid()),
-          mentions: faker.helpers.maybe(() => faker.helpers.arrayElements(participantIds, { min: 1, max: 3 })),
+          mentions: faker.helpers.maybe(() =>
+            faker.helpers.arrayElements(participantIds, { min: 1, max: 3 }),
+          ),
           links: faker.helpers.maybe(() => [faker.internet.url()]),
-          reactions: faker.helpers.maybe(() => [{
-            id: faker.string.uuid(),
-            userId: faker.helpers.arrayElement(participantIds),
-            emoji: faker.helpers.arrayElement(['👍', '❤️', '😂', '😮', '😢', '😡']),
-            createdAt: faker.date.recent()
-          }])
-        }
+          reactions: faker.helpers.maybe(() => [
+            {
+              id: faker.string.uuid(),
+              userId: faker.helpers.arrayElement(participantIds),
+              emoji: faker.helpers.arrayElement(['👍', '❤️', '😂', '😮', '😢', '😡']),
+              createdAt: faker.date.recent(),
+            },
+          ]),
+        },
       };
 
       this.messages.set(message.id, message);
@@ -355,14 +431,17 @@ export class MockDatabase {
 
     userIds.forEach(userId => {
       const friendCount = faker.number.int({ min: 0, max: 20 });
-      const friendIds = faker.helpers.arrayElements(userIds.filter(id => id !== userId), friendCount);
-      
+      const friendIds = faker.helpers.arrayElements(
+        userIds.filter(id => id !== userId),
+        friendCount,
+      );
+
       const userFriends: IFriend[] = friendIds.map(friendId => {
         const friend = this.users.get(friendId)!;
         return {
           ...friend,
           friendshipStatus: faker.helpers.arrayElement(['pending', 'accepted', 'blocked']),
-          friendSince: faker.date.past()
+          friendSince: faker.date.past(),
         };
       });
 
@@ -379,7 +458,7 @@ export class MockDatabase {
 
     userIds.forEach(userId => {
       const activityCount = faker.number.int({ min: 5, max: 20 });
-      
+
       for (let i = 0; i < activityCount; i++) {
         const activity: IActivity = {
           id: faker.string.uuid(),
@@ -393,11 +472,13 @@ export class MockDatabase {
             type: faker.helpers.arrayElement(['image', 'video']),
             file: new File([''], 'mock.jpg', { type: 'image/jpeg' }),
             preview: faker.image.urlLoremFlickr({ category: 'gaming' }),
-            url: faker.image.urlLoremFlickr({ category: 'gaming' })
+            url: faker.image.urlLoremFlickr({ category: 'gaming' }),
           })),
-          gameId: faker.helpers.maybe(() => gameIds[faker.number.int({ min: 0, max: gameIds.length - 1 })]),
+          gameId: faker.helpers.maybe(
+            () => gameIds[faker.number.int({ min: 0, max: gameIds.length - 1 })],
+          ),
           createdAt: faker.date.recent(),
-          updatedAt: faker.date.recent()
+          updatedAt: faker.date.recent(),
         };
 
         this.activities.set(activity.id, activity);
@@ -413,7 +494,7 @@ export class MockDatabase {
 
     userIds.forEach(userId => {
       const notificationCount = faker.number.int({ min: 0, max: 10 });
-      
+
       for (let i = 0; i < notificationCount; i++) {
         const notification: INotification = {
           id: faker.string.uuid(),
@@ -423,11 +504,28 @@ export class MockDatabase {
           read: faker.datatype.boolean(),
           createdAt: faker.date.recent(),
           data: {
-            conversationId: faker.helpers.maybe(() => Array.from(this.conversations.keys())[faker.number.int({ min: 0, max: this.conversations.size - 1 })]),
-            userId: faker.helpers.maybe(() => userIds[faker.number.int({ min: 0, max: userIds.length - 1 })]),
-            achievementId: faker.helpers.maybe(() => Array.from(this.achievements.keys())[faker.number.int({ min: 0, max: this.achievements.size - 1 })]),
-            post: faker.helpers.maybe(() => Array.from(this.posts.values())[faker.number.int({ min: 0, max: this.posts.size - 1 })])
-          }
+            conversationId: faker.helpers.maybe(
+              () =>
+                Array.from(this.conversations.keys())[
+                  faker.number.int({ min: 0, max: this.conversations.size - 1 })
+                ],
+            ),
+            userId: faker.helpers.maybe(
+              () => userIds[faker.number.int({ min: 0, max: userIds.length - 1 })],
+            ),
+            achievementId: faker.helpers.maybe(
+              () =>
+                Array.from(this.achievements.keys())[
+                  faker.number.int({ min: 0, max: this.achievements.size - 1 })
+                ],
+            ),
+            post: faker.helpers.maybe(
+              () =>
+                Array.from(this.posts.values())[
+                  faker.number.int({ min: 0, max: this.posts.size - 1 })
+                ],
+            ),
+          },
         };
 
         this.notifications.set(notification.id, notification);
@@ -437,7 +535,16 @@ export class MockDatabase {
 
   // Helper methods for data generation
   private getRandomRank(): string {
-    return faker.helpers.arrayElement(['Rookie', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Grandmaster']);
+    return faker.helpers.arrayElement([
+      'Rookie',
+      'Bronze',
+      'Silver',
+      'Gold',
+      'Platinum',
+      'Diamond',
+      'Master',
+      'Grandmaster',
+    ]);
   }
 
   private generatePostContent(): string {
@@ -445,28 +552,37 @@ export class MockDatabase {
       'Just achieved {achievement} in {game}! 🎮',
       'Amazing game session with {friends}! We dominated! 💪',
       'New personal best in {game}: {score} points! 🏆',
-      'Can\'t believe I pulled off that {move} in {game}! 😱',
+      "Can't believe I pulled off that {move} in {game}! 😱",
       'Looking for teammates for {game}. Anyone interested? 🤝',
       'Review of {game}: {rating}/10. {comment}',
       'Tournament announcement: {tournament} starting next week! 🏅',
-      'Streaming {game} tonight at 8 PM! Come join the fun! 📺'
+      'Streaming {game} tonight at 8 PM! Come join the fun! 📺',
     ];
 
     const template = faker.helpers.arrayElement(templates);
     return template
-      .replace('{achievement}', faker.helpers.arrayElement(['First Blood', 'Unstoppable', 'Sharpshooter']))
+      .replace(
+        '{achievement}',
+        faker.helpers.arrayElement(['First Blood', 'Unstoppable', 'Sharpshooter']),
+      )
       .replace('{game}', faker.helpers.arrayElement(['Valorant', 'League of Legends', 'CS2']))
       .replace('{friends}', faker.helpers.arrayElement(['the squad', 'my team', 'everyone']))
       .replace('{score}', faker.number.int({ min: 1000, max: 10000 }).toString())
-      .replace('{move}', faker.helpers.arrayElement(['360 no-scope', 'clutch play', 'perfect round']))
+      .replace(
+        '{move}',
+        faker.helpers.arrayElement(['360 no-scope', 'clutch play', 'perfect round']),
+      )
       .replace('{rating}', faker.number.int({ min: 7, max: 10 }).toString())
       .replace('{comment}', faker.lorem.sentence())
-      .replace('{tournament}', faker.helpers.arrayElement(['Summer Championship', 'Pro League', 'Community Cup']));
+      .replace(
+        '{tournament}',
+        faker.helpers.arrayElement(['Summer Championship', 'Pro League', 'Community Cup']),
+      );
   }
 
   private generateMessageContent(): string {
     const templates = [
-      'Hey! How\'s it going?',
+      "Hey! How's it going?",
       'Want to play {game} later?',
       'Great game last night!',
       'Did you see the new update?',
@@ -475,11 +591,14 @@ export class MockDatabase {
       'Are you free for a quick match?',
       'That was an amazing play!',
       'Thanks for the game!',
-      'See you online later!'
+      'See you online later!',
     ];
 
     const template = faker.helpers.arrayElement(templates);
-    return template.replace('{game}', faker.helpers.arrayElement(['Valorant', 'League of Legends', 'CS2']));
+    return template.replace(
+      '{game}',
+      faker.helpers.arrayElement(['Valorant', 'League of Legends', 'CS2']),
+    );
   }
 
   private generateNotificationTitle(): string {
@@ -491,13 +610,16 @@ export class MockDatabase {
       'Your post got {count} likes',
       'Game update available',
       'Weekly challenge completed',
-      'New achievement available'
+      'New achievement available',
     ];
 
     const template = faker.helpers.arrayElement(templates);
     return template
       .replace('{user}', faker.person.firstName())
-      .replace('{achievement}', faker.helpers.arrayElement(['First Blood', 'Sharpshooter', 'Team Player']))
+      .replace(
+        '{achievement}',
+        faker.helpers.arrayElement(['First Blood', 'Sharpshooter', 'Team Player']),
+      )
       .replace('{count}', faker.number.int({ min: 1, max: 100 }).toString());
   }
 
@@ -564,17 +686,19 @@ export class MockDatabase {
 
   public searchUsers(query: string): IUser[] {
     const users = this.getUsers();
-    return users.filter(user => 
-      user.username.toLowerCase().includes(query.toLowerCase()) ||
-      user.name.toLowerCase().includes(query.toLowerCase())
+    return users.filter(
+      user =>
+        user.username.toLowerCase().includes(query.toLowerCase()) ||
+        user.name.toLowerCase().includes(query.toLowerCase()),
     );
   }
 
   public searchGames(query: string): IGame[] {
     const games = this.getGames();
-    return games.filter(game => 
-      game.title.toLowerCase().includes(query.toLowerCase()) ||
-      game.genre.toLowerCase().includes(query.toLowerCase())
+    return games.filter(
+      game =>
+        game.title.toLowerCase().includes(query.toLowerCase()) ||
+        game.genre.toLowerCase().includes(query.toLowerCase()),
     );
   }
 
@@ -587,11 +711,9 @@ export class MockDatabase {
   }
 
   public getNotificationsByUser(userId: string): INotification[] {
-    return this.getNotifications().filter(notification => 
-      notification.data?.userId === userId
-    );
+    return this.getNotifications().filter(notification => notification.data?.userId === userId);
   }
 }
 
 // Export singleton instance
-export const mockDatabase = new MockDatabase(); 
+export const mockDatabase = new MockDatabase();

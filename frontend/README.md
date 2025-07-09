@@ -68,18 +68,21 @@ For detailed deployment instructions, see our [Amplify Gen2 Deployment Guide](do
 ## 📦 Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/M-K-World-Wide/GameDin.git
    cd GameDin
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    cd frontend && npm install
    ```
 
 3. Set up environment variables:
+
    ```bash
    cp .env.example .env.development
    ```
@@ -92,6 +95,7 @@ For detailed deployment instructions, see our [Amplify Gen2 Deployment Guide](do
 ## 🧪 Testing
 
 Run the test suite:
+
 ```bash
 npm run test        # Unit tests
 npm run test:e2e    # E2E tests
@@ -146,4 +150,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [React Community](https://reactjs.org/)
 - [Vite Team](https://vitejs.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
-- [Shadcn UI](https://ui.shadcn.com/) 
+- [Shadcn UI](https://ui.shadcn.com/)

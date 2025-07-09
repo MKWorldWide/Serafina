@@ -1,6 +1,6 @@
 /**
  * Content Migration Module
- * 
+ *
  * Handles migration of user-generated content like reviews, lists, and ratings
  */
 
@@ -62,7 +62,7 @@ function initialize(options) {
 
   // Create clients
   const dynamoDB = new AWS.DynamoDB.DocumentClient();
-  
+
   return { dynamoDB };
 }
 
@@ -72,7 +72,7 @@ function initialize(options) {
 function loadMappings() {
   const mappings = {
     users: [],
-    products: []
+    products: [],
   };
 
   try {
@@ -89,7 +89,10 @@ function loadMappings() {
       mappings.products = JSON.parse(productData);
       logMessage(`Loaded ${mappings.products.length} product mappings`);
     } else {
-      logMessage('No product mapping file found. Product-specific content will be skipped.', 'warning');
+      logMessage(
+        'No product mapping file found. Product-specific content will be skipped.',
+        'warning',
+      );
     }
 
     return mappings;
@@ -115,7 +118,7 @@ async function fetchReviews(dynamoDB, options) {
     do {
       const params = {
         TableName: tableName,
-        Limit: 50
+        Limit: 50,
       };
 
       if (lastEvaluatedKey) {
@@ -126,8 +129,10 @@ async function fetchReviews(dynamoDB, options) {
       reviews = reviews.concat(response.Items);
       lastEvaluatedKey = response.LastEvaluatedKey;
 
-      logMessage(`Fetched ${response.Items.length} reviews from DynamoDB. Total: ${reviews.length}`);
-      
+      logMessage(
+        `Fetched ${response.Items.length} reviews from DynamoDB. Total: ${reviews.length}`,
+      );
+
       // For dry runs, limit the number of entries to speed up testing
       if (options.dryRun && reviews.length >= 20) {
         logMessage('Dry run mode - limiting to 20 reviews for testing');
@@ -158,7 +163,7 @@ async function fetchGameLists(dynamoDB, options) {
     do {
       const params = {
         TableName: tableName,
-        Limit: 50
+        Limit: 50,
       };
 
       if (lastEvaluatedKey) {
@@ -169,8 +174,10 @@ async function fetchGameLists(dynamoDB, options) {
       lists = lists.concat(response.Items);
       lastEvaluatedKey = response.LastEvaluatedKey;
 
-      logMessage(`Fetched ${response.Items.length} game lists from DynamoDB. Total: ${lists.length}`);
-      
+      logMessage(
+        `Fetched ${response.Items.length} game lists from DynamoDB. Total: ${lists.length}`,
+      );
+
       // For dry runs, limit the number of entries to speed up testing
       if (options.dryRun && lists.length >= 10) {
         logMessage('Dry run mode - limiting to 10 game lists for testing');
@@ -190,13 +197,15 @@ async function fetchGameLists(dynamoDB, options) {
  */
 async function createReviewMetafields(productId, reviews, session, options) {
   if (options.dryRun) {
-    logMessage(`[DRY RUN] Would create review metafields for product ${productId} with ${reviews.length} reviews`);
+    logMessage(
+      `[DRY RUN] Would create review metafields for product ${productId} with ${reviews.length} reviews`,
+    );
     return { success: true };
   }
 
   try {
     const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
-    
+
     // Format reviews for storage in metafield
     const formattedReviews = reviews.map(review => ({
       id: review.id,
@@ -205,15 +214,15 @@ async function createReviewMetafields(productId, reviews, session, options) {
       title: review.title,
       content: review.content,
       createdAt: review.createdAt || new Date().toISOString(),
-      verified: review.verified || false
+      verified: review.verified || false,
     }));
-    
+
     // Create or update the reviews metafield
     const metafield = {
       namespace: 'gamedin',
       key: 'reviews',
       value: JSON.stringify(formattedReviews),
-      type: 'json_string'
+      type: 'json_string',
     };
 
     // Create the metafield in Shopify
@@ -223,10 +232,15 @@ async function createReviewMetafields(productId, reviews, session, options) {
       type: 'json',
     });
 
-    logMessage(`Successfully created reviews metafield for product ${productId} with ${reviews.length} reviews`);
+    logMessage(
+      `Successfully created reviews metafield for product ${productId} with ${reviews.length} reviews`,
+    );
     return { success: true, metafieldId: response.body.metafield.id };
   } catch (error) {
-    logMessage(`Error creating reviews metafield for product ${productId}: ${error.message}`, 'error');
+    logMessage(
+      `Error creating reviews metafield for product ${productId}: ${error.message}`,
+      'error',
+    );
     return { success: false, error: error.message };
   }
 }
@@ -236,22 +250,26 @@ async function createReviewMetafields(productId, reviews, session, options) {
  */
 async function createGameListMetafields(customerId, lists, mappings, session, options) {
   if (options.dryRun) {
-    logMessage(`[DRY RUN] Would create game list metafields for customer ${customerId} with ${lists.length} lists`);
+    logMessage(
+      `[DRY RUN] Would create game list metafields for customer ${customerId} with ${lists.length} lists`,
+    );
     return { success: true };
   }
 
   try {
     const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
-    
+
     // Process each list
     for (const list of lists) {
       try {
         // Map the game IDs to Shopify product IDs
-        const shopifyGameIds = (list.games || []).map(gameId => {
-          const mapping = mappings.products.find(p => p.originalId === gameId);
-          return mapping ? mapping.shopifyProductId : null;
-        }).filter(Boolean);
-        
+        const shopifyGameIds = (list.games || [])
+          .map(gameId => {
+            const mapping = mappings.products.find(p => p.originalId === gameId);
+            return mapping ? mapping.shopifyProductId : null;
+          })
+          .filter(Boolean);
+
         // Format the list for storage
         const formattedList = {
           id: list.id,
@@ -260,33 +278,41 @@ async function createGameListMetafields(customerId, lists, mappings, session, op
           isPublic: list.isPublic || false,
           createdAt: list.createdAt || new Date().toISOString(),
           updatedAt: list.updatedAt || new Date().toISOString(),
-          games: shopifyGameIds
+          games: shopifyGameIds,
         };
-        
+
         // Create the metafield
         const metafield = {
           namespace: 'gamedin',
           key: `game_list_${list.id.replace(/[^a-zA-Z0-9]/g, '_')}`,
           value: JSON.stringify(formattedList),
-          type: 'json_string'
+          type: 'json_string',
         };
-        
+
         // Create the metafield in Shopify
         await client.post({
           path: `customers/${customerId}/metafields`,
           data: { metafield },
           type: 'json',
         });
-        
-        logMessage(`Successfully created game list metafield '${list.title}' for customer ${customerId}`);
+
+        logMessage(
+          `Successfully created game list metafield '${list.title}' for customer ${customerId}`,
+        );
       } catch (error) {
-        logMessage(`Error creating game list metafield '${list.title}' for customer ${customerId}: ${error.message}`, 'error');
+        logMessage(
+          `Error creating game list metafield '${list.title}' for customer ${customerId}: ${error.message}`,
+          'error',
+        );
       }
     }
-    
+
     return { success: true };
   } catch (error) {
-    logMessage(`Error creating game list metafields for customer ${customerId}: ${error.message}`, 'error');
+    logMessage(
+      `Error creating game list metafields for customer ${customerId}: ${error.message}`,
+      'error',
+    );
     return { success: false, error: error.message };
   }
 }
@@ -296,33 +322,33 @@ async function createGameListMetafields(customerId, lists, mappings, session, op
  */
 async function migrate(options) {
   logMessage('Starting content migration...');
-  
+
   const result = {
     processed: {
       reviews: 0,
-      lists: 0
+      lists: 0,
     },
     success: {
       reviews: 0,
-      lists: 0
+      lists: 0,
     },
     errors: {
       reviews: 0,
-      lists: 0
+      lists: 0,
     },
     contentMappings: {
-      reviews: []
-    }
+      reviews: [],
+    },
   };
 
   try {
     // Initialize AWS and Shopify connections
     const { dynamoDB } = initialize(options);
-    
+
     // Get an offline session (in a real scenario, use a real authenticated session)
     const session = {
       shop: options.shopifyStore || process.env.SHOPIFY_SHOP,
-      accessToken: process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN
+      accessToken: process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN,
     };
 
     // Load user and product mappings
@@ -338,7 +364,7 @@ async function migrate(options) {
 
     // Group reviews by product
     const reviewsByProduct = {};
-    
+
     for (const review of reviews) {
       try {
         const originalProductId = review.productId || review.gameId;
@@ -346,16 +372,16 @@ async function migrate(options) {
           logMessage(`Skipping review without product ID: ${review.id}`, 'warning');
           continue;
         }
-        
+
         // Find product mapping
         const productMapping = mappings.products.find(p => p.originalId === originalProductId);
         if (!productMapping) {
           logMessage(`No Shopify product found for original ID ${originalProductId}`, 'warning');
           continue;
         }
-        
+
         const shopifyProductId = productMapping.shopifyProductId;
-        
+
         // Find user mapping if available
         if (review.userId) {
           const userMapping = mappings.users.find(u => u.cognitoUsername === review.userId);
@@ -363,117 +389,146 @@ async function migrate(options) {
             review.shopifyCustomerId = userMapping.shopifyCustomerId;
           }
         }
-        
+
         // Group by Shopify product ID
         if (!reviewsByProduct[shopifyProductId]) {
           reviewsByProduct[shopifyProductId] = [];
         }
-        
+
         reviewsByProduct[shopifyProductId].push(review);
       } catch (error) {
         logMessage(`Error processing review ${review.id}: ${error.message}`, 'error');
       }
     }
-    
+
     // Process reviews by product
     for (const [shopifyProductId, productReviews] of Object.entries(reviewsByProduct)) {
       result.processed.reviews += productReviews.length;
-      
+
       try {
         logMessage(`Processing ${productReviews.length} reviews for product ${shopifyProductId}`);
-        
+
         // Create reviews metafield
-        const createResult = await createReviewMetafields(shopifyProductId, productReviews, session, options);
-        
+        const createResult = await createReviewMetafields(
+          shopifyProductId,
+          productReviews,
+          session,
+          options,
+        );
+
         if (createResult.success) {
           result.success.reviews += productReviews.length;
-          
+
           // Store mapping
           result.contentMappings.reviews.push({
             shopifyProductId,
             metafieldId: createResult.metafieldId,
-            reviewCount: productReviews.length
+            reviewCount: productReviews.length,
           });
-          
-          logMessage(`Successfully migrated ${productReviews.length} reviews for product ${shopifyProductId}`);
+
+          logMessage(
+            `Successfully migrated ${productReviews.length} reviews for product ${shopifyProductId}`,
+          );
         } else {
           result.errors.reviews += productReviews.length;
-          logMessage(`Failed to migrate reviews for product ${shopifyProductId}: ${createResult.error}`, 'error');
+          logMessage(
+            `Failed to migrate reviews for product ${shopifyProductId}: ${createResult.error}`,
+            'error',
+          );
         }
       } catch (error) {
         result.errors.reviews += productReviews.length;
-        logMessage(`Error migrating reviews for product ${shopifyProductId}: ${error.message}`, 'error');
+        logMessage(
+          `Error migrating reviews for product ${shopifyProductId}: ${error.message}`,
+          'error',
+        );
       }
     }
-    
+
     // Fetch game lists
     const gameLists = await fetchGameLists(dynamoDB, options);
     logMessage(`Found ${gameLists.length} game lists to migrate`);
-    
+
     // Group lists by user
     const listsByUser = {};
-    
+
     for (const list of gameLists) {
       try {
         if (!list.userId) {
           logMessage(`Skipping list without user ID: ${list.id}`, 'warning');
           continue;
         }
-        
+
         // Find user mapping
         const userMapping = mappings.users.find(u => u.cognitoUsername === list.userId);
         if (!userMapping) {
           logMessage(`No Shopify customer found for user ID ${list.userId}`, 'warning');
           continue;
         }
-        
+
         const shopifyCustomerId = userMapping.shopifyCustomerId;
-        
+
         // Group by Shopify customer ID
         if (!listsByUser[shopifyCustomerId]) {
           listsByUser[shopifyCustomerId] = [];
         }
-        
+
         listsByUser[shopifyCustomerId].push(list);
       } catch (error) {
         logMessage(`Error processing game list ${list.id}: ${error.message}`, 'error');
       }
     }
-    
+
     // Process lists by user
     for (const [shopifyCustomerId, userLists] of Object.entries(listsByUser)) {
       result.processed.lists += userLists.length;
-      
+
       try {
         logMessage(`Processing ${userLists.length} game lists for customer ${shopifyCustomerId}`);
-        
+
         // Create lists metafields
-        const createResult = await createGameListMetafields(shopifyCustomerId, userLists, mappings, session, options);
-        
+        const createResult = await createGameListMetafields(
+          shopifyCustomerId,
+          userLists,
+          mappings,
+          session,
+          options,
+        );
+
         if (createResult.success) {
           result.success.lists += userLists.length;
-          logMessage(`Successfully migrated ${userLists.length} game lists for customer ${shopifyCustomerId}`);
+          logMessage(
+            `Successfully migrated ${userLists.length} game lists for customer ${shopifyCustomerId}`,
+          );
         } else {
           result.errors.lists += userLists.length;
-          logMessage(`Failed to migrate game lists for customer ${shopifyCustomerId}: ${createResult.error}`, 'error');
+          logMessage(
+            `Failed to migrate game lists for customer ${shopifyCustomerId}: ${createResult.error}`,
+            'error',
+          );
         }
       } catch (error) {
         result.errors.lists += userLists.length;
-        logMessage(`Error migrating game lists for customer ${shopifyCustomerId}: ${error.message}`, 'error');
+        logMessage(
+          `Error migrating game lists for customer ${shopifyCustomerId}: ${error.message}`,
+          'error',
+        );
       }
     }
-    
+
     // Save content mapping file
     if (!options.dryRun && result.contentMappings.reviews.length > 0) {
       fs.writeFileSync(CONTENT_MAPPING_FILE, JSON.stringify(result.contentMappings, null, 2));
       logMessage(`Content mapping saved to ${CONTENT_MAPPING_FILE}`);
     }
-    
+
     const totalProcessed = result.processed.reviews + result.processed.lists;
     const totalSuccess = result.success.reviews + result.success.lists;
     const totalErrors = result.errors.reviews + result.errors.lists;
-    
-    logMessage(`Content migration completed. Processed: ${totalProcessed}, Success: ${totalSuccess}, Errors: ${totalErrors}`);
+
+    logMessage(
+      `Content migration completed. Processed: ${totalProcessed}, Success: ${totalSuccess}, Errors: ${totalErrors}`,
+    );
     return result;
   } catch (error) {
     logMessage(`Migration failed: ${error.message}`, 'error');
@@ -482,5 +537,5 @@ async function migrate(options) {
 }
 
 module.exports = {
-  migrate
-}; 
+  migrate,
+};

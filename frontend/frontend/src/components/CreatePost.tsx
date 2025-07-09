@@ -30,7 +30,7 @@ const CreatePost: React.FC<ICreatePostProps> = ({ onSubmit }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
+    <Box component='form' onSubmit={handleSubmit}>
       <TextField
         fullWidth
         multiline
@@ -38,7 +38,7 @@ const CreatePost: React.FC<ICreatePostProps> = ({ onSubmit }) => {
         placeholder="What's on your mind?"
         value={content}
         onChange={e => setContent(e.target.value)}
-        variant="outlined"
+        variant='outlined'
         sx={{
           mb: 2,
           '& .MuiOutlinedInput-root': {
@@ -47,24 +47,24 @@ const CreatePost: React.FC<ICreatePostProps> = ({ onSubmit }) => {
         }}
       />
 
-      <Stack direction="row" spacing={2} alignItems="center">
+      <Stack direction='row' spacing={2} alignItems='center'>
         <Box>
-          <IconButton size="small" color="primary" disabled>
+          <IconButton size='small' color='primary' disabled>
             <ImageIcon />
           </IconButton>
-          <IconButton size="small" color="primary" disabled>
+          <IconButton size='small' color='primary' disabled>
             <VideoIcon />
           </IconButton>
-          <IconButton size="small" color="primary" disabled>
+          <IconButton size='small' color='primary' disabled>
             <LinkIcon />
           </IconButton>
         </Box>
 
-        <Typography variant="caption" color="text.secondary" sx={{ flex: 1 }}>
+        <Typography variant='caption' color='text.secondary' sx={{ flex: 1 }}>
           Attachment support coming soon
         </Typography>
 
-        <Button variant="contained" type="submit" disabled={!content.trim() || isSubmitting}>
+        <Button variant='contained' type='submit' disabled={!content.trim() || isSubmitting}>
           {isSubmitting ? 'Posting...' : 'Post'}
         </Button>
       </Stack>

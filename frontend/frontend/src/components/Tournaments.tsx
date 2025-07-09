@@ -203,18 +203,18 @@ const Tournaments: React.FC = () => {
   });
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 3 }}>
+    <Container maxWidth='lg' sx={{ mt: 3 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Tournaments & Events
         </Typography>
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2} alignItems='center'>
           <Grid item xs>
             <TextField
               fullWidth
-              size="small"
-              placeholder="Search tournaments..."
+              size='small'
+              placeholder='Search tournaments...'
               value={searchQuery}
               onChange={handleSearchChange}
               InputProps={{
@@ -223,19 +223,19 @@ const Tournaments: React.FC = () => {
             />
           </Grid>
           <Grid item>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
+            <FormControl size='small' sx={{ minWidth: 150 }}>
               <InputLabel>Game</InputLabel>
-              <Select value={selectedGame} label="Game" onChange={handleFilterChange}>
-                <MenuItem value="all">All Games</MenuItem>
-                <MenuItem value="Valorant">Valorant</MenuItem>
-                <MenuItem value="League of Legends">League of Legends</MenuItem>
-                <MenuItem value="CS:GO">CS:GO</MenuItem>
+              <Select value={selectedGame} label='Game' onChange={handleFilterChange}>
+                <MenuItem value='all'>All Games</MenuItem>
+                <MenuItem value='Valorant'>Valorant</MenuItem>
+                <MenuItem value='League of Legends'>League of Legends</MenuItem>
+                <MenuItem value='CS:GO'>CS:GO</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid item>
             <Button
-              variant="contained"
+              variant='contained'
               startIcon={<AddIcon />}
               onClick={() => setCreateDialogOpen(true)}
             >
@@ -248,7 +248,7 @@ const Tournaments: React.FC = () => {
       {/* Tournaments Grid */}
       <Grid container spacing={3}>
         {loading ? (
-          <Box display="flex" justifyContent="center" width="100%" mt={4}>
+          <Box display='flex' justifyContent='center' width='100%' mt={4}>
             <CircularProgress />
           </Box>
         ) : (
@@ -256,95 +256,95 @@ const Tournaments: React.FC = () => {
             <Grid item xs={12} md={6} key={tournament.id}>
               <StyledCard>
                 <CardContent>
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                  <Box display='flex' justifyContent='space-between' alignItems='flex-start'>
                     <Box>
-                      <Typography variant="h5" gutterBottom>
+                      <Typography variant='h5' gutterBottom>
                         {tournament.title}
                       </Typography>
-                      <Box display="flex" gap={1} mb={2}>
-                        <Chip label={tournament.game.name} size="small" color="primary" />
+                      <Box display='flex' gap={1} mb={2}>
+                        <Chip label={tournament.game.name} size='small' color='primary' />
                         <StatusChip
                           label={tournament.status}
-                          size="small"
+                          size='small'
                           status={tournament.status}
                         />
                       </Box>
                     </Box>
-                    <Box display="flex" alignItems="center">
+                    <Box display='flex' alignItems='center'>
                       <Tooltip title={tournament.organizer.name}>
                         <Avatar src={tournament.organizer.logo} sx={{ width: 40, height: 40 }} />
                       </Tooltip>
                     </Box>
                   </Box>
 
-                  <Typography variant="body2" color="textSecondary" paragraph>
+                  <Typography variant='body2' color='textSecondary' paragraph>
                     {tournament.description}
                   </Typography>
 
                   <Grid container spacing={2} sx={{ mb: 2 }}>
                     <Grid item xs={6}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <CalendarMonthIcon color="action" />
+                      <Box display='flex' alignItems='center' gap={1}>
+                        <CalendarMonthIcon color='action' />
                         <Box>
-                          <Typography variant="caption" color="textSecondary" display="block">
+                          <Typography variant='caption' color='textSecondary' display='block'>
                             Start Date
                           </Typography>
-                          <Typography variant="body2">
+                          <Typography variant='body2'>
                             {new Date(tournament.startDate).toLocaleDateString()}
                           </Typography>
                         </Box>
                       </Box>
                     </Grid>
                     <Grid item xs={6}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <MonetizationOnIcon color="action" />
+                      <Box display='flex' alignItems='center' gap={1}>
+                        <MonetizationOnIcon color='action' />
                         <Box>
-                          <Typography variant="caption" color="textSecondary" display="block">
+                          <Typography variant='caption' color='textSecondary' display='block'>
                             Prize Pool
                           </Typography>
-                          <Typography variant="body2">
+                          <Typography variant='body2'>
                             ${tournament.prizePool.amount} {tournament.prizePool.currency}
                           </Typography>
                         </Box>
                       </Box>
                     </Grid>
                     <Grid item xs={6}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <GroupsIcon color="action" />
+                      <Box display='flex' alignItems='center' gap={1}>
+                        <GroupsIcon color='action' />
                         <Box>
-                          <Typography variant="caption" color="textSecondary" display="block">
+                          <Typography variant='caption' color='textSecondary' display='block'>
                             Teams
                           </Typography>
-                          <Typography variant="body2">
+                          <Typography variant='body2'>
                             {tournament.registeredTeams}/{tournament.maxTeams}
                           </Typography>
                         </Box>
                       </Box>
                     </Grid>
                     <Grid item xs={6}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <EmojiEventsIcon color="action" />
+                      <Box display='flex' alignItems='center' gap={1}>
+                        <EmojiEventsIcon color='action' />
                         <Box>
-                          <Typography variant="caption" color="textSecondary" display="block">
+                          <Typography variant='caption' color='textSecondary' display='block'>
                             Format
                           </Typography>
-                          <Typography variant="body2">{tournament.format}</Typography>
+                          <Typography variant='body2'>{tournament.format}</Typography>
                         </Box>
                       </Box>
                     </Grid>
                   </Grid>
 
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
-                    <Box display="flex" alignItems="center" gap={1}>
+                  <Box display='flex' justifyContent='space-between' alignItems='center' mt={2}>
+                    <Box display='flex' alignItems='center' gap={1}>
                       <GroupsIcon />
-                      <Typography variant="body2">
+                      <Typography variant='body2'>
                         {tournament.registeredTeams}/{tournament.maxTeams} Teams
                       </Typography>
                     </Box>
                     <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
+                      variant='contained'
+                      color='primary'
+                      size='small'
                       onClick={() => handleRegister(tournament.id)}
                       disabled={tournament.registeredTeams >= tournament.maxTeams}
                     >
@@ -362,7 +362,7 @@ const Tournaments: React.FC = () => {
       <Dialog
         open={createDialogOpen}
         onClose={() => setCreateDialogOpen(false)}
-        maxWidth="md"
+        maxWidth='md'
         fullWidth
       >
         <DialogTitle>Create Tournament</DialogTitle>
@@ -370,43 +370,43 @@ const Tournaments: React.FC = () => {
           <Box sx={{ mt: 2 }}>
             <TextField
               fullWidth
-              label="Tournament Title"
+              label='Tournament Title'
               value={createFormData.title}
               onChange={e => setCreateFormData(prev => ({ ...prev, title: e.target.value }))}
-              margin="normal"
+              margin='normal'
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin='normal'>
               <InputLabel>Game</InputLabel>
               <Select
                 value={createFormData.game}
-                label="Game"
+                label='Game'
                 onChange={e => setCreateFormData(prev => ({ ...prev, game: e.target.value }))}
               >
-                <MenuItem value="Valorant">Valorant</MenuItem>
-                <MenuItem value="League of Legends">League of Legends</MenuItem>
-                <MenuItem value="CS:GO">CS:GO</MenuItem>
+                <MenuItem value='Valorant'>Valorant</MenuItem>
+                <MenuItem value='League of Legends'>League of Legends</MenuItem>
+                <MenuItem value='CS:GO'>CS:GO</MenuItem>
               </Select>
             </FormControl>
             <TextField
               fullWidth
-              label="Description"
+              label='Description'
               multiline
               rows={4}
               value={createFormData.description}
               onChange={e => setCreateFormData(prev => ({ ...prev, description: e.target.value }))}
-              margin="normal"
+              margin='normal'
             />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Start Date"
-                  type="datetime-local"
+                  label='Start Date'
+                  type='datetime-local'
                   value={createFormData.startDate}
                   onChange={e =>
                     setCreateFormData(prev => ({ ...prev, startDate: e.target.value }))
                   }
-                  margin="normal"
+                  margin='normal'
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -415,11 +415,11 @@ const Tournaments: React.FC = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="End Date"
-                  type="datetime-local"
+                  label='End Date'
+                  type='datetime-local'
                   value={createFormData.endDate}
                   onChange={e => setCreateFormData(prev => ({ ...prev, endDate: e.target.value }))}
-                  margin="normal"
+                  margin='normal'
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -428,38 +428,38 @@ const Tournaments: React.FC = () => {
             </Grid>
             <TextField
               fullWidth
-              label="Prize Pool"
-              type="number"
+              label='Prize Pool'
+              type='number'
               value={createFormData.prizePool}
               onChange={e => setCreateFormData(prev => ({ ...prev, prizePool: e.target.value }))}
-              margin="normal"
+              margin='normal'
             />
             <TextField
               fullWidth
-              label="Maximum Teams"
-              type="number"
+              label='Maximum Teams'
+              type='number'
               value={createFormData.maxTeams}
               onChange={e => setCreateFormData(prev => ({ ...prev, maxTeams: e.target.value }))}
-              margin="normal"
+              margin='normal'
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin='normal'>
               <InputLabel>Tournament Format</InputLabel>
               <Select
                 value={createFormData.format}
-                label="Tournament Format"
+                label='Tournament Format'
                 onChange={e => setCreateFormData(prev => ({ ...prev, format: e.target.value }))}
               >
-                <MenuItem value="Single Elimination">Single Elimination</MenuItem>
-                <MenuItem value="Double Elimination">Double Elimination</MenuItem>
-                <MenuItem value="Round Robin">Round Robin</MenuItem>
-                <MenuItem value="Swiss">Swiss System</MenuItem>
+                <MenuItem value='Single Elimination'>Single Elimination</MenuItem>
+                <MenuItem value='Double Elimination'>Double Elimination</MenuItem>
+                <MenuItem value='Round Robin'>Round Robin</MenuItem>
+                <MenuItem value='Swiss'>Swiss System</MenuItem>
               </Select>
             </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreateTournament}>
+          <Button variant='contained' onClick={handleCreateTournament}>
             Create Tournament
           </Button>
         </DialogActions>

@@ -69,22 +69,22 @@ const PostCard = forwardRef<HTMLDivElement, IPostCardProps>(
             </Link>
           }
           title={
-            <Box display="flex" alignItems="center" gap={1}>
+            <Box display='flex' alignItems='center' gap={1}>
               <Link
                 to={`/profile/${post.author.username}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <Typography variant="subtitle1">{post.author.username}</Typography>
+                <Typography variant='subtitle1'>{post.author.username}</Typography>
               </Link>
               {post.author.rank && (
-                <Chip label={post.author.rank} size="small" color="primary" variant="outlined" />
+                <Chip label={post.author.rank} size='small' color='primary' variant='outlined' />
               )}
             </Box>
           }
           subheader={new Date(post.createdAt).toLocaleString()}
         />
         <CardContent>
-          <Typography variant="body1" paragraph>
+          <Typography variant='body1' paragraph>
             {post.content}
           </Typography>
           {post.media && post.media.length > 0 && (
@@ -110,8 +110,8 @@ const PostCard = forwardRef<HTMLDivElement, IPostCardProps>(
                 <Chip
                   key={tag}
                   label={tag}
-                  size="small"
-                  variant="outlined"
+                  size='small'
+                  variant='outlined'
                   onClick={() => {
                     /* Handle tag click */
                   }}
@@ -136,7 +136,7 @@ const PostCard = forwardRef<HTMLDivElement, IPostCardProps>(
         </CardActions>
       </Card>
     );
-  }
+  },
 );
 
 PostCard.displayName = 'PostCard';

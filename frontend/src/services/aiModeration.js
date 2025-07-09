@@ -39,9 +39,9 @@ class AIModerator {
           { role: 'system', content: systemPrompt },
           ...messages.map(msg => ({
             role: msg.role,
-            content: msg.content
-          }))
-        ]
+            content: msg.content,
+          })),
+        ],
       };
 
       console.log('Sending request to Mistral API:', requestBody);
@@ -50,7 +50,7 @@ class AIModerator {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${MISTRAL_API_KEY}`,
+          Authorization: `Bearer ${MISTRAL_API_KEY}`,
         },
         body: JSON.stringify(requestBody),
       });
@@ -58,7 +58,9 @@ class AIModerator {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Mistral API Error:', errorData);
-        throw new Error(errorData.message?.detail?.[0] || errorData.message || 'API request failed');
+        throw new Error(
+          errorData.message?.detail?.[0] || errorData.message || 'API request failed',
+        );
       }
 
       const data = await response.json();
@@ -76,20 +78,20 @@ class AIModerator {
       // Add message to history
       const userMessage = {
         role: 'user',
-        content: message
+        content: message,
       };
 
       this.conversationHistory.push(userMessage);
-      
+
       // Get AI response
       const response = await this.sendRequest(this.conversationHistory);
-      
+
       // Add response to history
       const assistantMessage = {
         role: 'assistant',
-        content: response
+        content: response,
       };
-      
+
       this.conversationHistory.push(assistantMessage);
 
       // Keep conversation history manageable
@@ -105,11 +107,19 @@ class AIModerator {
 
   analyzeMessageIntent(message) {
     const lowerMessage = message.toLowerCase();
-    
-    if (lowerMessage.includes('match') || lowerMessage.includes('play') || lowerMessage.includes('team')) {
+
+    if (
+      lowerMessage.includes('match') ||
+      lowerMessage.includes('play') ||
+      lowerMessage.includes('team')
+    ) {
       return 'matchmaking';
     }
-    if (lowerMessage.includes('report') || lowerMessage.includes('problem') || lowerMessage.includes('issue')) {
+    if (
+      lowerMessage.includes('report') ||
+      lowerMessage.includes('problem') ||
+      lowerMessage.includes('issue')
+    ) {
       return 'moderation';
     }
     if (lowerMessage.includes('recommend') || lowerMessage.includes('suggest')) {
@@ -122,42 +132,52 @@ class AIModerator {
   }
 
   async moderateContent(content, context = {}) {
-    return this.processUserMessage(JSON.stringify({
-      type: 'content_moderation',
-      content,
-      context,
-    }));
+    return this.processUserMessage(
+      JSON.stringify({
+        type: 'content_moderation',
+        content,
+        context,
+      }),
+    );
   }
 
   async matchmakeSuggestion(userProfile, preferences) {
-    return this.processUserMessage(JSON.stringify({
-      type: 'matchmaking',
-      userProfile,
-      preferences,
-    }));
+    return this.processUserMessage(
+      JSON.stringify({
+        type: 'matchmaking',
+        userProfile,
+        preferences,
+      }),
+    );
   }
 
   async resolveDispute(disputeDetails) {
-    return this.processUserMessage(JSON.stringify({
-      type: 'dispute_resolution',
-      details: disputeDetails,
-    }));
+    return this.processUserMessage(
+      JSON.stringify({
+        type: 'dispute_resolution',
+        details: disputeDetails,
+      }),
+    );
   }
 
   async getRecommendations(userProfile, type = 'general') {
-    return this.processUserMessage(JSON.stringify({
-      type: 'recommendations',
-      userProfile,
-      recommendationType: type,
-    }));
+    return this.processUserMessage(
+      JSON.stringify({
+        type: 'recommendations',
+        userProfile,
+        recommendationType: type,
+      }),
+    );
   }
 
   async analyzeBehavior(userActions, timeframe) {
-    return this.processUserMessage(JSON.stringify({
-      type: 'behavior_analysis',
-      actions: userActions,
-      timeframe,
-    }));
+    return this.processUserMessage(
+      JSON.stringify({
+        type: 'behavior_analysis',
+        actions: userActions,
+        timeframe,
+      }),
+    );
   }
 
   clearHistory() {
@@ -166,4 +186,4 @@ class AIModerator {
 }
 
 export const aiModerator = new AIModerator();
-export default aiModerator; 
+export default aiModerator;

@@ -10,13 +10,13 @@ const NotificationCenter: React.FC = () => {
     <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 1, mt: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Badge badgeContent={unreadCount} color="error">
+          <Badge badgeContent={unreadCount} color='error'>
             <NotificationsIcon />
           </Badge>
-          <Typography variant="h6">Notifications</Typography>
+          <Typography variant='h6'>Notifications</Typography>
         </Box>
         {notifications.length > 0 && (
-          <IconButton onClick={clearAllNotifications} size="small">
+          <IconButton onClick={clearAllNotifications} size='small'>
             <ClearIcon />
           </IconButton>
         )}
@@ -25,7 +25,7 @@ const NotificationCenter: React.FC = () => {
       <List>
         {notifications.length === 0 ? (
           <ListItem>
-            <ListItemText primary="No notifications" />
+            <ListItemText primary='No notifications' />
           </ListItem>
         ) : (
           notifications.map(notification => (
@@ -56,4 +56,3 @@ const NotificationCenter: React.FC = () => {
 };
 
 export default NotificationCenter;
-

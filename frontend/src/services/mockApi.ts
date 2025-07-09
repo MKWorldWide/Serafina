@@ -35,17 +35,17 @@
  */
 
 import { mockDatabase } from './mockDatabase';
-import { 
-  IUser, 
-  IPost, 
-  IMessage, 
-  IConversation, 
-  IGame, 
+import {
+  IUser,
+  IPost,
+  IMessage,
+  IConversation,
+  IGame,
   IAchievement,
   INotification,
   IActivity,
   IFriend,
-  IPaginatedResponse
+  IPaginatedResponse,
 } from '../types/social';
 
 /**
@@ -102,12 +102,12 @@ export class MockApiService {
       statusText: this.getStatusText(status),
       headers: {
         'content-type': 'application/json',
-        'cache-control': 'no-cache'
+        'cache-control': 'no-cache',
       },
       config: {
         url: this.baseURL,
-        method: 'GET'
-      }
+        method: 'GET',
+      },
     };
   }
 
@@ -119,11 +119,11 @@ export class MockApiService {
       response: {
         data: {
           message,
-          code: this.getErrorCode(status)
+          code: this.getErrorCode(status),
         },
         status,
-        statusText: this.getStatusText(status)
-      }
+        statusText: this.getStatusText(status),
+      },
     };
   }
 
@@ -138,7 +138,7 @@ export class MockApiService {
       401: 'Unauthorized',
       403: 'Forbidden',
       404: 'Not Found',
-      500: 'Internal Server Error'
+      500: 'Internal Server Error',
     };
     return statusTexts[status] || 'Unknown';
   }
@@ -152,7 +152,7 @@ export class MockApiService {
       401: 'UNAUTHORIZED',
       403: 'FORBIDDEN',
       404: 'NOT_FOUND',
-      500: 'INTERNAL_ERROR'
+      500: 'INTERNAL_ERROR',
     };
     return errorCodes[status] || 'UNKNOWN_ERROR';
   }
@@ -169,7 +169,10 @@ export class MockApiService {
   /**
    * POST /api/auth/login
    */
-  async login(credentials: { email: string; password: string }): Promise<MockApiResponse<{ user: IUser; token: string }>> {
+  async login(credentials: {
+    email: string;
+    password: string;
+  }): Promise<MockApiResponse<{ user: IUser; token: string }>> {
     await this.simulateDelay();
 
     if (this.shouldSimulateError()) {
@@ -190,7 +193,11 @@ export class MockApiService {
   /**
    * POST /api/auth/register
    */
-  async register(userData: { email: string; password: string; username: string }): Promise<MockApiResponse<{ user: IUser; token: string }>> {
+  async register(userData: {
+    email: string;
+    password: string;
+    username: string;
+  }): Promise<MockApiResponse<{ user: IUser; token: string }>> {
     await this.simulateDelay();
 
     if (this.shouldSimulateError()) {
@@ -214,7 +221,7 @@ export class MockApiService {
         gamesPlayed: 0,
         gamesWon: 0,
         winRate: 0,
-        achievements: []
+        achievements: [],
       },
       settings: {
         profileVisibility: 'public',
@@ -227,23 +234,23 @@ export class MockApiService {
               friendRequests: true,
               messages: true,
               gameInvites: true,
-              achievements: true
-            }
-          }
+              achievements: true,
+            },
+          },
         },
         privacy: {
           showOnlineStatus: true,
           showLastSeen: true,
           allowFriendRequests: true,
-          showGameStats: true
-        }
+          showGameStats: true,
+        },
       },
       attributes: {
         email: userData.email,
         name: userData.username,
         picture: `https://api.dicebear.com/7.x/initials/svg?seed=${userData.username}`,
-        rank: 'Rookie'
-      }
+        rank: 'Rookie',
+      },
     };
 
     const token = `mock_token_${newUser.id}_${Date.now()}`;
@@ -263,7 +270,11 @@ export class MockApiService {
   /**
    * GET /api/users
    */
-  async getUsers(params?: { page?: number; limit?: number; search?: string }): Promise<MockApiResponse<IPaginatedResponse<IUser>>> {
+  async getUsers(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<MockApiResponse<IPaginatedResponse<IUser>>> {
     await this.simulateDelay();
 
     let users = mockDatabase.getUsers();
@@ -283,7 +294,7 @@ export class MockApiService {
     const response: IPaginatedResponse<IUser> = {
       items: paginatedUsers,
       hasMore: endIndex < users.length,
-      nextToken: endIndex < users.length ? `page_${page + 1}` : undefined
+      nextToken: endIndex < users.length ? `page_${page + 1}` : undefined,
     };
 
     return this.createResponse(response);
@@ -321,7 +332,10 @@ export class MockApiService {
   /**
    * GET /api/users/:id/posts
    */
-  async getUserPosts(userId: string, params?: { page?: number; limit?: number }): Promise<MockApiResponse<IPaginatedResponse<IPost>>> {
+  async getUserPosts(
+    userId: string,
+    params?: { page?: number; limit?: number },
+  ): Promise<MockApiResponse<IPaginatedResponse<IPost>>> {
     await this.simulateDelay();
 
     const posts = mockDatabase.getPostsByUser(userId);
@@ -334,7 +348,7 @@ export class MockApiService {
     const response: IPaginatedResponse<IPost> = {
       items: paginatedPosts,
       hasMore: endIndex < posts.length,
-      nextToken: endIndex < posts.length ? `page_${page + 1}` : undefined
+      nextToken: endIndex < posts.length ? `page_${page + 1}` : undefined,
     };
 
     return this.createResponse(response);
@@ -355,7 +369,11 @@ export class MockApiService {
   /**
    * GET /api/posts
    */
-  async getPosts(params?: { page?: number; limit?: number; userId?: string }): Promise<MockApiResponse<IPaginatedResponse<IPost>>> {
+  async getPosts(params?: {
+    page?: number;
+    limit?: number;
+    userId?: string;
+  }): Promise<MockApiResponse<IPaginatedResponse<IPost>>> {
     await this.simulateDelay();
 
     let posts = mockDatabase.getPosts();
@@ -375,7 +393,7 @@ export class MockApiService {
     const response: IPaginatedResponse<IPost> = {
       items: paginatedPosts,
       hasMore: endIndex < posts.length,
-      nextToken: endIndex < posts.length ? `page_${page + 1}` : undefined
+      nextToken: endIndex < posts.length ? `page_${page + 1}` : undefined,
     };
 
     return this.createResponse(response);
@@ -398,7 +416,11 @@ export class MockApiService {
   /**
    * POST /api/posts
    */
-  async createPost(postData: { content: string; authorId: string; gameId?: string }): Promise<MockApiResponse<IPost>> {
+  async createPost(postData: {
+    content: string;
+    authorId: string;
+    gameId?: string;
+  }): Promise<MockApiResponse<IPost>> {
     await this.simulateDelay();
 
     const author = mockDatabase.getUser(postData.authorId);
@@ -415,7 +437,7 @@ export class MockApiService {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       type: 'general',
-      gameId: postData.gameId
+      gameId: postData.gameId,
     };
 
     return this.createResponse(newPost, 201);
@@ -458,9 +480,9 @@ export class MockApiService {
   async getConversations(userId: string): Promise<MockApiResponse<IConversation[]>> {
     await this.simulateDelay();
 
-    const conversations = mockDatabase.getConversations().filter(conv =>
-      conv.participants.some(p => p.user.id === userId)
-    );
+    const conversations = mockDatabase
+      .getConversations()
+      .filter(conv => conv.participants.some(p => p.user.id === userId));
 
     return this.createResponse(conversations);
   }
@@ -468,7 +490,10 @@ export class MockApiService {
   /**
    * GET /api/conversations/:id/messages
    */
-  async getMessages(conversationId: string, params?: { page?: number; limit?: number }): Promise<MockApiResponse<IPaginatedResponse<IMessage>>> {
+  async getMessages(
+    conversationId: string,
+    params?: { page?: number; limit?: number },
+  ): Promise<MockApiResponse<IPaginatedResponse<IMessage>>> {
     await this.simulateDelay();
 
     const messages = mockDatabase.getMessagesByConversation(conversationId);
@@ -481,7 +506,7 @@ export class MockApiService {
     const response: IPaginatedResponse<IMessage> = {
       items: paginatedMessages,
       hasMore: endIndex < messages.length,
-      nextToken: endIndex < messages.length ? `page_${page + 1}` : undefined
+      nextToken: endIndex < messages.length ? `page_${page + 1}` : undefined,
     };
 
     return this.createResponse(response);
@@ -490,7 +515,10 @@ export class MockApiService {
   /**
    * POST /api/conversations/:id/messages
    */
-  async sendMessage(conversationId: string, messageData: { content: string; authorId: string }): Promise<MockApiResponse<IMessage>> {
+  async sendMessage(
+    conversationId: string,
+    messageData: { content: string; authorId: string },
+  ): Promise<MockApiResponse<IMessage>> {
     await this.simulateDelay();
 
     const author = mockDatabase.getUser(messageData.authorId);
@@ -506,7 +534,7 @@ export class MockApiService {
       author,
       status: 'sent',
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     return this.createResponse(newMessage, 201);
@@ -517,7 +545,12 @@ export class MockApiService {
   /**
    * GET /api/games
    */
-  async getGames(params?: { page?: number; limit?: number; search?: string; genre?: string }): Promise<MockApiResponse<IPaginatedResponse<IGame>>> {
+  async getGames(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    genre?: string;
+  }): Promise<MockApiResponse<IPaginatedResponse<IGame>>> {
     await this.simulateDelay();
 
     let games = mockDatabase.getGames();
@@ -542,7 +575,7 @@ export class MockApiService {
     const response: IPaginatedResponse<IGame> = {
       items: paginatedGames,
       hasMore: endIndex < games.length,
-      nextToken: endIndex < games.length ? `page_${page + 1}` : undefined
+      nextToken: endIndex < games.length ? `page_${page + 1}` : undefined,
     };
 
     return this.createResponse(response);
@@ -567,7 +600,10 @@ export class MockApiService {
   /**
    * GET /api/achievements
    */
-  async getAchievements(params?: { userId?: string; gameId?: string }): Promise<MockApiResponse<IAchievement[]>> {
+  async getAchievements(params?: {
+    userId?: string;
+    gameId?: string;
+  }): Promise<MockApiResponse<IAchievement[]>> {
     await this.simulateDelay();
 
     let achievements = mockDatabase.getAchievements();
@@ -576,8 +612,8 @@ export class MockApiService {
     if (params?.userId) {
       const user = mockDatabase.getUser(params.userId);
       if (user) {
-        achievements = achievements.filter(achievement => 
-          user.gameStats.achievements.includes(achievement.id)
+        achievements = achievements.filter(achievement =>
+          user.gameStats.achievements.includes(achievement.id),
         );
       }
     }
@@ -595,7 +631,10 @@ export class MockApiService {
   /**
    * GET /api/notifications
    */
-  async getNotifications(userId: string, params?: { unreadOnly?: boolean }): Promise<MockApiResponse<INotification[]>> {
+  async getNotifications(
+    userId: string,
+    params?: { unreadOnly?: boolean },
+  ): Promise<MockApiResponse<INotification[]>> {
     await this.simulateDelay();
 
     let notifications = mockDatabase.getNotificationsByUser(userId);
@@ -629,7 +668,10 @@ export class MockApiService {
   /**
    * GET /api/activities
    */
-  async getActivities(params?: { userId?: string; type?: string }): Promise<MockApiResponse<IActivity[]>> {
+  async getActivities(params?: {
+    userId?: string;
+    type?: string;
+  }): Promise<MockApiResponse<IActivity[]>> {
     await this.simulateDelay();
 
     let activities = mockDatabase.getActivities();
@@ -667,8 +709,8 @@ export class MockApiService {
 
     if (!type || type === 'posts') {
       const posts = mockDatabase.getPosts();
-      results.posts = posts.filter(post => 
-        post.content.toLowerCase().includes(query.toLowerCase())
+      results.posts = posts.filter(post =>
+        post.content.toLowerCase().includes(query.toLowerCase()),
       );
     }
 
@@ -680,7 +722,10 @@ export class MockApiService {
   /**
    * POST /api/friends/request
    */
-  async sendFriendRequest(fromUserId: string, toUserId: string): Promise<MockApiResponse<{ message: string }>> {
+  async sendFriendRequest(
+    fromUserId: string,
+    toUserId: string,
+  ): Promise<MockApiResponse<{ message: string }>> {
     await this.simulateDelay();
 
     const fromUser = mockDatabase.getUser(fromUserId);
@@ -696,7 +741,10 @@ export class MockApiService {
   /**
    * POST /api/friends/accept
    */
-  async acceptFriendRequest(userId: string, friendId: string): Promise<MockApiResponse<{ message: string }>> {
+  async acceptFriendRequest(
+    userId: string,
+    friendId: string,
+  ): Promise<MockApiResponse<{ message: string }>> {
     await this.simulateDelay();
 
     const user = mockDatabase.getUser(userId);
@@ -712,7 +760,10 @@ export class MockApiService {
   /**
    * DELETE /api/friends/:friendId
    */
-  async removeFriend(userId: string, friendId: string): Promise<MockApiResponse<{ message: string }>> {
+  async removeFriend(
+    userId: string,
+    friendId: string,
+  ): Promise<MockApiResponse<{ message: string }>> {
     await this.simulateDelay();
 
     const user = mockDatabase.getUser(userId);
@@ -727,4 +778,4 @@ export class MockApiService {
 }
 
 // Export singleton instance
-export const mockApi = new MockApiService(); 
+export const mockApi = new MockApiService();

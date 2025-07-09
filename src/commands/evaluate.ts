@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  PermissionFlagsBits,
+  EmbedBuilder,
+} from 'discord.js';
 import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
@@ -20,13 +25,13 @@ const getRatingEmoji = (rating: string): string => {
 export const command: Command = {
   data: new SlashCommandBuilder()
     .setName('evaluate')
-    .setDescription('Evaluate a trial moderator\'s performance')
+    .setDescription("Evaluate a trial moderator's performance")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addUserOption(option =>
       option
         .setName('moderator')
         .setDescription('The trial moderator to evaluate')
-        .setRequired(true)
+        .setRequired(true),
     )
     .addStringOption(option =>
       option
@@ -37,8 +42,8 @@ export const command: Command = {
           { name: '🌟 Excellent', value: 'excellent' },
           { name: '✨ Good', value: 'good' },
           { name: '⭐ Average', value: 'average' },
-          { name: '⚠️ Needs Improvement', value: 'needs_improvement' }
-        )
+          { name: '⚠️ Needs Improvement', value: 'needs_improvement' },
+        ),
     )
     .addStringOption(option =>
       option
@@ -49,8 +54,8 @@ export const command: Command = {
           { name: '🌟 Excellent', value: 'excellent' },
           { name: '✨ Good', value: 'good' },
           { name: '⭐ Average', value: 'average' },
-          { name: '⚠️ Needs Improvement', value: 'needs_improvement' }
-        )
+          { name: '⚠️ Needs Improvement', value: 'needs_improvement' },
+        ),
     )
     .addStringOption(option =>
       option
@@ -61,14 +66,14 @@ export const command: Command = {
           { name: '🌟 Excellent', value: 'excellent' },
           { name: '✨ Good', value: 'good' },
           { name: '⭐ Average', value: 'average' },
-          { name: '⚠️ Needs Improvement', value: 'needs_improvement' }
-        )
+          { name: '⚠️ Needs Improvement', value: 'needs_improvement' },
+        ),
     )
     .addStringOption(option =>
       option
         .setName('feedback')
         .setDescription('Detailed feedback for the trial moderator')
-        .setRequired(true)
+        .setRequired(true),
     )
     .toJSON(),
 
@@ -107,13 +112,13 @@ export const command: Command = {
       // Create evaluation embed
       const evaluationEmbed = new EmbedBuilder()
         .setTitle('📊 Trial Moderator Evaluation')
-        .setColor(0x9370DB)
+        .setColor(0x9370db)
         .setDescription(`Evaluation for ${trialMod.tag}`)
         .addFields(
           { name: '🎯 Activity', value: getRatingEmoji(activity), inline: true },
           { name: '💬 Communication', value: getRatingEmoji(communication), inline: true },
           { name: '⚖️ Decision Making', value: getRatingEmoji(decisionMaking), inline: true },
-          { name: '📝 Feedback', value: feedback }
+          { name: '📝 Feedback', value: feedback },
         )
         .setTimestamp()
         .setFooter({ text: `Evaluated by ${interaction.user.tag}` });
@@ -124,7 +129,7 @@ export const command: Command = {
       // Send to trial mod channel
       await trialModChannel.send({
         content: `${trialMod}`,
-        embeds: [evaluationEmbed]
+        embeds: [evaluationEmbed],
       });
 
       // Calculate overall rating
@@ -143,13 +148,16 @@ export const command: Command = {
 
       await interaction.editReply(`✅ Evaluation submitted!\n\nRecommendation: ${recommendation}`);
 
-      logger.info(`Trial moderator evaluation completed for ${trialMod.tag} by ${interaction.user.tag}`);
-
+      logger.info(
+        `Trial moderator evaluation completed for ${trialMod.tag} by ${interaction.user.tag}`,
+      );
     } catch (error) {
       logger.error('Error in evaluate command:', error);
-      await interaction.editReply('❌ An error occurred while evaluating the trial moderator. Please check the logs for details.');
+      await interaction.editReply(
+        '❌ An error occurred while evaluating the trial moderator. Please check the logs for details.',
+      );
     }
   },
 
-  cooldown: 300 // 5 minutes cooldown
-}; 
+  cooldown: 300, // 5 minutes cooldown
+};

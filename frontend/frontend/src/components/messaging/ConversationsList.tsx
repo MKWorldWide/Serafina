@@ -27,9 +27,7 @@ export default function ConversationsList({
   const { user } = useAuth();
 
   const getOtherParticipant = (conversation: IConversation) => {
-    return conversation.participants.find(
-      (p) => p.user.username !== user?.username
-    )?.user;
+    return conversation.participants.find(p => p.user.username !== user?.username)?.user;
   };
 
   const getLastMessageTime = (timestamp: string) => {
@@ -50,7 +48,7 @@ export default function ConversationsList({
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" p={4}>
+      <Box display='flex' justifyContent='center' alignItems='center' p={4}>
         <CircularProgress />
       </Box>
     );
@@ -58,7 +56,7 @@ export default function ConversationsList({
 
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      {conversations.map((conversation) => {
+      {conversations.map(conversation => {
         const otherParticipant = getOtherParticipant(conversation);
 
         return (
@@ -87,7 +85,7 @@ export default function ConversationsList({
               primary={conversation.title || otherParticipant?.username}
               secondary={
                 <Box
-                  component="span"
+                  component='span'
                   sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -95,9 +93,9 @@ export default function ConversationsList({
                   }}
                 >
                   <Typography
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
+                    component='span'
+                    variant='body2'
+                    color='text.primary'
                     sx={{
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -108,11 +106,7 @@ export default function ConversationsList({
                     {conversation.lastMessage?.content}
                   </Typography>
                   {conversation.lastMessage && (
-                    <Typography
-                      component="span"
-                      variant="caption"
-                      color="text.secondary"
-                    >
+                    <Typography component='span' variant='caption' color='text.secondary'>
                       {getLastMessageTime(conversation.lastMessage.createdAt)}
                     </Typography>
                   )}

@@ -87,26 +87,26 @@ const Achievements: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">Please sign in to view achievements</p>
+      <div className='text-center py-8'>
+        <p className='text-gray-600'>Please sign in to view achievements</p>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">Loading achievements...</p>
+      <div className='text-center py-8'>
+        <p className='text-gray-600'>Loading achievements...</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Achievements</h2>
-        <div className="space-y-4">
-          <p className="text-gray-600">No achievements yet. Start playing to earn some!</p>
+    <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+      <div className='bg-white shadow rounded-lg p-6'>
+        <h2 className='text-2xl font-bold text-gray-900 mb-4'>Achievements</h2>
+        <div className='space-y-4'>
+          <p className='text-gray-600'>No achievements yet. Start playing to earn some!</p>
         </div>
       </div>
     </div>

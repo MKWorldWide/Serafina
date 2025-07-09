@@ -27,41 +27,35 @@ import useStore from '../../store/useStore';
 const FriendsPage = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const navigate = useNavigate();
-  const {
-    friends,
-    requests,
-    suggestions,
-    acceptFriendRequest,
-    rejectFriendRequest,
-    addFriend,
-  } = useStore();
+  const { friends, requests, suggestions, acceptFriendRequest, rejectFriendRequest, addFriend } =
+    useStore();
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
 
-  const handleAcceptRequest = (requestId) => {
+  const handleAcceptRequest = requestId => {
     acceptFriendRequest(requestId);
   };
 
-  const handleRejectRequest = (requestId) => {
+  const handleRejectRequest = requestId => {
     rejectFriendRequest(requestId);
   };
 
-  const handleAddFriend = (suggestion) => {
+  const handleAddFriend = suggestion => {
     addFriend(suggestion);
   };
 
-  const handleMessage = (friendId) => {
+  const handleMessage = friendId => {
     navigate(`/messages/${friendId}`);
   };
 
-  const handleInviteToGame = (friendId) => {
+  const handleInviteToGame = friendId => {
     // TODO: Implement game invitation
     console.log('Invite to game:', friendId);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
       case 'online':
         return 'success';
@@ -76,13 +70,10 @@ const FriendsPage = () => {
     <List>
       {friends.length === 0 ? (
         <ListItem>
-          <ListItemText
-            primary="No friends yet"
-            secondary="Add friends to see them here"
-          />
+          <ListItemText primary='No friends yet' secondary='Add friends to see them here' />
         </ListItem>
       ) : (
-        friends.map((friend) => (
+        friends.map(friend => (
           <ListItem
             key={friend.id}
             secondaryAction={
@@ -98,18 +89,15 @@ const FriendsPage = () => {
           >
             <ListItemAvatar>
               <Badge
-                overlap="circular"
+                overlap='circular'
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                variant="dot"
+                variant='dot'
                 color={getStatusColor(friend.status)}
               >
                 <Avatar src={friend.avatar} alt={friend.username} />
               </Badge>
             </ListItemAvatar>
-            <ListItemText
-              primary={friend.username}
-              secondary={friend.status || 'Offline'}
-            />
+            <ListItemText primary={friend.username} secondary={friend.status || 'Offline'} />
           </ListItem>
         ))
       )}
@@ -121,26 +109,20 @@ const FriendsPage = () => {
       {requests.length === 0 ? (
         <ListItem>
           <ListItemText
-            primary="No pending requests"
-            secondary="Friend requests will appear here"
+            primary='No pending requests'
+            secondary='Friend requests will appear here'
           />
         </ListItem>
       ) : (
-        requests.map((request) => (
+        requests.map(request => (
           <ListItem
             key={request.id}
             secondaryAction={
               <Box>
-                <IconButton
-                  color="success"
-                  onClick={() => handleAcceptRequest(request.id)}
-                >
+                <IconButton color='success' onClick={() => handleAcceptRequest(request.id)}>
                   <CheckIcon />
                 </IconButton>
-                <IconButton
-                  color="error"
-                  onClick={() => handleRejectRequest(request.id)}
-                >
+                <IconButton color='error' onClick={() => handleRejectRequest(request.id)}>
                   <CloseIcon />
                 </IconButton>
               </Box>
@@ -149,10 +131,7 @@ const FriendsPage = () => {
             <ListItemAvatar>
               <Avatar src={request.avatar} alt={request.username} />
             </ListItemAvatar>
-            <ListItemText
-              primary={request.username}
-              secondary="Sent you a friend request"
-            />
+            <ListItemText primary={request.username} secondary='Sent you a friend request' />
           </ListItem>
         ))
       )}
@@ -164,17 +143,17 @@ const FriendsPage = () => {
       {suggestions.length === 0 ? (
         <ListItem>
           <ListItemText
-            primary="No suggestions available"
-            secondary="Check back later for friend suggestions"
+            primary='No suggestions available'
+            secondary='Check back later for friend suggestions'
           />
         </ListItem>
       ) : (
-        suggestions.map((suggestion) => (
+        suggestions.map(suggestion => (
           <ListItem
             key={suggestion.id}
             secondaryAction={
               <Button
-                variant="outlined"
+                variant='outlined'
                 startIcon={<AddIcon />}
                 onClick={() => handleAddFriend(suggestion)}
               >
@@ -196,9 +175,9 @@ const FriendsPage = () => {
   );
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth='md'>
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Friends
         </Typography>
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
@@ -225,4 +204,4 @@ const FriendsPage = () => {
   );
 };
 
-export default FriendsPage; 
+export default FriendsPage;

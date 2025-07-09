@@ -57,7 +57,9 @@ export function loadBotConfig(): BotConfig {
   // Validate environment
   const validatedEnvironment = EnvironmentSchema.safeParse(environment);
   if (!validatedEnvironment.success) {
-    throw new Error(`Invalid NODE_ENV: ${environment}. Must be one of: development, production, testing`);
+    throw new Error(
+      `Invalid NODE_ENV: ${environment}. Must be one of: development, production, testing`,
+    );
   }
 
   // Load optional environment variables
@@ -67,7 +69,7 @@ export function loadBotConfig(): BotConfig {
   const logLevel = (process.env['LOG_LEVEL'] as 'error' | 'warn' | 'info' | 'debug') || 'info';
   const debug = process.env['DEBUG'] === 'true';
   const maxConcurrency = parseInt(process.env['MAX_CONCURRENCY'] || '10');
-  
+
   const rateLimitMaxRequests = parseInt(process.env['RATE_LIMIT_MAX_REQUESTS'] || '100');
   const rateLimitWindowMs = parseInt(process.env['RATE_LIMIT_WINDOW_MS'] || '60000');
 
@@ -91,8 +93,8 @@ export function loadBotConfig(): BotConfig {
     maxConcurrency,
     rateLimit: {
       maxRequests: rateLimitMaxRequests,
-      windowMs: rateLimitWindowMs
-    }
+      windowMs: rateLimitWindowMs,
+    },
   };
 
   return botConfig;
@@ -110,8 +112,8 @@ export function getEnvironmentConfig(environment: string) {
     maxConcurrency: 10,
     rateLimit: {
       maxRequests: 100,
-      windowMs: 60000
-    }
+      windowMs: 60000,
+    },
   };
 
   switch (environment) {
@@ -123,10 +125,10 @@ export function getEnvironmentConfig(environment: string) {
         maxConcurrency: 5,
         rateLimit: {
           maxRequests: 1000,
-          windowMs: 60000
-        }
+          windowMs: 60000,
+        },
       };
-    
+
     case 'production':
       return {
         ...baseConfig,
@@ -135,10 +137,10 @@ export function getEnvironmentConfig(environment: string) {
         maxConcurrency: 20,
         rateLimit: {
           maxRequests: 50,
-          windowMs: 60000
-        }
+          windowMs: 60000,
+        },
       };
-    
+
     case 'testing':
       return {
         ...baseConfig,
@@ -147,10 +149,10 @@ export function getEnvironmentConfig(environment: string) {
         maxConcurrency: 1,
         rateLimit: {
           maxRequests: 10,
-          windowMs: 1000
-        }
+          windowMs: 1000,
+        },
       };
-    
+
     default:
       return baseConfig;
   }
@@ -231,4 +233,4 @@ export function validateServiceConfig(config: BotConfig): string[] {
   }
 
   return errors;
-} 
+}

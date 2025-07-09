@@ -92,7 +92,7 @@ npm run deploy
 ```
 gamedin-shopify/
 ├── app/                      # Shopify App (React)
-│   ├── frontend/             # React components 
+│   ├── frontend/             # React components
 │   │   ├── index.html        # HTML entry point
 │   │   └── src/              # React source code
 │   │       ├── App.jsx       # Main App component
@@ -124,4 +124,4 @@ gamedin-shopify/
 
 ## License
 
-MIT 
+MIT

@@ -119,8 +119,8 @@ class FeedService {
     if (this.userPreferences) {
       // Game relevance
       if (post.user.games) {
-        const commonGames = post.user.games.filter(game => 
-          this.userPreferences.games.includes(game)
+        const commonGames = post.user.games.filter(game =>
+          this.userPreferences.games.includes(game),
         );
         score += commonGames.length * 5;
       }
@@ -160,4 +160,4 @@ class FeedService {
   }
 }
 
-export const feedService = new FeedService(); 
+export const feedService = new FeedService();

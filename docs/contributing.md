@@ -40,6 +40,7 @@ Format: `<type>(<scope>): <subject>`
 Example: `feat(auth): add Google OAuth integration`
 
 Types:
+
 - feat: new feature
 - fix: bug fix
 - docs: documentation
@@ -69,6 +70,7 @@ Format: `<type>/<description>`
 Example: `feature/google-auth`
 
 Types:
+
 - feature/
 - bugfix/
 - hotfix/
@@ -101,12 +103,14 @@ Types:
 ## Development Setup
 
 1. Install dependencies:
+
    ```bash
    npm install
    cd frontend && npm install
    ```
 
 2. Set up pre-commit hooks:
+
    ```bash
    npm run prepare
    ```

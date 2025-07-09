@@ -28,4 +28,4 @@ export const onCreateMessageSubscription = gql`
       conversationId
     }
   }
-`; 
+`;

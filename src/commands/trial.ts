@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  PermissionFlagsBits,
+  EmbedBuilder,
+} from 'discord.js';
 import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
@@ -15,48 +20,36 @@ export const command: Command = {
           option
             .setName('user')
             .setDescription('The user to add as trial moderator')
-            .setRequired(true)
+            .setRequired(true),
         )
         .addStringOption(option =>
           option
             .setName('reason')
             .setDescription('Reason for adding as trial moderator')
-            .setRequired(true)
-        )
+            .setRequired(true),
+        ),
     )
     .addSubcommand(subcommand =>
       subcommand
         .setName('promote')
         .setDescription('Promote a trial moderator to full moderator')
         .addUserOption(option =>
-          option
-            .setName('user')
-            .setDescription('The trial moderator to promote')
-            .setRequired(true)
+          option.setName('user').setDescription('The trial moderator to promote').setRequired(true),
         )
         .addStringOption(option =>
-          option
-            .setName('reason')
-            .setDescription('Reason for promotion')
-            .setRequired(true)
-        )
+          option.setName('reason').setDescription('Reason for promotion').setRequired(true),
+        ),
     )
     .addSubcommand(subcommand =>
       subcommand
         .setName('remove')
         .setDescription('Remove a trial moderator')
         .addUserOption(option =>
-          option
-            .setName('user')
-            .setDescription('The trial moderator to remove')
-            .setRequired(true)
+          option.setName('user').setDescription('The trial moderator to remove').setRequired(true),
         )
         .addStringOption(option =>
-          option
-            .setName('reason')
-            .setDescription('Reason for removal')
-            .setRequired(true)
-        )
+          option.setName('reason').setDescription('Reason for removal').setRequired(true),
+        ),
     )
     .toJSON(),
 
@@ -90,7 +83,7 @@ export const command: Command = {
       }
 
       const embed = new EmbedBuilder()
-        .setColor(0xFF69B4)
+        .setColor(0xff69b4)
         .setTimestamp()
         .setFooter({ text: `Action by ${interaction.user.tag}` });
 
@@ -105,7 +98,7 @@ export const command: Command = {
           embed
             .setTitle('🆕 Trial Moderator Added')
             .setDescription(`**User:** ${user.tag} (${user.id})\n**Reason:** ${reason}`)
-            .setColor(0x9370DB);
+            .setColor(0x9370db);
 
           await modLogsChannel.send({ embeds: [embed] });
           await interaction.editReply(`✅ Added ${user.tag} as trial moderator.`);
@@ -123,7 +116,7 @@ export const command: Command = {
           embed
             .setTitle('⬆️ Trial Moderator Promoted')
             .setDescription(`**User:** ${user.tag} (${user.id})\n**Reason:** ${reason}`)
-            .setColor(0xFF69B4);
+            .setColor(0xff69b4);
 
           await modLogsChannel.send({ embeds: [embed] });
           await interaction.editReply(`✅ Promoted ${user.tag} to full moderator.`);
@@ -140,7 +133,7 @@ export const command: Command = {
           embed
             .setTitle('❌ Trial Moderator Removed')
             .setDescription(`**User:** ${user.tag} (${user.id})\n**Reason:** ${reason}`)
-            .setColor(0xFF0000);
+            .setColor(0xff0000);
 
           await modLogsChannel.send({ embeds: [embed] });
           await interaction.editReply(`✅ Removed ${user.tag} from trial moderator role.`);
@@ -148,13 +141,16 @@ export const command: Command = {
         }
       }
 
-      logger.info(`Trial moderator ${subcommand} executed for ${user.tag} by ${interaction.user.tag}`);
-
+      logger.info(
+        `Trial moderator ${subcommand} executed for ${user.tag} by ${interaction.user.tag}`,
+      );
     } catch (error) {
       logger.error('Error in trial command:', error);
-      await interaction.editReply('❌ An error occurred while managing trial moderators. Please check the logs for details.');
+      await interaction.editReply(
+        '❌ An error occurred while managing trial moderators. Please check the logs for details.',
+      );
     }
   },
 
-  cooldown: 10 // 10 seconds cooldown
-}; 
+  cooldown: 10, // 10 seconds cooldown
+};

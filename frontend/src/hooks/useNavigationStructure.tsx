@@ -22,13 +22,16 @@ interface NavigationStructureReturn {
  */
 const useNavigationStructure = (): NavigationStructureReturn => {
   // Memoize the navigation items to prevent unnecessary re-renders
-  const navigationItems = useMemo<NavigationItem[]>(() => [
-    { name: 'Dashboard', path: '/' },
-    { name: 'Products', path: '/products' },
-    { name: 'Customers', path: '/customers' }
-  ], []);
+  const navigationItems = useMemo<NavigationItem[]>(
+    () => [
+      { name: 'Dashboard', path: '/' },
+      { name: 'Products', path: '/products' },
+      { name: 'Customers', path: '/customers' },
+    ],
+    [],
+  );
 
   return { navigationItems };
 };
 
-export default useNavigationStructure; 
+export default useNavigationStructure;

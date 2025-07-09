@@ -96,19 +96,20 @@ This guide provides detailed instructions for deploying the GameDin application 
 
 Ensure these environment variables are configured in the Amplify Console:
 
-| Variable Name | Description | Example Value |
-|---------------|-------------|--------------|
-| `AMPLIFY_MONOREPO_APP_ROOT` | Root directory of the app | `frontend` |
-| `NODE_OPTIONS` | Node.js memory allocation | `--max-old-space-size=4096` |
-| `NODE_ENV` | Environment name | `production` |
-| `NODE_VERSION` | Node.js version | `20` |
-| `VITE_APP_ENV` | Application environment | `production` |
+| Variable Name               | Description               | Example Value               |
+| --------------------------- | ------------------------- | --------------------------- |
+| `AMPLIFY_MONOREPO_APP_ROOT` | Root directory of the app | `frontend`                  |
+| `NODE_OPTIONS`              | Node.js memory allocation | `--max-old-space-size=4096` |
+| `NODE_ENV`                  | Environment name          | `production`                |
+| `NODE_VERSION`              | Node.js version           | `20`                        |
+| `VITE_APP_ENV`              | Application environment   | `production`                |
 
 ## Amplify Gen2 Feature Optimization
 
 ### 1. Performance Optimizations
 
 - **Caching Strategy**: Configure custom cache headers for different file types
+
   ```yaml
   customHeaders:
     - pattern: '/assets/*'
@@ -131,6 +132,7 @@ Ensure these environment variables are configured in the Amplify Console:
 ### 2. Security Enhancements
 
 - **Web Application Firewall (WAF)**: Enable and configure WAF rules
+
   ```yaml
   security:
     enableWAF: true
@@ -211,4 +213,4 @@ If you encounter issues not covered in this guide:
 - [AWS Amplify Documentation](https://docs.aws.amazon.com/amplify/)
 - [AWS Amplify CLI Documentation](https://docs.amplify.aws/cli/)
 - [AWS Amplify Gen2 Features](https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html)
-- [AWS Amplify Console User Guide](https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html) 
+- [AWS Amplify Console User Guide](https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html)

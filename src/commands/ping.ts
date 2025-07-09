@@ -36,14 +36,20 @@ export const command: Command = {
    * @param interaction Discord ChatInputCommandInteraction
    */
   async execute(interaction: ChatInputCommandInteraction) {
-    const sent = await interaction.reply({ content: '🏓 Pinging...', fetchReply: true, ephemeral: true });
+    const sent = await interaction.reply({
+      content: '🏓 Pinging...',
+      fetchReply: true,
+      ephemeral: true,
+    });
     // Calculate round-trip latency
     const latency = sent.createdTimestamp - interaction.createdTimestamp;
     // API latency from Discord.js client
     const apiLatency = interaction.client.ws.ping;
     await interaction.editReply(`🏓 Pong! Latency: ${latency}ms | API Latency: ${apiLatency}ms`);
-    logger.info(`/ping used by ${interaction.user.tag} (Latency: ${latency}ms, API: ${apiLatency}ms)`);
+    logger.info(
+      `/ping used by ${interaction.user.tag} (Latency: ${latency}ms, API: ${apiLatency}ms)`,
+    );
   },
 
   cooldown: 5, // 5 seconds cooldown to prevent spam
-}; 
+};

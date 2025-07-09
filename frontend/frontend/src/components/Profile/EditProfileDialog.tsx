@@ -18,12 +18,7 @@ interface EditProfileDialogProps {
   onSave: (profile: IUserProfile) => void;
 }
 
-export default function EditProfileDialog({
-  open,
-  onClose,
-  user,
-  onSave,
-}: EditProfileDialogProps) {
+export default function EditProfileDialog({ open, onClose, user, onSave }: EditProfileDialogProps) {
   const [name, setName] = useState(user.name || '');
   const [bio, setBio] = useState(user.bio || '');
   const [picture, setPicture] = useState(user.picture || user.avatar || '');
@@ -48,7 +43,7 @@ export default function EditProfileDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
       <DialogTitle>Edit Profile</DialogTitle>
       <DialogContent>
         <Box
@@ -67,35 +62,35 @@ export default function EditProfileDialog({
           />
           <TextField
             fullWidth
-            label="Profile Picture URL"
+            label='Profile Picture URL'
             value={picture}
-            onChange={(e) => setPicture(e.target.value)}
-            margin="normal"
+            onChange={e => setPicture(e.target.value)}
+            margin='normal'
           />
           <TextField
             fullWidth
-            label="Name"
+            label='Name'
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            margin="normal"
+            onChange={e => setName(e.target.value)}
+            margin='normal'
           />
           <TextField
             fullWidth
-            label="Bio"
+            label='Bio'
             value={bio}
-            onChange={(e) => setBio(e.target.value)}
+            onChange={e => setBio(e.target.value)}
             multiline
             rows={4}
-            margin="normal"
+            margin='normal'
           />
         </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSubmit} color="primary">
+        <Button onClick={handleSubmit} color='primary'>
           Save Changes
         </Button>
       </DialogActions>
     </Dialog>
   );
-} 
+}

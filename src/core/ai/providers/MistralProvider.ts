@@ -1,23 +1,30 @@
 /**
  * 🎮 GameDin Discord Bot - Mistral Provider
- * 
+ *
  * Mistral AI API provider implementation for the Discord bot AI system.
  * Supports Mistral-7B, Mixtral-8x7B, and other Mistral models with comprehensive
  * error handling, rate limiting, and cost tracking.
- * 
+ *
  * Features:
  * - Support for Mistral-7B, Mixtral-8x7B, and other Mistral models
  * - Rate limiting and error handling
  * - Cost tracking and usage statistics
  * - TypeScript interfaces for type safety
  * - Quantum documentation and usage tracking
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
  */
 
-import { BaseAIProvider, AIRequestParams, AIResponse, AIModelConfig, AIErrorType, AIProviderError } from '../AIProvider';
+import {
+  BaseAIProvider,
+  AIRequestParams,
+  AIResponse,
+  AIModelConfig,
+  AIErrorType,
+  AIProviderError,
+} from '../AIProvider';
 import { Logger } from '../../Logger';
 
 /**
@@ -90,7 +97,7 @@ export class MistralProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.0000014 // $0.0014 per 1K tokens
+      costPerToken: 0.0000014, // $0.0014 per 1K tokens
     });
 
     // Mistral Small (Mixtral-8x7B)
@@ -101,7 +108,7 @@ export class MistralProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.0000042 // $0.0042 per 1K tokens
+      costPerToken: 0.0000042, // $0.0042 per 1K tokens
     });
 
     // Mistral Medium
@@ -112,7 +119,7 @@ export class MistralProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.000014 // $0.014 per 1K tokens
+      costPerToken: 0.000014, // $0.014 per 1K tokens
     });
 
     // Mistral Large
@@ -123,7 +130,7 @@ export class MistralProvider extends BaseAIProvider {
       topP: 1.0,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      costPerToken: 0.000042 // $0.042 per 1K tokens
+      costPerToken: 0.000042, // $0.042 per 1K tokens
     });
 
     this.logger.info(`Initialized ${this.models.size} Mistral models`);
@@ -134,7 +141,7 @@ export class MistralProvider extends BaseAIProvider {
    */
   protected async generateResponseInternal(
     params: AIRequestParams,
-    model: AIModelConfig
+    model: AIModelConfig,
   ): Promise<AIResponse> {
     const requestBody: MistralRequest = {
       model: model.name,
@@ -142,25 +149,25 @@ export class MistralProvider extends BaseAIProvider {
       max_tokens: params.maxTokens || model.maxTokens,
       temperature: params.temperature ?? model.temperature,
       top_p: params.topP ?? model.topP,
-      safe_prompt: true
+      safe_prompt: true,
     };
 
     try {
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
         await this.handleAPIError(response);
       }
 
-      const data = await response.json() as MistralResponse;
-      
+      const data = (await response.json()) as MistralResponse;
+
       if (!data.choices || data.choices.length === 0) {
         throw new AIProviderError('No response generated', AIErrorType.UNKNOWN);
       }
@@ -183,18 +190,18 @@ export class MistralProvider extends BaseAIProvider {
         metadata: {
           finishReason: data.choices[0]?.finish_reason || 'unknown',
           promptTokens: data.usage?.prompt_tokens || 0,
-          completionTokens: data.usage?.completion_tokens || 0
-        }
+          completionTokens: data.usage?.completion_tokens || 0,
+        },
       };
     } catch (error) {
       if (error instanceof AIProviderError) {
         throw error;
       }
-      
+
       throw new AIProviderError(
         `Mistral API error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         AIErrorType.NETWORK_ERROR,
-        true
+        true,
       );
     }
   }
@@ -209,7 +216,7 @@ export class MistralProvider extends BaseAIProvider {
     if (params.systemPrompt) {
       messages.push({
         role: 'system',
-        content: params.systemPrompt
+        content: params.systemPrompt,
       });
     }
 
@@ -217,14 +224,14 @@ export class MistralProvider extends BaseAIProvider {
     if (params.context) {
       messages.push({
         role: 'system',
-        content: `Context: ${params.context}`
+        content: `Context: ${params.context}`,
       });
     }
 
     // Add user prompt
     messages.push({
       role: 'user',
-      content: params.prompt
+      content: params.prompt,
     });
 
     return messages;
@@ -239,9 +246,9 @@ export class MistralProvider extends BaseAIProvider {
     let retryable = false;
 
     try {
-      const errorData = await response.json() as any;
+      const errorData = (await response.json()) as any;
       errorMessage = errorData?.error?.message || errorMessage;
-      
+
       // Map Mistral error codes to our error types
       switch (response.status) {
         case 401:
@@ -293,7 +300,7 @@ export class MistralProvider extends BaseAIProvider {
       name: this.name,
       models: Array.from(this.models.keys()),
       baseUrl: this.baseUrl,
-      defaultModel: this.defaultModel
+      defaultModel: this.defaultModel,
     };
   }
-} 
+}

@@ -42,4 +42,4 @@ describe('Basic Functionality', () => {
     expect(result).toBeDefined();
     expect(typeof result).toBe('string');
   });
-}); 
+});

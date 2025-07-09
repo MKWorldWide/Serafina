@@ -1,10 +1,10 @@
 /**
  * 🏥 Serafina Health Check Endpoint
- * 
+ *
  * This module provides a health check endpoint for AWS load balancer monitoring
  * and bot status reporting. It runs on port 3000 and provides detailed health
  * information for monitoring and alerting.
- * 
+ *
  * Features:
  * - HTTP health check endpoint (/health)
  * - Detailed bot status reporting
@@ -12,7 +12,7 @@
  * - AI provider health checks
  * - Memory and performance metrics
  * - AWS load balancer compatibility
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -93,7 +93,7 @@ class HealthCheckServer {
     this.config = config;
     this.logger = new Logger('HealthCheck', LogLevel.INFO);
     this.startTime = new Date();
-    
+
     this.app = express();
     this.setupRoutes();
   }
@@ -106,16 +106,16 @@ class HealthCheckServer {
     this.app.get('/health', async (req: express.Request, res: express.Response) => {
       try {
         const healthStatus = await this.getHealthStatus();
-        const statusCode = healthStatus.status === 'healthy' ? 200 : 
-                          healthStatus.status === 'degraded' ? 200 : 503;
-        
+        const statusCode =
+          healthStatus.status === 'healthy' ? 200 : healthStatus.status === 'degraded' ? 200 : 503;
+
         res.status(statusCode).json(healthStatus);
       } catch (error) {
         this.logger.error('Health check error:', error);
         res.status(503).json({
           status: 'unhealthy',
           timestamp: new Date().toISOString(),
-          error: 'Health check failed'
+          error: 'Health check failed',
         });
       }
     });
@@ -140,7 +140,7 @@ class HealthCheckServer {
         res.json({
           status: 'online',
           timestamp: new Date().toISOString(),
-          stats: botStats
+          stats: botStats,
         });
       } catch (error) {
         this.logger.error('Status check error:', error);
@@ -157,16 +157,18 @@ class HealthCheckServer {
         endpoints: {
           health: '/health',
           status: '/status',
-          metrics: this.config.enableDetailedMetrics ? '/metrics' : 'disabled'
-        }
+          metrics: this.config.enableDetailedMetrics ? '/metrics' : 'disabled',
+        },
       });
     });
 
     // Error handling middleware
-    this.app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-      this.logger.error('Express error:', err);
-      res.status(500).json({ error: 'Internal server error' });
-    });
+    this.app.use(
+      (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+        this.logger.error('Express error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+      },
+    );
   }
 
   /**
@@ -175,12 +177,12 @@ class HealthCheckServer {
   private async getHealthStatus(): Promise<HealthStatus> {
     const botStats = this.bot.getStats();
     const uptime = Date.now() - this.startTime.getTime();
-    
+
     // Get Discord connection status
     const discordStatus = {
       connected: botStats.isReady,
       guildCount: botStats.guildCount,
-      latency: 0 // TODO: Implement actual latency measurement
+      latency: 0, // TODO: Implement actual latency measurement
     };
 
     // Get AI provider status
@@ -190,10 +192,10 @@ class HealthCheckServer {
       providers: {
         openai: providerHealth.find(p => p.provider === 'openai')?.available || false,
         mistral: providerHealth.find(p => p.provider === 'mistral')?.available || false,
-        athenaMist: providerHealth.find(p => p.provider === 'athenamist')?.available || false
+        athenaMist: providerHealth.find(p => p.provider === 'athenamist')?.available || false,
       },
       totalRequests: aiManager.getStats().totalRequests,
-      errorRate: aiManager.getStats().errors / Math.max(aiManager.getStats().totalRequests, 1)
+      errorRate: aiManager.getStats().errors / Math.max(aiManager.getStats().totalRequests, 1),
     };
 
     // Get system metrics
@@ -201,7 +203,7 @@ class HealthCheckServer {
 
     // Determine overall health status
     let status: 'healthy' | 'unhealthy' | 'degraded' = 'healthy';
-    
+
     if (!discordStatus.connected) {
       status = 'unhealthy';
     } else if (aiStatus.errorRate > 0.1 || systemMetrics.memory.percentage > 80) {
@@ -220,13 +222,13 @@ class HealthCheckServer {
       commands: {
         total: botStats.commandStats?.total || 0,
         active: botStats.commandStats?.active || 0,
-        errors: botStats.commandStats?.errors || 0
+        errors: botStats.commandStats?.errors || 0,
       },
       events: {
         total: botStats.eventStats?.total || 0,
         active: botStats.eventStats?.active || 0,
-        errors: botStats.eventStats?.errors || 0
-      }
+        errors: botStats.eventStats?.errors || 0,
+      },
     };
   }
 
@@ -236,31 +238,31 @@ class HealthCheckServer {
   private getDetailedMetrics(): any {
     const usage = process.memoryUsage();
     const cpuUsage = process.cpuUsage();
-    
+
     return {
       memory: {
         rss: usage.rss,
         heapTotal: usage.heapTotal,
         heapUsed: usage.heapUsed,
         external: usage.external,
-        arrayBuffers: usage.arrayBuffers
+        arrayBuffers: usage.arrayBuffers,
       },
       cpu: {
         user: cpuUsage.user,
-        system: cpuUsage.system
+        system: cpuUsage.system,
       },
       process: {
         pid: process.pid,
         uptime: process.uptime(),
         version: process.version,
         platform: process.platform,
-        arch: process.arch
+        arch: process.arch,
       },
       environment: {
         nodeEnv: process.env.NODE_ENV,
         awsRegion: process.env.AWS_REGION,
-        awsAccountId: process.env.AWS_ACCOUNT_ID
-      }
+        awsAccountId: process.env.AWS_ACCOUNT_ID,
+      },
     };
   }
 
@@ -277,11 +279,11 @@ class HealthCheckServer {
       memory: {
         used: usedMemory,
         total: totalMemory,
-        percentage: Math.round(memoryPercentage * 100) / 100
+        percentage: Math.round(memoryPercentage * 100) / 100,
       },
       cpu: {
-        load: 0 // TODO: Implement actual CPU load measurement
-      }
+        load: 0, // TODO: Implement actual CPU load measurement
+      },
     };
   }
 
@@ -306,7 +308,7 @@ class HealthCheckServer {
    * Stop the health check server
    */
   async stop(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (this.server) {
         this.server.close(() => {
           this.logger.info('Health check server stopped');
@@ -324,9 +326,9 @@ class HealthCheckServer {
   getServerInfo(): { port: number; host: string } {
     return {
       port: this.config.port,
-      host: this.config.host
+      host: this.config.host,
     };
   }
 }
 
-export { HealthCheckServer, HealthCheckConfig, HealthStatus }; 
+export { HealthCheckServer, HealthCheckConfig, HealthStatus };

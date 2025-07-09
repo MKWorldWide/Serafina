@@ -1,60 +1,89 @@
-import { SlashCommandBuilder, CommandInteraction, PermissionFlagsBits, ChannelType, GuildChannel, Role } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  CommandInteraction,
+  PermissionFlagsBits,
+  ChannelType,
+  GuildChannel,
+  Role,
+} from 'discord.js';
 import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
 const categories = {
   '🌀 GameDin Core': {
-    channels: ['welcome', 'rules-and-purpose', 'introduce-yourself', 'announcements', 'role-select'],
-    description: 'Core channels for community management and announcements'
+    channels: [
+      'welcome',
+      'rules-and-purpose',
+      'introduce-yourself',
+      'announcements',
+      'role-select',
+    ],
+    description: 'Core channels for community management and announcements',
   },
   '💬 Unity Circle': {
-    channels: ['gaming-chat', 'memes-and-chaos', 'vent-channel', 'coven-circle', 'after-dark', 'holy-quotes'],
-    description: 'Community interaction and social channels'
+    channels: [
+      'gaming-chat',
+      'memes-and-chaos',
+      'vent-channel',
+      'coven-circle',
+      'after-dark',
+      'holy-quotes',
+    ],
+    description: 'Community interaction and social channels',
   },
   '🎮 Game Rooms': {
     channels: ['matchmaking', 'roblox-din', 'fortnite-legion', 'fighting-games', 'suggest-a-game'],
-    description: 'Game-specific channels and matchmaking'
+    description: 'Game-specific channels and matchmaking',
   },
   '🎥 Spotlight': {
     channels: ['your-streams', 'epic-moments', 'art-and-mods'],
-    description: 'Showcase your content and achievements'
+    description: 'Showcase your content and achievements',
   },
   '🔊 GameDin Voice': {
-    channels: ['🎤 General Vibe', '🎮 Game Night VC', '🕊️ Chill Lounge', '🔒 The Throne Room', '🔥 Sacred Flame VC'],
-    description: 'Voice channels for gaming and socializing'
+    channels: [
+      '🎤 General Vibe',
+      '🎮 Game Night VC',
+      '🕊️ Chill Lounge',
+      '🔒 The Throne Room',
+      '🔥 Sacred Flame VC',
+    ],
+    description: 'Voice channels for gaming and socializing',
   },
   '🛡️ Moderation': {
     channels: ['mod-logs', 'mod-chat', 'reports', 'trial-moderators'],
-    description: 'Moderation and staff channels'
-  }
+    description: 'Moderation and staff channels',
+  },
 };
 
 const roles = {
   '👑 Sovereign': {
-    color: 0xFFD700, // Gold
+    color: 0xffd700, // Gold
     permissions: PermissionFlagsBits.Administrator,
-    description: 'Server Owner'
+    description: 'Server Owner',
   },
   '🛡️ Guardian': {
-    color: 0xFF0000, // Red
-    permissions: PermissionFlagsBits.ModerateMembers | PermissionFlagsBits.ManageMessages | PermissionFlagsBits.ManageChannels,
-    description: 'Senior Moderator'
+    color: 0xff0000, // Red
+    permissions:
+      PermissionFlagsBits.ModerateMembers |
+      PermissionFlagsBits.ManageMessages |
+      PermissionFlagsBits.ManageChannels,
+    description: 'Senior Moderator',
   },
   '✨ Seraph': {
-    color: 0xFF69B4, // Hot Pink
+    color: 0xff69b4, // Hot Pink
     permissions: PermissionFlagsBits.ModerateMembers | PermissionFlagsBits.ManageMessages,
-    description: 'Moderator'
+    description: 'Moderator',
   },
   '🌟 Trial Seraph': {
-    color: 0x9370DB, // Medium Purple
+    color: 0x9370db, // Medium Purple
     permissions: PermissionFlagsBits.ModerateMembers,
-    description: 'Trial Moderator'
+    description: 'Trial Moderator',
   },
   '💫 Member': {
-    color: 0x00FF00, // Green
+    color: 0x00ff00, // Green
     permissions: 0n,
-    description: 'Regular Member'
-  }
+    description: 'Regular Member',
+  },
 };
 
 export const command: Command = {
@@ -77,7 +106,9 @@ export const command: Command = {
       // Check for existing channels
       const existingChannels = guild.channels.cache;
       if (existingChannels.size > 0) {
-        await interaction.editReply('⚠️ Server already has channels. Please delete existing channels first or use /reset to clear all channels.');
+        await interaction.editReply(
+          '⚠️ Server already has channels. Please delete existing channels first or use /reset to clear all channels.',
+        );
         return;
       }
 
@@ -89,7 +120,7 @@ export const command: Command = {
           color: roleData.color,
           permissions: roleData.permissions,
           reason: 'GameDin server initialization',
-          mentionable: true
+          mentionable: true,
         });
         createdRoles.set(roleName, role);
         logger.info(`Created role: ${roleName}`);
@@ -101,7 +132,7 @@ export const command: Command = {
         const category = await guild.channels.create({
           name: categoryName,
           type: ChannelType.GuildCategory,
-          reason: 'GameDin server initialization'
+          reason: 'GameDin server initialization',
         });
 
         logger.info(`Created category: ${categoryName}`);
@@ -113,14 +144,14 @@ export const command: Command = {
             name: channelName,
             type: isVoice ? ChannelType.GuildVoice : ChannelType.GuildText,
             parent: category.id,
-            reason: 'GameDin server initialization'
+            reason: 'GameDin server initialization',
           });
 
           // Set channel permissions
           if (channelName === 'rules-and-purpose') {
             await channel.permissionOverwrites.create(guild.roles.everyone, {
               SendMessages: false,
-              AddReactions: false
+              AddReactions: false,
             });
           }
 
@@ -132,7 +163,7 @@ export const command: Command = {
               AddReactions: false,
               CreatePublicThreads: false,
               CreatePrivateThreads: false,
-              SendMessagesInThreads: false
+              SendMessagesInThreads: false,
             });
           }
 
@@ -145,14 +176,14 @@ export const command: Command = {
             const ownerRole = createdRoles.get('👑 Sovereign');
 
             await channel.permissionOverwrites.create(everyoneRole, {
-              ViewChannel: false
+              ViewChannel: false,
             });
 
             if (trialRole) {
               await channel.permissionOverwrites.create(trialRole, {
                 ViewChannel: true,
                 SendMessages: channelName === 'trial-moderators',
-                ReadMessageHistory: true
+                ReadMessageHistory: true,
               });
             }
 
@@ -160,7 +191,7 @@ export const command: Command = {
               await channel.permissionOverwrites.create(modRole, {
                 ViewChannel: true,
                 SendMessages: true,
-                ReadMessageHistory: true
+                ReadMessageHistory: true,
               });
             }
 
@@ -169,7 +200,7 @@ export const command: Command = {
                 ViewChannel: true,
                 SendMessages: true,
                 ReadMessageHistory: true,
-                ManageMessages: true
+                ManageMessages: true,
               });
             }
 
@@ -179,7 +210,7 @@ export const command: Command = {
                 SendMessages: true,
                 ReadMessageHistory: true,
                 ManageMessages: true,
-                ManageChannels: true
+                ManageChannels: true,
               });
             }
           }
@@ -208,18 +239,21 @@ Our dedicated team of moderators (Seraphs) is here to help:
 - <@&${createdRoles.get('✨ Seraph')?.id}> - Moderators
 - <@&${createdRoles.get('🌟 Trial Seraph')?.id}> - Trial Moderators
 
-Feel free to reach out to any of our moderators if you need assistance!`
+Feel free to reach out to any of our moderators if you need assistance!`,
         });
       }
 
-      await interaction.editReply('✅ Server channels and roles have been initialized successfully!');
+      await interaction.editReply(
+        '✅ Server channels and roles have been initialized successfully!',
+      );
       logger.info(`Server setup completed for guild: ${guild.name} (${guild.id})`);
-
     } catch (error) {
       logger.error('Error in setup command:', error);
-      await interaction.editReply('❌ An error occurred while setting up the server. Please check the logs for details.');
+      await interaction.editReply(
+        '❌ An error occurred while setting up the server. Please check the logs for details.',
+      );
     }
   },
 
-  cooldown: 300 // 5 minutes cooldown
-}; 
+  cooldown: 300, // 5 minutes cooldown
+};

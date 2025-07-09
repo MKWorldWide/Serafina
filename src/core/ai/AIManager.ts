@@ -1,10 +1,10 @@
 /**
  * 🎮 GameDin Discord Bot - AI Manager
- * 
+ *
  * Central AI management system that coordinates all AI providers (OpenAI, Mistral, AthenaMist)
  * and provides a unified interface for AI interactions with load balancing, fallback,
  * and comprehensive monitoring.
- * 
+ *
  * Features:
  * - Multi-provider support with load balancing
  * - Automatic fallback on provider failures
@@ -12,13 +12,20 @@
  * - Provider health monitoring
  * - TypeScript interfaces for type safety
  * - Quantum documentation and usage tracking
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
  */
 
-import { AIProvider, AIRequestParams, AIResponse, AIProviderStats, AIErrorType, AIProviderError } from './AIProvider';
+import {
+  AIProvider,
+  AIRequestParams,
+  AIResponse,
+  AIProviderStats,
+  AIErrorType,
+  AIProviderError,
+} from './AIProvider';
 import { OpenAIProvider } from './providers/OpenAIProvider';
 import { MistralProvider } from './providers/MistralProvider';
 import { AthenaMistProvider } from './providers/AthenaMistProvider';
@@ -80,11 +87,11 @@ export class AIManager {
       retryDelay: 1000,
       costLimit: 100, // $100 limit
       rateLimit: 100, // 100 requests per minute
-      ...config
+      ...config,
     };
-    
+
     this.logger = logger || new Logger('AIManager');
-    
+
     this.stats = {
       totalRequests: 0,
       totalTokens: 0,
@@ -92,7 +99,7 @@ export class AIManager {
       averageLatency: 0,
       errors: 0,
       providerStats: {},
-      lastUsed: null
+      lastUsed: null,
     };
 
     this.initializeProviders();
@@ -111,35 +118,41 @@ export class AIManager {
         available: openaiProvider.isAvailable(),
         lastCheck: new Date(),
         errorCount: 0,
-        averageLatency: 0
+        averageLatency: 0,
       });
       this.logger.info('OpenAI provider initialized');
     }
 
     // Initialize Mistral provider
     if (this.config.mistralKey) {
-      const mistralProvider = new MistralProvider(this.config.mistralKey, this.logger.child('Mistral'));
+      const mistralProvider = new MistralProvider(
+        this.config.mistralKey,
+        this.logger.child('Mistral'),
+      );
       this.providers.set('mistral', mistralProvider);
       this.healthChecks.set('mistral', {
         provider: 'mistral',
         available: mistralProvider.isAvailable(),
         lastCheck: new Date(),
         errorCount: 0,
-        averageLatency: 0
+        averageLatency: 0,
       });
       this.logger.info('Mistral provider initialized');
     }
 
     // Initialize AthenaMist provider
     if (this.config.athenaMistKey) {
-      const athenaMistProvider = new AthenaMistProvider(this.config.athenaMistKey, this.logger.child('AthenaMist'));
+      const athenaMistProvider = new AthenaMistProvider(
+        this.config.athenaMistKey,
+        this.logger.child('AthenaMist'),
+      );
       this.providers.set('athenamist', athenaMistProvider);
       this.healthChecks.set('athenamist', {
         provider: 'athenamist',
         available: athenaMistProvider.isAvailable(),
         lastCheck: new Date(),
         errorCount: 0,
-        averageLatency: 0
+        averageLatency: 0,
       });
       this.logger.info('AthenaMist provider initialized');
     }
@@ -152,10 +165,10 @@ export class AIManager {
    */
   async generateResponse(params: AIRequestParams): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     try {
       this.logger.debug(`Generating response for user ${params.userId} in guild ${params.guildId}`);
-      
+
       // Check cost limits
       if (!this.checkCostLimit(params)) {
         throw new AIProviderError('Cost limit exceeded', AIErrorType.QUOTA_EXCEEDED);
@@ -169,12 +182,14 @@ export class AIManager {
 
       // Generate response with retries
       const response = await this.generateResponseWithRetry(provider, params);
-      
+
       // Update statistics
       this.updateStats(response, Date.now() - startTime);
-      
-      this.logger.info(`Generated response using ${provider.name}, tokens: ${response.tokensUsed}, cost: $${response.cost.toFixed(4)}`);
-      
+
+      this.logger.info(
+        `Generated response using ${provider.name}, tokens: ${response.tokensUsed}, cost: $${response.cost.toFixed(4)}`,
+      );
+
       return response;
     } catch (error) {
       this.handleError(error, Date.now() - startTime);
@@ -242,17 +257,23 @@ export class AIManager {
   private async generateResponseWithRetry(
     provider: AIProvider,
     params: AIRequestParams,
-    retryCount: number = 0
+    retryCount: number = 0,
   ): Promise<AIResponse> {
     try {
       return await provider.generateResponse(params);
     } catch (error) {
-      if (error instanceof AIProviderError && error.retryable && retryCount < (this.config.maxRetries || 3)) {
-        this.logger.warn(`Retrying ${provider.name} (attempt ${retryCount + 1}/${this.config.maxRetries})`);
-        
+      if (
+        error instanceof AIProviderError &&
+        error.retryable &&
+        retryCount < (this.config.maxRetries || 3)
+      ) {
+        this.logger.warn(
+          `Retrying ${provider.name} (attempt ${retryCount + 1}/${this.config.maxRetries})`,
+        );
+
         // Wait before retry
         await new Promise(resolve => setTimeout(resolve, this.config.retryDelay || 1000));
-        
+
         return this.generateResponseWithRetry(provider, params, retryCount + 1);
       }
 
@@ -273,8 +294,8 @@ export class AIManager {
    * Select a fallback provider
    */
   private selectFallbackProvider(excludeProvider: AIProvider): AIProvider | null {
-    const availableProviders = Array.from(this.providers.values()).filter(provider => 
-      provider !== excludeProvider && provider.isAvailable()
+    const availableProviders = Array.from(this.providers.values()).filter(
+      provider => provider !== excludeProvider && provider.isAvailable(),
     );
 
     if (availableProviders.length === 0) {
@@ -292,7 +313,7 @@ export class AIManager {
 
     const totalCost = this.stats.totalCost;
     const estimatedCost = this.estimateRequestCost(params);
-    
+
     return totalCost + estimatedCost <= this.config.costLimit;
   }
 
@@ -314,7 +335,7 @@ export class AIManager {
     this.stats.totalTokens += response.tokensUsed;
     this.stats.totalCost += response.cost;
     this.stats.lastUsed = new Date();
-    
+
     // Update average latency
     this.stats.averageLatency = (this.stats.averageLatency + latency) / 2;
 
@@ -340,15 +361,19 @@ export class AIManager {
   private handleError(error: any, latency: number): void {
     this.stats.errors++;
     this.stats.lastUsed = new Date();
-    
+
     if (error instanceof AIProviderError) {
       this.logger.error(`AI manager error (${error.type}): ${error.message}`);
-      
+
       // Update provider health
-      const providerName = error.message.includes('OpenAI') ? 'openai' :
-                          error.message.includes('Mistral') ? 'mistral' :
-                          error.message.includes('AthenaMist') ? 'athenamist' : null;
-      
+      const providerName = error.message.includes('OpenAI')
+        ? 'openai'
+        : error.message.includes('Mistral')
+          ? 'mistral'
+          : error.message.includes('AthenaMist')
+            ? 'athenamist'
+            : null;
+
       if (providerName) {
         const health = this.healthChecks.get(providerName);
         if (health) {
@@ -407,7 +432,7 @@ export class AIManager {
       averageLatency: 0,
       errors: 0,
       providerStats: {},
-      lastUsed: null
+      lastUsed: null,
     };
 
     for (const provider of this.providers.values()) {
@@ -422,33 +447,35 @@ export class AIManager {
    */
   async performHealthCheck(): Promise<void> {
     this.logger.info('Performing health check on all providers...');
-    
+
     for (const [name, provider] of this.providers) {
       const health = this.healthChecks.get(name)!;
-      
+
       try {
         // Test with a simple prompt
         const testParams: AIRequestParams = {
           prompt: 'Hello',
-          maxTokens: 10
+          maxTokens: 10,
         };
-        
+
         const startTime = Date.now();
         await provider.generateResponse(testParams);
         const latency = Date.now() - startTime;
-        
+
         health.available = true;
         health.lastCheck = new Date();
         health.averageLatency = (health.averageLatency + latency) / 2;
         health.errorCount = Math.max(0, health.errorCount - 1); // Reduce error count on success
-        
+
         this.logger.info(`Provider ${name} health check passed (latency: ${latency}ms)`);
       } catch (error) {
         health.available = false;
         health.lastCheck = new Date();
         health.errorCount++;
-        
-        this.logger.warn(`Provider ${name} health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+
+        this.logger.warn(
+          `Provider ${name} health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
       }
     }
   }
@@ -466,11 +493,11 @@ export class AIManager {
    */
   getAllModels(): Record<string, string[]> {
     const models: Record<string, string[]> = {};
-    
+
     for (const [name, provider] of this.providers) {
       models[name] = provider.getModels().map(model => model.name);
     }
-    
+
     return models;
   }
-} 
+}

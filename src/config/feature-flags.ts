@@ -28,18 +28,15 @@ class FeatureFlagService {
       return;
     }
 
-    this.client = initialize(
-      process.env.REACT_APP_LAUNCH_DARKLY_CLIENT_ID,
-      {
-        key: userId,
-        anonymous: !userId,
-        privateAttributes: ['email', 'phoneNumber'],
-        custom: {
-          groups: [],
-          roles: []
-        }
-      }
-    );
+    this.client = initialize(process.env.REACT_APP_LAUNCH_DARKLY_CLIENT_ID, {
+      key: userId,
+      anonymous: !userId,
+      privateAttributes: ['email', 'phoneNumber'],
+      custom: {
+        groups: [],
+        roles: [],
+      },
+    });
 
     await this.client.waitForInitialization();
   }
@@ -55,7 +52,7 @@ class FeatureFlagService {
       enableAchievements: await this.client.variation('enable-achievements', false),
       enableSocialFeatures: await this.client.variation('enable-social-features', false),
       enableDarkMode: await this.client.variation('enable-dark-mode', true),
-      enableBetaFeatures: await this.client.variation('enable-beta-features', false)
+      enableBetaFeatures: await this.client.variation('enable-beta-features', false),
     };
   }
 
@@ -66,7 +63,7 @@ class FeatureFlagService {
       enableAchievements: process.env.NODE_ENV === 'development',
       enableSocialFeatures: process.env.NODE_ENV === 'development',
       enableDarkMode: true,
-      enableBetaFeatures: process.env.NODE_ENV === 'development'
+      enableBetaFeatures: process.env.NODE_ENV === 'development',
     };
   }
 
@@ -80,8 +77,8 @@ class FeatureFlagService {
     await this.client.identify({
       ...this.client.getContext(),
       custom: {
-        ...context
-      }
+        ...context,
+      },
     });
   }
 
@@ -102,4 +99,4 @@ class FeatureFlagService {
 }
 
 export const featureFlags = FeatureFlagService.getInstance();
-export type { FeatureFlags }; 
+export type { FeatureFlags };

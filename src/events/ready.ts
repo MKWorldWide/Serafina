@@ -7,14 +7,16 @@ export const event: Event = {
   once: true,
   async execute(client: Client) {
     logger.info(`GameDin Bot is ready! Logged in as ${client.user?.tag}`);
-    
+
     // Set bot status
     client.user?.setPresence({
-      activities: [{
-        name: '🎮 GameDin Community',
-        type: 4 // Custom Status
-      }],
-      status: 'online'
+      activities: [
+        {
+          name: '🎮 GameDin Community',
+          type: 4, // Custom Status
+        },
+      ],
+      status: 'online',
     });
 
     // Log guild information
@@ -23,5 +25,5 @@ export const event: Event = {
     guilds.forEach(guild => {
       logger.info(`- ${guild.name} (${guild.id})`);
     });
-  }
-}; 
+  },
+};

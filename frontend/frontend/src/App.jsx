@@ -33,27 +33,33 @@ const App = () => {
   const errorFallback = useMemo(() => <div>Something went wrong. Please try again.</div>, []);
 
   // Memoize the Authenticator component to prevent re-renders
-  const MemoizedAuthenticator = useMemo(() => (
-    <Authenticator>
-      {({ signOut, user }) => (
-        <div>
-          <h1>Hello {user.username}</h1>
-          <button onClick={signOut}>Sign out</button>
-        </div>
-      )}
-    </Authenticator>
-  ), []);
+  const MemoizedAuthenticator = useMemo(
+    () => (
+      <Authenticator>
+        {({ signOut, user }) => (
+          <div>
+            <h1>Hello {user.username}</h1>
+            <button onClick={signOut}>Sign out</button>
+          </div>
+        )}
+      </Authenticator>
+    ),
+    [],
+  );
 
   // Memoize the routes to prevent unnecessary re-renders
-  const routes = useMemo(() => (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/games" element={<Games />} />
-      <Route path="/games/:id" element={<GameDetails />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  ), []);
+  const routes = useMemo(
+    () => (
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/games' element={<Games />} />
+        <Route path='/games/:id' element={<GameDetails />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='*' element={<NotFound />} />
+      </Routes>
+    ),
+    [],
+  );
 
   return (
     <ErrorBoundary fallback={errorFallback}>
@@ -67,4 +73,4 @@ const App = () => {
   );
 };
 
-export default App; 
+export default App;

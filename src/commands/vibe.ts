@@ -51,7 +51,7 @@ export const command: Command = {
       '🙌 You got this!',
       '🧘‍♂️ Breathe in, vibe out.',
       '🎵 Let the music flow!',
-      '🫶 Community strong!'
+      '🫶 Community strong!',
     ];
     const vibe = vibes[Math.floor(Math.random() * vibes.length)];
     await interaction.reply({ content: vibe, ephemeral: false });
@@ -59,4 +59,4 @@ export const command: Command = {
   },
 
   cooldown: 5, // 5 seconds cooldown to prevent spam
-}; 
+};

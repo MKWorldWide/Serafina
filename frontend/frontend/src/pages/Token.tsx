@@ -48,16 +48,16 @@ const BuyButton = styled(MuiButton)<{ component?: React.ElementType }>(({ theme 
 const Token: React.FC = () => {
   return (
     <PageContainer>
-      <Container maxWidth="lg">
+      <Container maxWidth='lg'>
         <Box sx={{ textAlign: 'center', mb: 8 }}>
           <Typography
-            variant="h2"
+            variant='h2'
             sx={{ mb: 3, color: '#fff', fontSize: { xs: '2.5rem', md: '3.5rem' } }}
           >
             GameDin Token (GDT)
           </Typography>
           <Typography
-            variant="h5"
+            variant='h5'
             sx={{
               mb: 4,
               maxWidth: '800px',
@@ -68,13 +68,13 @@ const Token: React.FC = () => {
             The native cryptocurrency powering the GameDin ecosystem
           </Typography>
           <Box
-            component="a"
-            href="https://pancakeswap.finance"
-            target="_blank"
-            rel="noopener noreferrer"
+            component='a'
+            href='https://pancakeswap.finance'
+            target='_blank'
+            rel='noopener noreferrer'
             sx={{ textDecoration: 'none' }}
           >
-            <BuyButton variant="contained" color="primary" fullWidth>
+            <BuyButton variant='contained' color='primary' fullWidth>
               Buy GDT Token
             </BuyButton>
           </Box>
@@ -86,10 +86,10 @@ const Token: React.FC = () => {
               <MonetizationOnIcon
                 sx={{ fontSize: 40, color: theme => theme.palette.primary.main, mb: 1 }}
               />
-              <Typography variant="h6" sx={{ color: '#fff' }}>
+              <Typography variant='h6' sx={{ color: '#fff' }}>
                 Total Supply
               </Typography>
-              <Typography variant="h4" sx={{ color: theme => theme.palette.primary.main }}>
+              <Typography variant='h4' sx={{ color: theme => theme.palette.primary.main }}>
                 1,000,000,000
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>GDT Tokens</Typography>
@@ -101,10 +101,10 @@ const Token: React.FC = () => {
               <AccountBalanceIcon
                 sx={{ fontSize: 40, color: theme => theme.palette.primary.main, mb: 1 }}
               />
-              <Typography variant="h6" sx={{ color: '#fff' }}>
+              <Typography variant='h6' sx={{ color: '#fff' }}>
                 Market Cap
               </Typography>
-              <Typography variant="h4" sx={{ color: theme => theme.palette.primary.main }}>
+              <Typography variant='h4' sx={{ color: theme => theme.palette.primary.main }}>
                 $10M+
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>USD</Typography>
@@ -116,10 +116,10 @@ const Token: React.FC = () => {
               <ShowChartIcon
                 sx={{ fontSize: 40, color: theme => theme.palette.primary.main, mb: 1 }}
               />
-              <Typography variant="h6" sx={{ color: '#fff' }}>
+              <Typography variant='h6' sx={{ color: '#fff' }}>
                 Current Price
               </Typography>
-              <Typography variant="h4" sx={{ color: theme => theme.palette.primary.main }}>
+              <Typography variant='h4' sx={{ color: theme => theme.palette.primary.main }}>
                 $0.01
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>USD</Typography>
@@ -133,7 +133,7 @@ const Token: React.FC = () => {
               <SecurityIcon
                 sx={{ fontSize: 48, color: theme => theme.palette.primary.main, mb: 2 }}
               />
-              <Typography variant="h5" sx={{ mb: 2, color: '#fff' }}>
+              <Typography variant='h5' sx={{ mb: 2, color: '#fff' }}>
                 Security
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -148,7 +148,7 @@ const Token: React.FC = () => {
               <SwapHorizIcon
                 sx={{ fontSize: 48, color: theme => theme.palette.primary.main, mb: 2 }}
               />
-              <Typography variant="h5" sx={{ mb: 2, color: '#fff' }}>
+              <Typography variant='h5' sx={{ mb: 2, color: '#fff' }}>
                 Utility
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -163,7 +163,7 @@ const Token: React.FC = () => {
               <GroupWorkIcon
                 sx={{ fontSize: 48, color: theme => theme.palette.primary.main, mb: 2 }}
               />
-              <Typography variant="h5" sx={{ mb: 2, color: '#fff' }}>
+              <Typography variant='h5' sx={{ mb: 2, color: '#fff' }}>
                 Community
               </Typography>
               <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -175,13 +175,13 @@ const Token: React.FC = () => {
         </Grid>
 
         <Box sx={{ mb: 8 }}>
-          <Typography variant="h3" sx={{ mb: 4, color: '#fff' }}>
+          <Typography variant='h3' sx={{ mb: 4, color: '#fff' }}>
             Token Distribution
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <TokenCard elevation={0}>
-                <Typography variant="h6" sx={{ mb: 3, color: '#fff' }}>
+                <Typography variant='h6' sx={{ mb: 3, color: '#fff' }}>
                   Initial Distribution
                 </Typography>
                 <Box sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -195,7 +195,7 @@ const Token: React.FC = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <TokenCard elevation={0}>
-                <Typography variant="h6" sx={{ mb: 3, color: '#fff' }}>
+                <Typography variant='h6' sx={{ mb: 3, color: '#fff' }}>
                   Token Utility
                 </Typography>
                 <Box sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -211,13 +211,13 @@ const Token: React.FC = () => {
         </Box>
 
         <Box>
-          <Typography variant="h3" sx={{ mb: 4, color: '#fff' }}>
+          <Typography variant='h3' sx={{ mb: 4, color: '#fff' }}>
             Roadmap
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
               <TokenCard elevation={0}>
-                <Typography variant="h6" sx={{ mb: 2, color: theme => theme.palette.primary.main }}>
+                <Typography variant='h6' sx={{ mb: 2, color: theme => theme.palette.primary.main }}>
                   Q1 2024
                 </Typography>
                 <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -230,7 +230,7 @@ const Token: React.FC = () => {
             </Grid>
             <Grid item xs={12} md={3}>
               <TokenCard elevation={0}>
-                <Typography variant="h6" sx={{ mb: 2, color: theme => theme.palette.primary.main }}>
+                <Typography variant='h6' sx={{ mb: 2, color: theme => theme.palette.primary.main }}>
                   Q2 2024
                 </Typography>
                 <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -243,7 +243,7 @@ const Token: React.FC = () => {
             </Grid>
             <Grid item xs={12} md={3}>
               <TokenCard elevation={0}>
-                <Typography variant="h6" sx={{ mb: 2, color: theme => theme.palette.primary.main }}>
+                <Typography variant='h6' sx={{ mb: 2, color: theme => theme.palette.primary.main }}>
                   Q3 2024
                 </Typography>
                 <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
@@ -256,7 +256,7 @@ const Token: React.FC = () => {
             </Grid>
             <Grid item xs={12} md={3}>
               <TokenCard elevation={0}>
-                <Typography variant="h6" sx={{ mb: 2, color: theme => theme.palette.primary.main }}>
+                <Typography variant='h6' sx={{ mb: 2, color: theme => theme.palette.primary.main }}>
                   Q4 2024
                 </Typography>
                 <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>

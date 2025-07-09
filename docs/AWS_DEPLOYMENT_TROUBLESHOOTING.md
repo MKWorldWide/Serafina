@@ -11,6 +11,7 @@ During the AWS deployment attempt, we encountered the following issues:
 ## 🚀 Current Status
 
 **✅ Bot Status**: FULLY FUNCTIONAL LOCALLY
+
 - Bot running healthily with all features working
 - All commands and events loaded successfully
 - Health endpoints responding correctly
@@ -21,6 +22,7 @@ During the AWS deployment attempt, we encountered the following issues:
 ### 1. CloudFormation Stack Issues
 
 **Problem**: Stack in ROLLBACK_COMPLETE state
+
 ```bash
 # Solution: Delete existing stack
 aws cloudformation delete-stack --stack-name serafina-infrastructure-production --region us-east-1
@@ -30,6 +32,7 @@ aws cloudformation describe-stacks --stack-name serafina-infrastructure-producti
 ```
 
 **Problem**: Deployment failure after stack deletion
+
 ```bash
 # Check stack events for failure reason
 aws cloudformation describe-stack-events --stack-name serafina-infrastructure-production --region us-east-1
@@ -41,6 +44,7 @@ aws cloudformation describe-stack-events --stack-name serafina-infrastructure-pr
 ### 2. Alternative Deployment Methods
 
 #### Method 1: Manual CloudFormation Deployment
+
 ```bash
 # Deploy with explicit parameters
 aws cloudformation deploy \
@@ -57,6 +61,7 @@ aws cloudformation deploy \
 ```
 
 #### Method 2: Step-by-Step Infrastructure Creation
+
 ```bash
 # 1. Create VPC and networking
 aws cloudformation create-stack \
@@ -78,6 +83,7 @@ aws cloudformation create-stack \
 ```
 
 #### Method 3: AWS CLI Direct Resource Creation
+
 ```bash
 # Create VPC
 aws ec2 create-vpc --cidr-block 10.0.0.0/16
@@ -95,6 +101,7 @@ aws ec2 create-launch-template --launch-template-name serafina-lt --version-desc
 ### 3. Environment Variable Issues
 
 **Problem**: Shell configuration affecting AWS CLI
+
 ```bash
 # Check shell configuration
 echo $SHELL
@@ -111,6 +118,7 @@ aws cloudformation deploy --template-file aws/serafina-infrastructure.yml --stac
 ### 4. Template Validation
 
 **Problem**: CloudFormation template validation errors
+
 ```bash
 # Validate template
 aws cloudformation validate-template --template-body file://aws/serafina-infrastructure.yml
@@ -122,6 +130,7 @@ aws cloudformation validate-template --template-body file://aws/serafina-infrast
 ## 🛠️ Manual Deployment Steps
 
 ### Step 1: Verify Prerequisites
+
 ```bash
 # Check AWS CLI
 aws --version
@@ -134,6 +143,7 @@ aws configure get region
 ```
 
 ### Step 2: Create S3 Bucket
+
 ```bash
 # Create bucket for CloudFormation templates
 aws s3 mb s3://serafina-cfn-templates-production-$(aws sts get-caller-identity --query Account --output text)
@@ -143,6 +153,7 @@ aws s3 cp aws/serafina-infrastructure.yml s3://serafina-cfn-templates-production
 ```
 
 ### Step 3: Create Key Pair
+
 ```bash
 # Create EC2 key pair
 aws ec2 create-key-pair --key-name serafina-key-production --query 'KeyMaterial' --output text > serafina-key-production.pem
@@ -152,6 +163,7 @@ chmod 400 serafina-key-production.pem
 ```
 
 ### Step 4: Deploy Infrastructure
+
 ```bash
 # Deploy with minimal parameters first
 aws cloudformation deploy \
@@ -165,6 +177,7 @@ aws cloudformation deploy \
 ## 📊 Monitoring and Validation
 
 ### Check Deployment Status
+
 ```bash
 # Check stack status
 aws cloudformation describe-stacks --stack-name serafina-infrastructure-production --query 'Stacks[0].StackStatus'
@@ -174,6 +187,7 @@ aws cloudformation describe-stack-resources --stack-name serafina-infrastructure
 ```
 
 ### Validate Bot Deployment
+
 ```bash
 # Get load balancer URL
 LOAD_BALANCER_URL=$(aws cloudformation describe-stacks --stack-name serafina-infrastructure-production --query 'Stacks[0].Outputs[?OutputKey==`LoadBalancerURL`].OutputValue' --output text)
@@ -185,6 +199,7 @@ curl -I $LOAD_BALANCER_URL/health
 ## 🔄 Rollback Procedures
 
 ### If Deployment Fails
+
 ```bash
 # Delete failed stack
 aws cloudformation delete-stack --stack-name serafina-infrastructure-production
@@ -194,7 +209,9 @@ aws ec2 describe-instances --filters "Name=tag:Name,Values=serafina*" --query 'R
 ```
 
 ### Alternative: Use Existing Infrastructure
+
 If AWS deployment continues to fail, consider:
+
 1. **Local Deployment**: Continue running bot locally (currently working perfectly)
 2. **Docker Deployment**: Containerize the bot for easier deployment
 3. **Alternative Cloud**: Consider other cloud providers (Google Cloud, Azure)
@@ -203,18 +220,21 @@ If AWS deployment continues to fail, consider:
 ## 📞 Support and Next Steps
 
 ### Current Bot Status
+
 - ✅ **Fully Functional**: All commands working
 - ✅ **Stable**: Memory usage stable at 48MB
 - ✅ **Connected**: Successfully connected to Discord
 - ✅ **Healthy**: All health endpoints responding
 
 ### Recommended Actions
+
 1. **Continue Local Operation**: Bot is working perfectly locally
 2. **Investigate AWS Issues**: Debug CloudFormation template
 3. **Consider Alternatives**: Docker or VPS deployment
 4. **Monitor Performance**: Continue monitoring local bot performance
 
 ### Contact Information
+
 - **Discord**: GameDin Community Server
 - **Email**: admin@novasanctum.com
 - **Documentation**: Project repository
@@ -222,4 +242,4 @@ If AWS deployment continues to fail, consider:
 ---
 
 **Last Updated**: 2025-07-07  
-**Status**: BOT FULLY FUNCTIONAL - AWS DEPLOYMENT REQUIRES TROUBLESHOOTING 
+**Status**: BOT FULLY FUNCTIONAL - AWS DEPLOYMENT REQUIRES TROUBLESHOOTING

@@ -338,6 +338,7 @@ node migration/index.js migrate --users --products --metafields --content --dry-
 5. **Verify Migration**
 
 After migration, verify the data in your Shopify admin panel:
+
 - Check that customers were created correctly
 - Verify products and their metafields
 - Ensure user-generated content is accessible
@@ -377,7 +378,7 @@ We've implemented a hybrid approach with the following structure:
 ```
 gamedin-shopify/
 ├── app/                      # Shopify App (React)
-│   ├── frontend/             # React components 
+│   ├── frontend/             # React components
 │   │   ├── index.html        # HTML entry point
 │   │   └── src/              # React source code
 │   │       ├── App.jsx       # Main App component
@@ -414,6 +415,7 @@ The backend is implemented using Express.js and the Shopify API. Key components 
 #### Express Server (app/web/index.js)
 
 The Express server handles:
+
 - Authentication with Shopify OAuth
 - Webhook processing
 - API routes for the frontend
@@ -425,15 +427,12 @@ app.get(shopify.config.auth.path, shopify.auth.begin());
 app.get(
   shopify.config.auth.callbackPath,
   shopify.auth.callback(),
-  shopify.redirectToShopifyOrAppRoot()
+  shopify.redirectToShopifyOrAppRoot(),
 );
-app.post(
-  shopify.config.webhooks.path,
-  shopify.processWebhooks({ webhookHandlers })
-);
+app.post(shopify.config.webhooks.path, shopify.processWebhooks({ webhookHandlers }));
 
 // API routes
-app.use("/api", shopify.validateAuthenticatedSession(), apiRoutes);
+app.use('/api', shopify.validateAuthenticatedSession(), apiRoutes);
 ```
 
 #### Shopify API Configuration (app/web/shopify.js)
@@ -448,11 +447,11 @@ const shopify = shopifyApp({
     billing: undefined, // or replace with billing config if needed
   },
   auth: {
-    path: "/auth",
-    callbackPath: "/auth/callback",
+    path: '/auth',
+    callbackPath: '/auth/callback',
   },
   webhooks: {
-    path: "/webhooks",
+    path: '/webhooks',
   },
   sessionStorage,
 });
@@ -466,12 +465,12 @@ Webhook handlers process events from Shopify:
 export default {
   APP_UNINSTALLED: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: "/webhooks",
+    callbackUrl: '/webhooks',
     callback: appUninstallHandler,
   },
   PRODUCTS_CREATE: {
     deliveryMethod: DeliveryMethod.Http,
-    callbackUrl: "/webhooks",
+    callbackUrl: '/webhooks',
     callback: productCreateHandler,
   },
   // ... other webhook handlers
@@ -483,13 +482,13 @@ export default {
 API routes provide data to the frontend:
 
 ```javascript
-router.get("/products", async (req, res) => {
+router.get('/products', async (req, res) => {
   const session = res.locals.shopify.session;
   // ... fetch products from Shopify
   res.status(200).send({ products: productsWithMetafields });
 });
 
-router.get("/products/:id/recommendations", async (req, res) => {
+router.get('/products/:id/recommendations', async (req, res) => {
   // ... fetch recommendations from metafields
   res.status(200).send({ recommendations: validRecommendations });
 });
@@ -513,8 +512,8 @@ return (
         onNavigationDismiss={toggleMobileNavigationActive}
       >
         <Routes>
-          <Route path="/" element={<Dashboard showToast={showToast} />} />
-          <Route path="/products" element={<Products showToast={showToast} />} />
+          <Route path='/' element={<Dashboard showToast={showToast} />} />
+          <Route path='/products' element={<Products showToast={showToast} />} />
           {/* ... other routes */}
         </Routes>
       </Frame>
@@ -635,4 +634,4 @@ npm run deploy
 
 - [Shopify Partners Forum](https://community.shopify.com/c/partners-and-developers/ct-p/appdev)
 - [Shopify Developer Discord](https://discord.gg/shopify-developers)
-- [Shopify Stack Exchange](https://shopify.stackexchange.com/) 
+- [Shopify Stack Exchange](https://shopify.stackexchange.com/)

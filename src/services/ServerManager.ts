@@ -1,5 +1,19 @@
-import { Guild, ChannelType, PermissionFlagsBits, Role, TextChannel, VoiceChannel, CategoryChannel } from 'discord.js';
-import { SERVER_CONFIG, RoleConfig, CategoryConfig, ChannelConfig, PermissionConfig } from '../config/serverConfig';
+import {
+  Guild,
+  ChannelType,
+  PermissionFlagsBits,
+  Role,
+  TextChannel,
+  VoiceChannel,
+  CategoryChannel,
+} from 'discord.js';
+import {
+  SERVER_CONFIG,
+  RoleConfig,
+  CategoryConfig,
+  ChannelConfig,
+  PermissionConfig,
+} from '../config/serverConfig';
 import { logger } from '../utils/logger';
 
 export class ServerManager {
@@ -12,19 +26,19 @@ export class ServerManager {
   async initializeServer(): Promise<void> {
     try {
       logger.info(`Starting server initialization for ${this.guild.name}`);
-      
+
       // Create roles
       await this.createRoles();
-      
+
       // Create categories and channels
       await this.createCategoriesAndChannels();
-      
+
       // Set up welcome message
       await this.setupWelcomeMessage();
-      
+
       // Set up role selection
       await this.setupRoleSelection();
-      
+
       logger.info(`Server initialization completed for ${this.guild.name}`);
     } catch (error) {
       logger.error('Error initializing server:', error);
@@ -34,21 +48,24 @@ export class ServerManager {
 
   private async createRoles(): Promise<void> {
     const existingRoles = this.guild.roles.cache;
-    
-    for (const [roleName, roleConfig] of Object.entries(SERVER_CONFIG.roles) as [string, RoleConfig][]) {
+
+    for (const [roleName, roleConfig] of Object.entries(SERVER_CONFIG.roles) as [
+      string,
+      RoleConfig,
+    ][]) {
       if (existingRoles.find(r => r.name === roleName)) {
         logger.info(`Role ${roleName} already exists`);
         continue;
       }
 
       const permissions = roleConfig.permissions;
-      
+
       const role = await this.guild.roles.create({
         name: roleName,
         color: roleConfig.color,
         permissions: permissions,
         reason: 'GameDin server initialization',
-        mentionable: true
+        mentionable: true,
       });
 
       logger.info(`Created role: ${roleName}`);
@@ -56,23 +73,28 @@ export class ServerManager {
   }
 
   private async createCategoriesAndChannels(): Promise<void> {
-    for (const [categoryName, categoryConfig] of Object.entries(SERVER_CONFIG.categories) as [string, CategoryConfig][]) {
+    for (const [categoryName, categoryConfig] of Object.entries(SERVER_CONFIG.categories) as [
+      string,
+      CategoryConfig,
+    ][]) {
       // Create category
-      let category = this.guild.channels.cache.find(c => c.name === categoryName) as CategoryChannel;
-      
+      let category = this.guild.channels.cache.find(
+        c => c.name === categoryName,
+      ) as CategoryChannel;
+
       if (!category) {
-        category = await this.guild.channels.create({
+        category = (await this.guild.channels.create({
           name: categoryName,
           type: ChannelType.GuildCategory,
-          reason: 'GameDin server initialization'
-        }) as CategoryChannel;
+          reason: 'GameDin server initialization',
+        })) as CategoryChannel;
         logger.info(`Created category: ${categoryName}`);
       }
 
       // Create channels in category
       for (const channelConfig of categoryConfig.channels as ChannelConfig[]) {
         const existingChannel = this.guild.channels.cache.find(c => c.name === channelConfig.name);
-        
+
         if (existingChannel) {
           logger.info(`Channel ${channelConfig.name} already exists`);
           continue;
@@ -80,19 +102,19 @@ export class ServerManager {
 
         let channel;
         if (channelConfig.type === ChannelType.GuildVoice) {
-          channel = await this.guild.channels.create({
+          channel = (await this.guild.channels.create({
             name: channelConfig.name,
             type: ChannelType.GuildVoice,
             parent: category.id,
-            reason: 'GameDin server initialization'
-          }) as VoiceChannel;
+            reason: 'GameDin server initialization',
+          })) as VoiceChannel;
         } else {
-          channel = await this.guild.channels.create({
+          channel = (await this.guild.channels.create({
             name: channelConfig.name,
             type: ChannelType.GuildText,
             parent: category.id,
-            reason: 'GameDin server initialization'
-          }) as TextChannel;
+            reason: 'GameDin server initialization',
+          })) as TextChannel;
         }
 
         // Set channel permissions
@@ -105,9 +127,12 @@ export class ServerManager {
     }
   }
 
-  private async setChannelPermissions(channel: any, permissions: Record<string, PermissionConfig>): Promise<void> {
+  private async setChannelPermissions(
+    channel: any,
+    permissions: Record<string, PermissionConfig>,
+  ): Promise<void> {
     const everyoneRole = this.guild.roles.everyone;
-    
+
     if (permissions.everyone) {
       await channel.permissionOverwrites.create(everyoneRole, permissions.everyone);
     }
@@ -115,14 +140,14 @@ export class ServerManager {
     // Set moderator permissions for private channels
     if (permissions.everyone?.ViewChannel === false) {
       const modRoles = ['🌟 Trial Seraph', '✨ Seraph', '🛡️ Guardian', '👑 Sovereign'];
-      
+
       for (const roleName of modRoles) {
         const role = this.guild.roles.cache.find(r => r.name === roleName);
         if (role) {
           await channel.permissionOverwrites.create(role, {
             ViewChannel: true,
             SendMessages: true,
-            ReadMessageHistory: true
+            ReadMessageHistory: true,
           });
         }
       }
@@ -150,15 +175,17 @@ Our dedicated team of moderators (Seraphs) is here to help:
 - <@&${this.guild.roles.cache.find(r => r.name === '🌟 Trial Seraph')?.id}> - Trial Moderators
 
 Feel free to reach out to any of our moderators if you need assistance!`,
-      color: 0xFFD700,
-      timestamp: new Date().toISOString()
+      color: 0xffd700,
+      timestamp: new Date().toISOString(),
     };
 
     await welcomeChannel.send({ embeds: [welcomeEmbed] });
   }
 
   private async setupRoleSelection(): Promise<void> {
-    const roleSelectChannel = this.guild.channels.cache.find(c => c.name === 'role-select') as TextChannel;
+    const roleSelectChannel = this.guild.channels.cache.find(
+      c => c.name === 'role-select',
+    ) as TextChannel;
     if (!roleSelectChannel) return;
 
     const roleSelectEmbed = {
@@ -169,12 +196,12 @@ Feel free to reach out to any of our moderators if you need assistance!`,
 🎨 **Creator** - For content creators
 
 Click the reactions below to get your roles!`,
-      color: 0x9370DB,
-      timestamp: new Date().toISOString()
+      color: 0x9370db,
+      timestamp: new Date().toISOString(),
     };
 
     const message = await roleSelectChannel.send({ embeds: [roleSelectEmbed] });
-    
+
     // Add reactions for role selection
     await message.react('🎮');
     await message.react('🎨');
@@ -188,7 +215,7 @@ Click the reactions below to get your roles!`,
   async assignDefaultRole(memberId: string): Promise<void> {
     const member = await this.guild.members.fetch(memberId);
     const memberRole = this.guild.roles.cache.find(r => r.name === '💫 Member');
-    
+
     if (memberRole && !member.roles.cache.has(memberRole.id)) {
       await member.roles.add(memberRole);
       logger.info(`Assigned default role to ${member.user.tag}`);
@@ -197,11 +224,11 @@ Click the reactions below to get your roles!`,
 
   async checkAndCreateMissingChannels(): Promise<void> {
     const existingChannels = this.guild.channels.cache;
-    
+
     for (const [categoryName, categoryConfig] of Object.entries(SERVER_CONFIG.categories)) {
       for (const channelConfig of categoryConfig.channels) {
         const channelExists = existingChannels.find(c => c.name === channelConfig.name);
-        
+
         if (!channelExists) {
           logger.info(`Missing channel detected: ${channelConfig.name}, recreating...`);
           await this.createCategoriesAndChannels();
@@ -210,4 +237,4 @@ Click the reactions below to get your roles!`,
       }
     }
   }
-} 
+}

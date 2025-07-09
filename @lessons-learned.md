@@ -5,6 +5,7 @@
 ### 🏗️ Architecture Lessons
 
 #### **1. Discord.js Best Practices**
+
 - **Event Handling**: Always use proper event listeners with error handling
 - **Intents Management**: Only request necessary intents for security
 - **Rate Limiting**: Implement proper rate limiting for API calls
@@ -12,6 +13,7 @@
 - **Resource Cleanup**: Properly dispose of resources to prevent memory leaks
 
 #### **2. TypeScript Integration**
+
 - **Type Safety**: Use strict TypeScript configuration for better code quality
 - **Interface Design**: Create comprehensive interfaces for all data structures
 - **Generic Types**: Leverage generics for reusable components
@@ -19,6 +21,7 @@
 - **Module Declarations**: Extend Discord.js types properly
 
 #### **3. Error Handling Patterns**
+
 - **Try-Catch Blocks**: Wrap all async operations in try-catch
 - **Error Propagation**: Properly propagate errors up the call stack
 - **User Feedback**: Provide meaningful error messages to users
@@ -28,18 +31,21 @@
 ### 🛡️ Security Lessons
 
 #### **1. Permission Management**
+
 - **Principle of Least Privilege**: Only grant necessary permissions
 - **Role Hierarchy**: Maintain proper role hierarchy for security
 - **Permission Validation**: Always validate permissions before actions
 - **Audit Logging**: Log all permission changes and administrative actions
 
 #### **2. Input Validation**
+
 - **Sanitization**: Always sanitize user input
 - **Type Checking**: Validate input types and formats
 - **Length Limits**: Implement reasonable length limits
 - **Content Filtering**: Filter inappropriate content
 
 #### **3. Bot Security**
+
 - **Token Protection**: Never expose bot tokens in code
 - **Environment Variables**: Use environment variables for sensitive data
 - **Rate Limiting**: Implement rate limiting to prevent abuse
@@ -48,18 +54,21 @@
 ### 🎮 Discord Server Management Lessons
 
 #### **1. Channel Organization**
+
 - **Logical Grouping**: Group channels by purpose and audience
 - **Permission Inheritance**: Use category permissions effectively
 - **Channel Limits**: Respect Discord's channel limits
 - **Naming Conventions**: Use consistent naming conventions
 
 #### **2. Role Management**
+
 - **Hierarchy Design**: Design role hierarchy for proper permissions
 - **Role Colors**: Use distinct colors for easy identification
 - **Role Descriptions**: Provide clear role descriptions
 - **Role Limits**: Be mindful of Discord's role limits
 
 #### **3. Community Management**
+
 - **Welcome Systems**: Create engaging welcome experiences
 - **Moderation Tools**: Implement comprehensive moderation features
 - **Activity Tracking**: Track user engagement and participation
@@ -68,18 +77,21 @@
 ### 🚀 Performance Lessons
 
 #### **1. Database Optimization**
+
 - **Indexing**: Properly index database collections
 - **Query Optimization**: Optimize database queries for performance
 - **Connection Pooling**: Use connection pooling for database connections
 - **Caching**: Implement caching for frequently accessed data
 
 #### **2. Memory Management**
+
 - **Resource Cleanup**: Properly dispose of unused resources
 - **Memory Monitoring**: Monitor memory usage and optimize
 - **Garbage Collection**: Understand and optimize garbage collection
 - **Memory Leaks**: Prevent memory leaks through proper cleanup
 
 #### **3. API Optimization**
+
 - **Batch Operations**: Use batch operations when possible
 - **Rate Limiting**: Respect Discord API rate limits
 - **Caching**: Cache API responses when appropriate
@@ -88,18 +100,21 @@
 ### 🧪 Testing Lessons
 
 #### **1. Unit Testing**
+
 - **Test Coverage**: Aim for high test coverage
 - **Mocking**: Use mocks for external dependencies
 - **Test Isolation**: Ensure tests are isolated and independent
 - **Assertions**: Use meaningful assertions
 
 #### **2. Integration Testing**
+
 - **End-to-End Testing**: Test complete user workflows
 - **API Testing**: Test API endpoints thoroughly
 - **Database Testing**: Test database operations
 - **Error Scenarios**: Test error handling and edge cases
 
 #### **3. Testing Best Practices**
+
 - **Test Organization**: Organize tests logically
 - **Test Data**: Use consistent test data
 - **Test Environment**: Maintain separate test environment
@@ -108,18 +123,21 @@
 ### 📚 Documentation Lessons
 
 #### **1. Code Documentation**
+
 - **Inline Comments**: Add meaningful inline comments
 - **Function Documentation**: Document all functions and methods
 - **API Documentation**: Document all APIs and endpoints
 - **Examples**: Provide usage examples
 
 #### **2. Project Documentation**
+
 - **README Files**: Maintain comprehensive README files
 - **Architecture Documentation**: Document system architecture
 - **Deployment Guides**: Provide clear deployment instructions
 - **Troubleshooting**: Document common issues and solutions
 
 #### **3. Documentation Maintenance**
+
 - **Regular Updates**: Keep documentation up to date
 - **Version Control**: Version control documentation changes
 - **Review Process**: Review documentation for accuracy
@@ -128,18 +146,21 @@
 ### 🔧 Deployment Lessons
 
 #### **1. Environment Management**
+
 - **Environment Variables**: Use environment variables for configuration
 - **Secrets Management**: Properly manage secrets and sensitive data
 - **Configuration Files**: Use configuration files for different environments
 - **Validation**: Validate configuration on startup
 
 #### **2. Containerization**
+
 - **Docker Best Practices**: Follow Docker best practices
 - **Image Optimization**: Optimize Docker images for size and security
 - **Multi-stage Builds**: Use multi-stage builds for efficiency
 - **Health Checks**: Implement proper health checks
 
 #### **3. Monitoring and Logging**
+
 - **Structured Logging**: Use structured logging for better analysis
 - **Log Levels**: Use appropriate log levels
 - **Monitoring**: Implement comprehensive monitoring
@@ -148,6 +169,7 @@
 ### ☁️ AWS Infrastructure Lessons
 
 #### **1. Auto Scaling Best Practices**
+
 - **Health Checks**: Implement proper health checks for auto scaling
 - **Scaling Policies**: Use target tracking for better scaling behavior
 - **Cooldown Periods**: Set appropriate cooldown periods to prevent thrashing
@@ -155,6 +177,7 @@
 - **Minimum Instances**: Maintain minimum instances for high availability
 
 #### **2. Load Balancer Configuration**
+
 - **Health Check Paths**: Use dedicated health check endpoints
 - **Target Groups**: Configure target groups with appropriate health checks
 - **Sticky Sessions**: Enable sticky sessions for stateful applications
@@ -162,6 +185,7 @@
 - **Access Logs**: Enable access logs for monitoring and debugging
 
 #### **3. Security and Compliance**
+
 - **IAM Roles**: Use least privilege IAM roles for instances
 - **Security Groups**: Configure restrictive security group rules
 - **Secrets Manager**: Store sensitive data in AWS Secrets Manager
@@ -169,6 +193,7 @@
 - **WAF Rules**: Implement web application firewall rules
 
 #### **4. Monitoring and Alerting**
+
 - **CloudWatch Dashboards**: Create comprehensive monitoring dashboards
 - **Custom Metrics**: Implement custom metrics for application-specific monitoring
 - **Alarm Thresholds**: Set appropriate alarm thresholds for different metrics
@@ -176,6 +201,7 @@
 - **Log Aggregation**: Centralize logs for better analysis
 
 #### **5. Cost Optimization**
+
 - **Instance Sizing**: Right-size instances based on actual usage
 - **Reserved Instances**: Use reserved instances for predictable workloads
 - **Spot Instances**: Consider spot instances for non-critical workloads
@@ -300,6 +326,11 @@
 
 [2025-07-08 03:10] Discord Bot Deployment: Issue: TypeScript declaration files (.d.ts) causing module loading conflicts and performance warnings in production Discord bot → Solution: Implemented selective compilation strategy, removed unnecessary .d.ts files from dist/, converted event files to ES modules, and optimized build process to exclude frontend files → Why: Critical for preventing runtime module resolution errors, improving bot startup performance, and ensuring clean production deployments with proper separation of concerns between bot and web application components.
 
+[2024-02-08 16:20] Component Error: TextInput props incompatible with DatePicker → Implemented strict prop type validation and interface checks → Critical for preventing runtime errors and ensuring reusability.
+
+[2024-12-19 14:30] Merge Conflict Resolution: Multiple files with Git merge conflicts blocking auto-fix process → Used sed command to remove conflict markers systematically, resolved complex interface conflicts in social.ts/auth.ts/store.ts by combining both branches intelligently, installed missing dependencies (workbox, dexie, zustand, @aws-amplify/auth) → Critical for maintaining codebase integrity and enabling automated fixes across the entire project.
+
 ---
-*Last Updated: 2024-12-19*
-*Session: Major Refactoring & Perfection* 
+
+_Last Updated: 2024-12-19_
+_Session: Major Refactoring & Perfection_

@@ -1,16 +1,21 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  PermissionFlagsBits,
+  EmbedBuilder,
+} from 'discord.js';
 import type { Command } from '../types/Command';
 import { logger } from '../utils/logger';
 
 const emotions = {
-  '🌸 Joy': { color: 0xFFB6C1, emoji: '🌸' },
-  '🌿 Peace': { color: 0x98FB98, emoji: '🌿' },
-  '🌺 Love': { color: 0xFF69B4, emoji: '🌺' },
-  '🌼 Hope': { color: 0xFFD700, emoji: '🌼' },
-  '🌻 Growth': { color: 0xFFA500, emoji: '🌻' },
-  '🌹 Passion': { color: 0xFF0000, emoji: '🌹' },
-  '🌱 Renewal': { color: 0x90EE90, emoji: '🌱' },
-  '🌷 Gratitude': { color: 0xDA70D6, emoji: '🌷' }
+  '🌸 Joy': { color: 0xffb6c1, emoji: '🌸' },
+  '🌿 Peace': { color: 0x98fb98, emoji: '🌿' },
+  '🌺 Love': { color: 0xff69b4, emoji: '🌺' },
+  '🌼 Hope': { color: 0xffd700, emoji: '🌼' },
+  '🌻 Growth': { color: 0xffa500, emoji: '🌻' },
+  '🌹 Passion': { color: 0xff0000, emoji: '🌹' },
+  '🌱 Renewal': { color: 0x90ee90, emoji: '🌱' },
+  '🌷 Gratitude': { color: 0xda70d6, emoji: '🌷' },
 };
 
 export const command: Command = {
@@ -30,20 +35,17 @@ export const command: Command = {
           { name: '🌻 Growth', value: 'Growth' },
           { name: '🌹 Passion', value: 'Passion' },
           { name: '🌱 Renewal', value: 'Renewal' },
-          { name: '🌷 Gratitude', value: 'Gratitude' }
-        )
+          { name: '🌷 Gratitude', value: 'Gratitude' },
+        ),
     )
     .addStringOption(option =>
       option
         .setName('memory')
         .setDescription('Share a memory or thought (optional)')
-        .setRequired(false)
+        .setRequired(false),
     )
     .addStringOption(option =>
-      option
-        .setName('plant')
-        .setDescription('What plant bloomed? (optional)')
-        .setRequired(false)
+      option.setName('plant').setDescription('What plant bloomed? (optional)').setRequired(false),
     )
     .toJSON(),
 
@@ -56,38 +58,45 @@ export const command: Command = {
       const plant = interaction.options.getString('plant');
 
       const emotionKey = Object.keys(emotions).find(key => key.includes(emotion));
-      const emotionData = emotionKey ? emotions[emotionKey as keyof typeof emotions] : emotions['🌸 Joy'];
-      
+      const emotionData = emotionKey
+        ? emotions[emotionKey as keyof typeof emotions]
+        : emotions['🌸 Joy'];
+
       const embed = new EmbedBuilder()
         .setColor(emotionData.color)
         .setTitle(`${emotionData.emoji} A New Bloom in the Garden ${emotionData.emoji}`)
-        .setDescription(`**Emotion:** ${emotion}\n${memory ? `**Memory:** ${memory}\n` : ''}${plant ? `**Plant:** ${plant}` : ''}`)
+        .setDescription(
+          `**Emotion:** ${emotion}\n${memory ? `**Memory:** ${memory}\n` : ''}${plant ? `**Plant:** ${plant}` : ''}`,
+        )
         .setAuthor({
           name: interaction.user.tag,
-          iconURL: interaction.user.displayAvatarURL()
+          iconURL: interaction.user.displayAvatarURL(),
         })
         .setTimestamp()
         .setFooter({ text: 'NeuroBloom Garden' });
 
       // Find the appropriate channel to post in
-      const channel = interaction.guild?.channels.cache.find(c => 
-        c.name === 'coven-circle' || c.name === 'holy-quotes'
+      const channel = interaction.guild?.channels.cache.find(
+        c => c.name === 'coven-circle' || c.name === 'holy-quotes',
       );
 
       if (channel?.isTextBased()) {
         await channel.send({ embeds: [embed] });
         await interaction.editReply('🌸 Your bloom has been shared in the garden!');
       } else {
-        await interaction.editReply('❌ Could not find an appropriate channel to share your bloom.');
+        await interaction.editReply(
+          '❌ Could not find an appropriate channel to share your bloom.',
+        );
       }
 
       logger.info(`Bloom shared by ${interaction.user.tag}: ${emotion}`);
-
     } catch (error) {
       logger.error('Error in bloom command:', error);
-      await interaction.editReply('❌ An error occurred while sharing your bloom. Please try again.');
+      await interaction.editReply(
+        '❌ An error occurred while sharing your bloom. Please try again.',
+      );
     }
   },
 
-  cooldown: 60 // 1 minute cooldown
-}; 
+  cooldown: 60, // 1 minute cooldown
+};

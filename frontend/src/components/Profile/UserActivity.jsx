@@ -37,15 +37,15 @@ const UserActivity = ({ userId }) => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center p-8">
-        <div className="loading loading-spinner loading-lg"></div>
+      <div className='flex justify-center p-8'>
+        <div className='loading loading-spinner loading-lg'></div>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="alert alert-error">
+      <div className='alert alert-error'>
         <span>Error loading activities. Please try again later.</span>
       </div>
     );
@@ -55,18 +55,18 @@ const UserActivity = ({ userId }) => {
 
   if (activities.length === 0) {
     return (
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body text-center">
-          <h3 className="text-lg font-semibold">No Activity Yet</h3>
-          <p className="text-sm opacity-70">This user hasn't posted anything yet.</p>
+      <div className='card bg-base-100 shadow-xl'>
+        <div className='card-body text-center'>
+          <h3 className='text-lg font-semibold'>No Activity Yet</h3>
+          <p className='text-sm opacity-70'>This user hasn't posted anything yet.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <AnimatePresence mode="popLayout">
+    <div className='space-y-6'>
+      <AnimatePresence mode='popLayout'>
         {activities.map((activity, index) => (
           <motion.div
             key={activity.id}
@@ -81,10 +81,10 @@ const UserActivity = ({ userId }) => {
       </AnimatePresence>
 
       {/* Loading indicator for next page */}
-      <div ref={ref} className="py-4">
+      <div ref={ref} className='py-4'>
         {isFetchingNextPage && (
-          <div className="flex justify-center">
-            <div className="loading loading-spinner loading-md"></div>
+          <div className='flex justify-center'>
+            <div className='loading loading-spinner loading-md'></div>
           </div>
         )}
       </div>
@@ -94,7 +94,7 @@ const UserActivity = ({ userId }) => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center py-4 text-sm opacity-70"
+          className='text-center py-4 text-sm opacity-70'
         >
           No more activities to load
         </motion.div>

@@ -1,9 +1,9 @@
 /**
  * 🎮 GameDin Discord Server Configuration
- * 
+ *
  * This file contains all the configuration for the Discord server structure,
  * including categories, channels, roles, and permissions.
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -27,9 +27,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: false,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'rules-and-purpose',
@@ -39,9 +39,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: false,
             AddReactions: false,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'introduce-yourself',
@@ -51,9 +51,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'announcements',
@@ -63,9 +63,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: false,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'role-select',
@@ -75,11 +75,11 @@ export const serverCategories = {
           everyone: {
             SendMessages: false,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
-      }
-    ]
+            ReadMessageHistory: true,
+          },
+        },
+      },
+    ],
   },
   '💬 Unity Circle': {
     description: 'Community interaction and social channels',
@@ -92,9 +92,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'memes-and-chaos',
@@ -104,9 +104,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'vent-channel',
@@ -116,9 +116,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: false,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'coven-circle',
@@ -128,9 +128,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'after-dark',
@@ -140,9 +140,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'holy-quotes',
@@ -152,11 +152,11 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
-      }
-    ]
+            ReadMessageHistory: true,
+          },
+        },
+      },
+    ],
   },
   '🎮 Game Rooms': {
     description: 'Game-specific channels and matchmaking',
@@ -169,9 +169,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'roblox-din',
@@ -181,9 +181,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'fortnite-legion',
@@ -193,9 +193,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'fighting-games',
@@ -205,9 +205,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'suggest-a-game',
@@ -217,11 +217,11 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
-      }
-    ]
+            ReadMessageHistory: true,
+          },
+        },
+      },
+    ],
   },
   '🎥 Spotlight': {
     description: 'Showcase your content and achievements',
@@ -234,9 +234,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'epic-moments',
@@ -246,9 +246,9 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
+            ReadMessageHistory: true,
+          },
+        },
       },
       {
         name: 'art-and-mods',
@@ -258,11 +258,11 @@ export const serverCategories = {
           everyone: {
             SendMessages: true,
             AddReactions: true,
-            ReadMessageHistory: true
-          }
-        }
-      }
-    ]
+            ReadMessageHistory: true,
+          },
+        },
+      },
+    ],
   },
   '🔊 GameDin Voice': {
     description: 'Voice channels for gaming and socializing',
@@ -275,9 +275,9 @@ export const serverCategories = {
           everyone: {
             Connect: true,
             Speak: true,
-            UseVAD: true
-          }
-        }
+            UseVAD: true,
+          },
+        },
       },
       {
         name: '🎮 Game Night VC',
@@ -287,9 +287,9 @@ export const serverCategories = {
           everyone: {
             Connect: true,
             Speak: true,
-            UseVAD: true
-          }
-        }
+            UseVAD: true,
+          },
+        },
       },
       {
         name: '🕊️ Chill Lounge',
@@ -299,9 +299,9 @@ export const serverCategories = {
           everyone: {
             Connect: true,
             Speak: true,
-            UseVAD: true
-          }
-        }
+            UseVAD: true,
+          },
+        },
       },
       {
         name: '🔒 The Throne Room',
@@ -311,9 +311,9 @@ export const serverCategories = {
           everyone: {
             Connect: false,
             Speak: false,
-            UseVAD: false
-          }
-        }
+            UseVAD: false,
+          },
+        },
       },
       {
         name: '🔥 Sacred Flame VC',
@@ -323,11 +323,11 @@ export const serverCategories = {
           everyone: {
             Connect: true,
             Speak: true,
-            UseVAD: true
-          }
-        }
-      }
-    ]
+            UseVAD: true,
+          },
+        },
+      },
+    ],
   },
   '🛡️ Moderation': {
     description: 'Moderation and staff channels',
@@ -340,9 +340,9 @@ export const serverCategories = {
           everyone: {
             ViewChannel: false,
             SendMessages: false,
-            ReadMessageHistory: false
-          }
-        }
+            ReadMessageHistory: false,
+          },
+        },
       },
       {
         name: 'mod-chat',
@@ -352,9 +352,9 @@ export const serverCategories = {
           everyone: {
             ViewChannel: false,
             SendMessages: false,
-            ReadMessageHistory: false
-          }
-        }
+            ReadMessageHistory: false,
+          },
+        },
       },
       {
         name: 'reports',
@@ -364,9 +364,9 @@ export const serverCategories = {
           everyone: {
             ViewChannel: false,
             SendMessages: false,
-            ReadMessageHistory: false
-          }
-        }
+            ReadMessageHistory: false,
+          },
+        },
       },
       {
         name: 'trial-moderators',
@@ -376,12 +376,12 @@ export const serverCategories = {
           everyone: {
             ViewChannel: false,
             SendMessages: false,
-            ReadMessageHistory: false
-          }
-        }
-      }
-    ]
-  }
+            ReadMessageHistory: false,
+          },
+        },
+      },
+    ],
+  },
 };
 
 /**
@@ -390,52 +390,53 @@ export const serverCategories = {
  */
 export const serverRoles = {
   '👑 Sovereign': {
-    color: 0xFFD700, // Gold
+    color: 0xffd700, // Gold
     permissions: PermissionFlagsBits.Administrator,
     description: 'Server Owner - Full administrative control',
     position: 5,
     mentionable: true,
-    hoist: true
+    hoist: true,
   },
   '🛡️ Guardian': {
-    color: 0xFF0000, // Red
-    permissions: PermissionFlagsBits.ModerateMembers | 
-                PermissionFlagsBits.ManageMessages | 
-                PermissionFlagsBits.ManageChannels |
-                PermissionFlagsBits.KickMembers |
-                PermissionFlagsBits.BanMembers,
+    color: 0xff0000, // Red
+    permissions:
+      PermissionFlagsBits.ModerateMembers |
+      PermissionFlagsBits.ManageMessages |
+      PermissionFlagsBits.ManageChannels |
+      PermissionFlagsBits.KickMembers |
+      PermissionFlagsBits.BanMembers,
     description: 'Senior Moderator - Advanced moderation powers',
     position: 4,
     mentionable: true,
-    hoist: true
+    hoist: true,
   },
   '✨ Seraph': {
-    color: 0xFF69B4, // Hot Pink
-    permissions: PermissionFlagsBits.ModerateMembers | 
-                PermissionFlagsBits.ManageMessages |
-                PermissionFlagsBits.KickMembers,
+    color: 0xff69b4, // Hot Pink
+    permissions:
+      PermissionFlagsBits.ModerateMembers |
+      PermissionFlagsBits.ManageMessages |
+      PermissionFlagsBits.KickMembers,
     description: 'Moderator - Standard moderation powers',
     position: 3,
     mentionable: true,
-    hoist: true
+    hoist: true,
   },
   '🌟 Trial Seraph': {
-    color: 0x9370DB, // Medium Purple
-    permissions: PermissionFlagsBits.ModerateMembers |
-                PermissionFlagsBits.ManageMessages,
+    color: 0x9370db, // Medium Purple
+    permissions: PermissionFlagsBits.ModerateMembers | PermissionFlagsBits.ManageMessages,
     description: 'Trial Moderator - Learning moderation',
     position: 2,
     mentionable: true,
-    hoist: true
+    hoist: true,
   },
   '💫 Member': {
-    color: 0x00FF00, // Green
+    color: 0x00ff00, // Green
     permissions: 0n,
     description: 'Regular Member - Community participant',
     position: 1,
     mentionable: false,
-    hoist: false
-  }
+    hoist: false,
+  },
 };
 
 /**
@@ -468,9 +469,9 @@ GameDin is a divine gaming community where players from all walks of life come t
 • **Growth**: Help each other improve and learn
 
 We're excited to have you join our family! 🎮✨`,
-  color: 0x00FF00,
+  color: 0x00ff00,
   thumbnail: 'https://example.com/gamedin-logo.png',
-  footer: 'GameDin - Where Gaming Meets Community'
+  footer: 'GameDin - Where Gaming Meets Community',
 };
 
 /**
@@ -483,7 +484,7 @@ export const serverSettings = {
   explicitContentFilter: 1, // Medium
   defaultMessageNotifications: 1, // Mentions only
   systemChannelFlags: 0,
-  preferredLocale: 'en-US'
+  preferredLocale: 'en-US',
 };
 
 /**
@@ -498,7 +499,7 @@ export const autoModSettings = {
   profanityFilter: true,
   capsThreshold: 0.7,
   emojiThreshold: 10,
-  actionOnViolation: 'warn' // 'warn', 'mute', 'kick', 'ban'
+  actionOnViolation: 'warn', // 'warn', 'mute', 'kick', 'ban'
 };
 
 /**
@@ -511,7 +512,7 @@ export const xpSettings = {
   maxDailyXp: 1000,
   levelMultiplier: 100,
   bonusXpChannels: ['gaming-chat', 'memes-and-chaos'],
-  excludedChannels: ['mod-logs', 'mod-chat', 'reports']
+  excludedChannels: ['mod-logs', 'mod-chat', 'reports'],
 };
 
 // Type definitions for strong typing
@@ -543,4 +544,4 @@ export const SERVER_CONFIG = {
   serverSettings,
   autoMod: autoModSettings,
   xp: xpSettings,
-}; 
+};

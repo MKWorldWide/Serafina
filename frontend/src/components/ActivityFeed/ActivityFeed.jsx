@@ -30,7 +30,7 @@ const ActivityFeed = () => {
       });
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore, fetchActivities]
+    [loading, hasMore, fetchActivities],
   );
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const ActivityFeed = () => {
 
   if (error) {
     return (
-      <div className="alert alert-error shadow-lg">
+      <div className='alert alert-error shadow-lg'>
         <div>
           <span>Error loading activities. Please try again later.</span>
         </div>
@@ -48,10 +48,10 @@ const ActivityFeed = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className='space-y-6 max-w-2xl mx-auto'>
       {user && <CreatePost onPost={createActivity} />}
 
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {activities.map((activity, index) => (
           <div
             key={activity.id}
@@ -68,17 +68,17 @@ const ActivityFeed = () => {
       </div>
 
       {loading && (
-        <div className="flex justify-center p-4">
-          <div className="loading loading-spinner loading-lg"></div>
+        <div className='flex justify-center p-4'>
+          <div className='loading loading-spinner loading-lg'></div>
         </div>
       )}
 
       {!hasMore && activities.length > 0 && (
-        <div className="text-center text-gray-500 py-4">No more activities to load</div>
+        <div className='text-center text-gray-500 py-4'>No more activities to load</div>
       )}
 
       {!loading && activities.length === 0 && (
-        <div className="text-center text-gray-500 py-4">
+        <div className='text-center text-gray-500 py-4'>
           No activities yet. Be the first to post!
         </div>
       )}

@@ -24,7 +24,11 @@ const ProfilePage = () => {
   const { user, addFriend } = useStore();
   const isOwnProfile = user?.username === username;
 
-  const { data: profile, isLoading, error } = useQuery({
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['profile', username],
     queryFn: async () => {
       // Mock API call - replace with actual API call
@@ -71,8 +75,16 @@ const ProfilePage = () => {
 
   if (isLoading) {
     return (
-      <Container maxWidth="lg">
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+      <Container maxWidth='lg'>
+        <Box
+          sx={{
+            mt: 4,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '50vh',
+          }}
+        >
           <CircularProgress />
         </Box>
       </Container>
@@ -81,9 +93,9 @@ const ProfilePage = () => {
 
   if (error) {
     return (
-      <Container maxWidth="lg">
+      <Container maxWidth='lg'>
         <Box sx={{ mt: 4 }}>
-          <Alert severity="error">Error loading profile. Please try again later.</Alert>
+          <Alert severity='error'>Error loading profile. Please try again later.</Alert>
         </Box>
       </Container>
     );
@@ -91,16 +103,16 @@ const ProfilePage = () => {
 
   if (!profile) {
     return (
-      <Container maxWidth="lg">
+      <Container maxWidth='lg'>
         <Box sx={{ mt: 4 }}>
-          <Alert severity="info">Profile not found.</Alert>
+          <Alert severity='info'>Profile not found.</Alert>
         </Box>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth='lg'>
       <Box sx={{ mt: 4, mb: 4 }}>
         {/* Profile Header */}
         <Card sx={{ mb: 4 }}>
@@ -112,23 +124,23 @@ const ProfilePage = () => {
                 sx={{ width: 120, height: 120 }}
               />
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h4" gutterBottom>
+                <Typography variant='h4' gutterBottom>
                   {profile.username}
                 </Typography>
-                <Typography variant="body1" color="text.secondary" gutterBottom>
+                <Typography variant='body1' color='text.secondary' gutterBottom>
                   {profile.bio}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
                   {isOwnProfile ? (
-                    <Button variant="contained" onClick={handleEditProfile}>
+                    <Button variant='contained' onClick={handleEditProfile}>
                       Edit Profile
                     </Button>
                   ) : (
                     <>
-                      <Button variant="outlined" onClick={handleAddFriend}>
+                      <Button variant='outlined' onClick={handleAddFriend}>
                         Add Friend
                       </Button>
-                      <Button variant="outlined" onClick={handleSendMessage}>
+                      <Button variant='outlined' onClick={handleSendMessage}>
                         Message
                       </Button>
                     </>
@@ -144,7 +156,7 @@ const ProfilePage = () => {
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Level & Rank
                 </Typography>
                 <Stack spacing={1}>
@@ -163,48 +175,48 @@ const ProfilePage = () => {
           <Grid item xs={12} md={8}>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Gaming Stats
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography variant='subtitle2' color='text.secondary'>
                       Games Played
                     </Typography>
-                    <Typography variant="h6">{profile.stats.gamesPlayed}</Typography>
+                    <Typography variant='h6'>{profile.stats.gamesPlayed}</Typography>
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography variant='subtitle2' color='text.secondary'>
                       Win Rate
                     </Typography>
-                    <Typography variant="h6">{profile.stats.winRate}%</Typography>
+                    <Typography variant='h6'>{profile.stats.winRate}%</Typography>
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography variant='subtitle2' color='text.secondary'>
                       Matches Won
                     </Typography>
-                    <Typography variant="h6">{profile.stats.matchesWon}</Typography>
+                    <Typography variant='h6'>{profile.stats.matchesWon}</Typography>
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography variant='subtitle2' color='text.secondary'>
                       Matches Lost
                     </Typography>
-                    <Typography variant="h6">{profile.stats.matchesLost}</Typography>
+                    <Typography variant='h6'>{profile.stats.matchesLost}</Typography>
                   </Grid>
                 </Grid>
                 <Divider sx={{ my: 2 }} />
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography variant='subtitle2' color='text.secondary'>
                       Favorite Game
                     </Typography>
-                    <Typography variant="h6">{profile.stats.favoriteGame}</Typography>
+                    <Typography variant='h6'>{profile.stats.favoriteGame}</Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography variant='subtitle2' color='text.secondary'>
                       Total Playtime
                     </Typography>
-                    <Typography variant="h6">{profile.stats.playtime} hours</Typography>
+                    <Typography variant='h6'>{profile.stats.playtime} hours</Typography>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -215,7 +227,7 @@ const ProfilePage = () => {
         {/* Timeline */}
         <Card>
           <CardContent>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant='h5' gutterBottom>
               Activity Feed
             </Typography>
             <Timeline userId={profile.id} />

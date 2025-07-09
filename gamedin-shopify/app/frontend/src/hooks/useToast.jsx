@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 
 /**
  * Custom hook for managing toast notifications
@@ -40,18 +40,24 @@ export function useToast() {
    * @param {string} content - The success message to display
    * @param {Object} options - Toast options
    */
-  const showSuccessToast = useCallback((content, options = {}) => {
-    showToast(content, { ...options, error: false });
-  }, [showToast]);
+  const showSuccessToast = useCallback(
+    (content, options = {}) => {
+      showToast(content, { ...options, error: false });
+    },
+    [showToast],
+  );
 
   /**
    * Show an error toast notification
    * @param {string} content - The error message to display
    * @param {Object} options - Toast options
    */
-  const showErrorToast = useCallback((content, options = {}) => {
-    showToast(content, { ...options, error: true });
-  }, [showToast]);
+  const showErrorToast = useCallback(
+    (content, options = {}) => {
+      showToast(content, { ...options, error: true });
+    },
+    [showToast],
+  );
 
   return {
     toastActive,
@@ -63,4 +69,4 @@ export function useToast() {
   };
 }
 
-export default useToast; 
+export default useToast;

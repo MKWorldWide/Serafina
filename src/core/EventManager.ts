@@ -1,9 +1,9 @@
 /**
  * 🎮 GameDin Discord Bot - Event Manager
- * 
+ *
  * Comprehensive event management system that handles dynamic event loading
  * and processing for the Discord bot with TypeScript interfaces and error handling.
- * 
+ *
  * Features:
  * - Dynamic event loading from directories
  * - Support for both once and on events
@@ -11,7 +11,7 @@
  * - Error handling and logging
  * - Event statistics and monitoring
  * - Quantum documentation and usage tracking
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -65,13 +65,13 @@ export class EventManager {
   async loadEvents(eventsPath: string): Promise<void> {
     try {
       this.logger.info('Loading events from:', eventsPath);
-      
+
       const eventFiles = this.getEventFiles(eventsPath);
-      
+
       for (const file of eventFiles) {
         await this.loadEvent(file);
       }
-      
+
       this.logger.info(`Loaded ${this.events.size} events`);
     } catch (error) {
       this.logger.error('Error loading events:', error);
@@ -85,10 +85,10 @@ export class EventManager {
   private async loadEvent(filePath: string): Promise<void> {
     try {
       const eventModule = await import(filePath);
-      
+
       // Handle both default exports and named exports
       let event = eventModule.default || eventModule.event || eventModule;
-      
+
       // If it's an array of events, load each one
       if (Array.isArray(event)) {
         for (const evt of event) {
@@ -118,14 +118,14 @@ export class EventManager {
    */
   private getEventFiles(dir: string): string[] {
     const files: string[] = [];
-    
+
     try {
       const items = readdirSync(dir);
-      
+
       for (const item of items) {
         const fullPath = join(dir, item);
         const stat = statSync(fullPath);
-        
+
         if (stat.isDirectory()) {
           files.push(...this.getEventFiles(fullPath));
         } else if (item.endsWith('.ts') || item.endsWith('.js')) {
@@ -135,7 +135,7 @@ export class EventManager {
     } catch (error) {
       this.logger.warn(`Could not read directory ${dir}:`, error);
     }
-    
+
     return files;
   }
 
@@ -148,7 +148,7 @@ export class EventManager {
       executions: 0,
       lastExecuted: null,
       errors: 0,
-      averageExecutionTime: 0
+      averageExecutionTime: 0,
     });
   }
 
@@ -157,7 +157,7 @@ export class EventManager {
    */
   registerEvents(): void {
     this.logger.info('Registering events with Discord client...');
-    
+
     for (const [name, event] of this.events) {
       if (event.enabled === false) {
         this.logger.debug(`Skipping disabled event: ${name}`);
@@ -167,10 +167,10 @@ export class EventManager {
       const wrappedExecute = async (...args: any[]) => {
         const startTime = Date.now();
         const stats = this.stats.get(name);
-        
+
         try {
           await event.execute(...args);
-          
+
           // Update statistics
           if (stats) {
             stats.executions++;
@@ -178,11 +178,11 @@ export class EventManager {
             const executionTime = Date.now() - startTime;
             stats.averageExecutionTime = (stats.averageExecutionTime + executionTime) / 2;
           }
-          
+
           this.logger.debug(`Event ${name} executed successfully`);
         } catch (error) {
           this.logger.error(`Error in event ${name}:`, error);
-          
+
           // Update error statistics
           if (stats) {
             stats.errors++;
@@ -198,7 +198,7 @@ export class EventManager {
         this.logger.debug(`Registered event: ${name}`);
       }
     }
-    
+
     this.logger.info(`Registered ${this.events.size} events`);
   }
 
@@ -221,7 +221,7 @@ export class EventManager {
    */
   getEventsByCategory(): Record<string, BotEvent<any>[]> {
     const categories: Record<string, BotEvent<any>[]> = {};
-    
+
     for (const event of this.events.values()) {
       const category = event.category || 'General';
       if (!categories[category]) {
@@ -229,7 +229,7 @@ export class EventManager {
       }
       categories[category].push(event);
     }
-    
+
     return categories;
   }
 
@@ -285,13 +285,14 @@ export class EventManager {
     const stats = this.getAllEventStats();
     const totalExecutions = stats.reduce((sum, stat) => sum + stat.executions, 0);
     const totalErrors = stats.reduce((sum, stat) => sum + stat.errors, 0);
-    const avgExecutionTime = stats.reduce((sum, stat) => sum + stat.averageExecutionTime, 0) / stats.length || 0;
-    
+    const avgExecutionTime =
+      stats.reduce((sum, stat) => sum + stat.averageExecutionTime, 0) / stats.length || 0;
+
     return {
       totalEvents: this.events.size,
       totalExecutions,
       totalErrors,
-      averageExecutionTime: avgExecutionTime
+      averageExecutionTime: avgExecutionTime,
     };
   }
 
@@ -312,24 +313,24 @@ export class EventManager {
   getEventHelp(eventName: string): string | null {
     const event = this.events.get(eventName);
     if (!event) return null;
-    
+
     const help = [
       `**${eventName}**`,
       `Description: ${event.description || 'No description available'}`,
       `Category: ${event.category || 'General'}`,
       `Type: ${event.once ? 'Once' : 'On'}`,
-      `Enabled: ${event.enabled !== false ? 'Yes' : 'No'}`
+      `Enabled: ${event.enabled !== false ? 'Yes' : 'No'}`,
     ];
-    
+
     const stats = this.stats.get(eventName);
     if (stats) {
       help.push(
         `Executions: ${stats.executions}`,
         `Errors: ${stats.errors}`,
-        `Average Execution Time: ${stats.averageExecutionTime.toFixed(2)}ms`
+        `Average Execution Time: ${stats.averageExecutionTime.toFixed(2)}ms`,
       );
     }
-    
+
     return help.join('\n');
   }
 
@@ -338,15 +339,15 @@ export class EventManager {
    */
   listEvents(): string[] {
     const eventList: string[] = [];
-    
+
     for (const [name, event] of this.events) {
       const status = event.enabled !== false ? '✅' : '❌';
       const type = event.once ? 'Once' : 'On';
       const category = event.category || 'General';
-      
+
       eventList.push(`${status} **${name}** (${type}) - ${category}`);
     }
-    
+
     return eventList;
   }
-} 
+}

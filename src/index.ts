@@ -1,9 +1,9 @@
 /**
  * 🎮 GameDin Discord Bot - Main Entry Point
- * 
+ *
  * This is the main entry point for the GameDin Discord bot. It initializes the Discord client,
  * loads commands and events, sets up services, and handles all bot functionality.
- * 
+ *
  * @author NovaSanctum
  * @version 1.0.0
  * @since 2024-12-19
@@ -47,7 +47,7 @@ const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js
 for (const file of commandFiles) {
   const filePath = join(commandsPath, file);
   const command = require(filePath);
-  
+
   if ('data' in command && 'execute' in command) {
     commands.set(command.data.name, command);
     logger.info(`Loaded command: ${command.data.name}`);
@@ -63,13 +63,13 @@ const eventFiles = readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
   const filePath = join(eventsPath, file);
   const event = require(filePath);
-  
+
   if (event.once) {
     client.once(event.name, (...args) => event.execute(...args));
   } else {
     client.on(event.name, (...args) => event.execute(...args));
   }
-  
+
   logger.info(`Loaded event: ${event.name}`);
 }
 
@@ -81,22 +81,21 @@ let xpManager: XPManager;
 // Ready event
 client.once(Events.ClientReady, async () => {
   logger.info(`Logged in as ${client.user?.tag}`);
-  
+
   try {
     // Initialize services
     const guild = client.guilds.cache.get(config.guildId);
     if (!guild) {
       throw new Error(`Guild with ID ${config.guildId} not found`);
     }
-    
+
     serverManager = new ServerManager(guild);
     autoModerator = new AutoModerator();
     xpManager = new XPManager();
-    
+
     // Initialize server
     await serverManager.initializeServer();
     logger.info('Server initialization completed');
-    
   } catch (error) {
     logger.error('Failed to initialize server:', error);
   }
@@ -121,9 +120,9 @@ client.on(Events.InteractionCreate, async interaction => {
     }
   } catch (error) {
     logger.error(`Error executing command ${interaction.commandName}:`, error);
-    
+
     const errorMessage = 'There was an error while executing this command!';
-    
+
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({ content: errorMessage, ephemeral: true });
     } else {
@@ -136,21 +135,20 @@ client.on(Events.InteractionCreate, async interaction => {
 client.on(Events.MessageCreate, async message => {
   // Ignore bot messages
   if (message.author.bot) return;
-  
+
   try {
     // Sanitize message content
     const sanitizedContent = sanitizeDiscordInput(message.content);
-    
+
     // Process with auto moderator
     if (autoModerator) {
       await autoModerator.handleMessage(message);
     }
-    
+
     // Add XP for message
     if (xpManager && message.member) {
       await xpManager.handleMessage(message.member);
     }
-    
   } catch (error) {
     logger.error('Error processing message:', error);
   }
@@ -204,4 +202,4 @@ if (!token) {
 client.login(token).catch(error => {
   logger.error('Failed to login to Discord:', error);
   process.exit(1);
-}); 
+});
