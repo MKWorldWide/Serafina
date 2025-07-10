@@ -1,251 +1,77 @@
 name: Notion Documentation Sync
 
 on:
-  # Manual trigger
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'scripts/notion-*.js'
   workflow_dispatch:
     inputs:
-      sync_direction:
-        description: 'Sync direction'
+      sync_type:
+        description: 'Type of sync to perform'
         required: true
-        default: 'bidirectional'
+        default: 'auto'
         type: choice
         options:
-        - bidirectional
-        - notion-to-github
-        - github-to-notion
-      force_sync:
-        description: 'Force sync even if no changes detected'
-        required: false
-        default: false
-        type: boolean
-  
-  # Schedule sync every 6 hours
-  schedule:
-    - cron: '0 */6 * * *'
-  
-  # Sync on push to main branch
-  push:
-    branches:
-      - main
-    paths:
-      - 'docs/**/*.md'
-      - 'README.md'
-      - 'ARCHITECTURE.md'
-      - 'CHANGELOG.md'
-  
-  # Sync on pull request to main
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'docs/**/*.md'
-      - 'README.md'
-      - 'ARCHITECTURE.md'
-      - 'CHANGELOG.md'
+        - auto
+        - manual
+        - full
 
 jobs:
   notion-sync:
-    name: Sync Notion Documentation
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout code
+      uses: actions/checkout@v4
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install
       
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Create .env file
-        run: |
-          echo "NOTION_TOKEN=${{ secrets.NOTION_TOKEN }}" > .env
-          echo "NODE_ENV=production" >> .env
-      
-      - name: Validate configuration
-        run: npm run notion-sync:validate
-      
-      - name: Initialize sync service
-        run: npm run notion-sync:init
-      
-      - name: Perform documentation sync
-        id: sync
-        run: |
-          echo "🔄 Starting ${{ github.event.inputs.sync_direction || 'bidirectional' }} sync..."
-          
-          if [ "${{ github.event.inputs.sync_direction }}" = "notion-to-github" ]; then
-            npm run notion-sync -- sync --direction=notion-to-github
-          elif [ "${{ github.event.inputs.sync_direction }}" = "github-to-notion" ]; then
-            npm run notion-sync -- sync --direction=github-to-notion
-          else
-            npm run notion-sync:sync
-          fi
-          
-          echo "✅ Sync completed successfully"
-        continue-on-error: true
-      
-      - name: Check for changes
-        id: changes
-        run: |
-          if git diff --quiet HEAD~1 HEAD; then
-            echo "no_changes=true" >> $GITHUB_OUTPUT
-            echo "📝 No changes detected"
-          else
-            echo "no_changes=false" >> $GITHUB_OUTPUT
-            echo "📝 Changes detected"
-          fi
-      
-      - name: Commit and push changes
-        if: steps.changes.outputs.no_changes == 'false'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # Add all changes
-          git add .
-          
-          # Create commit message
-          COMMIT_MSG="📝 Auto-sync documentation from Notion"
-          
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            COMMIT_MSG="$COMMIT_MSG (manual trigger)"
-          elif [ "${{ github.event_name }}" = "schedule" ]; then
-            COMMIT_MSG="$COMMIT_MSG (scheduled)"
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            COMMIT_MSG="$COMMIT_MSG (push trigger)"
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            COMMIT_MSG="$COMMIT_MSG (PR trigger)"
-          fi
-          
-          # Commit and push
-          git commit -m "$COMMIT_MSG" || echo "No changes to commit"
-          git push || echo "No changes to push"
-      
-      - name: Create sync report
-        if: always()
-        run: |
-          echo "📊 Sync Report" > sync-report.md
-          echo "=============" >> sync-report.md
-          echo "" >> sync-report.md
-          echo "**Timestamp:** $(date -u)" >> sync-report.md
-          echo "**Trigger:** ${{ github.event_name }}" >> sync-report.md
-          echo "**Direction:** ${{ github.event.inputs.sync_direction || 'bidirectional' }}" >> sync-report.md
-          echo "**Status:** ${{ steps.sync.outcome }}" >> sync-report.md
-          echo "" >> sync-report.md
-          
-          if [ "${{ steps.sync.outcome }}" = "success" ]; then
-            echo "✅ Sync completed successfully" >> sync-report.md
-          else
-            echo "❌ Sync failed" >> sync-report.md
-            echo "" >> sync-report.md
-            echo "**Error Details:**" >> sync-report.md
-            echo "Check the logs above for detailed error information." >> sync-report.md
-          fi
-          
-          echo "" >> sync-report.md
-          echo "---" >> sync-report.md
-          echo "*Generated by GitHub Actions*" >> sync-report.md
-      
-      - name: Upload sync report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: sync-report-${{ github.run_number }}
-          path: sync-report.md
-          retention-days: 30
-      
-      - name: Comment on PR
-        if: github.event_name == 'pull_request' && steps.changes.outputs.no_changes == 'false'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const report = fs.readFileSync('sync-report.md', 'utf8');
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## 📝 Documentation Sync Report\n\n${report}`
-            });
-      
-      - name: Notify on failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            let report = 'Sync failed. Check the logs for details.';
-            
-            try {
-              report = fs.readFileSync('sync-report.md', 'utf8');
-            } catch (e) {
-              // Report file might not exist
-            }
-            
-            // Create issue for sync failure
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '🚨 Notion Sync Failed',
-              body: `## Sync Failure Report\n\n${report}\n\n**Workflow:** ${context.workflow}\n**Run:** ${context.runId}\n**Commit:** ${context.sha}`,
-              labels: ['documentation', 'sync-failure', 'bug']
-            });
-
-  # Additional job for monitoring sync health
-  sync-health-check:
-    name: Sync Health Check
-    runs-on: ubuntu-latest
-    needs: notion-sync
-    if: always()
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Create .env file
-        run: |
-          echo "NOTION_TOKEN=${{ secrets.NOTION_TOKEN }}" > .env
-          echo "NODE_ENV=production" >> .env
-      
-      - name: Run health check
-        run: npm run notion-sync:status
-      
-      - name: Generate health report
-        run: |
-          echo "🏥 Sync Health Report" > health-report.md
-          echo "====================" >> health-report.md
-          echo "" >> health-report.md
-          echo "**Generated:** $(date -u)" >> health-report.md
-          echo "**Previous Sync:** ${{ needs.notion-sync.result }}" >> health-report.md
-          echo "" >> health-report.md
-          echo "## Status" >> health-report.md
-          echo "✅ All systems operational" >> health-report.md
-          echo "" >> health-report.md
-          echo "## Recommendations" >> health-report.md
-          echo "- Monitor sync frequency" >> health-report.md
-          echo "- Review error logs regularly" >> health-report.md
-          echo "- Update page IDs as needed" >> health-report.md
-      
-      - name: Upload health report
-        uses: actions/upload-artifact@v4
-        with:
-          name: health-report-${{ github.run_number }}
-          path: health-report.md
-          retention-days: 30 
+    - name: Create .env file
+      run: |
+        echo "# Discord Bot Configuration" > .env
+        echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" >> .env
+        echo "DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}" >> .env
+        echo "DISCORD_GUILD_ID=${{ secrets.DISCORD_GUILD_ID }}" >> .env
+        echo "" >> .env
+        echo "# Bot Configuration" >> .env
+        echo "BOT_PREFIX=!" >> .env
+        echo "" >> .env
+        echo "# Feature Flags" >> .env
+        echo "ENABLE_XP_SYSTEM=true" >> .env
+        echo "ENABLE_AUTO_MODERATION=true" >> .env
+        echo "ENABLE_WELCOME_SYSTEM=true" >> .env
+        echo "ENABLE_ROLE_MANAGEMENT=true" >> .env
+        echo "" >> .env
+        echo "# Notion API" >> .env
+        echo "NOTION_API_KEY=${{ secrets.NOTION_API_KEY }}" >> .env
+        echo "" >> .env
+        echo "# Mistral API" >> .env
+        echo "MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}" >> .env
+        
+    - name: Sync Notion Documentation
+      run: |
+        if [ "${{ github.event.inputs.sync_type }}" = "full" ]; then
+          echo "Running full Notion sync..."
+          node scripts/update-notion-pages-fixed.js
+        else
+          echo "Running auto sync..."
+          node scripts/create-notion-docs.js
+        fi
+        
+    - name: Commit and push changes
+      if: success()
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git diff --quiet && git diff --staged --quiet || git commit -m "docs: auto-sync Notion documentation [skip ci]"
+        git push 
