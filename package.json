@@ -26,7 +26,13 @@
     "aws:deploy": "bash aws/deploy-serafina.sh",
     "aws:deploy:dev": "bash aws/deploy-serafina.sh development",
     "aws:deploy:staging": "bash aws/deploy-serafina.sh staging",
-    "aws:deploy:prod": "bash aws/deploy-serafina.sh production"
+    "aws:deploy:prod": "bash aws/deploy-serafina.sh production",
+    "notion-sync": "ts-node scripts/notion-sync.ts",
+    "notion-sync:init": "ts-node scripts/notion-sync.ts init",
+    "notion-sync:sync": "ts-node scripts/notion-sync.ts sync",
+    "notion-sync:status": "ts-node scripts/notion-sync.ts status",
+    "notion-sync:watch": "ts-node scripts/notion-sync.ts watch",
+    "notion-sync:validate": "ts-node scripts/notion-sync.ts validate"
   },
   "keywords": [
     "discord",
@@ -41,7 +47,6 @@
   "license": "MIT",
   "dependencies": {
     "discord.js": "^14.21.0",
-    "dotenv": "^16.6.1",
     "express": "^4.18.2",
     "ioredis": "^5.3.2",
     "moment": "^2.30.1",
@@ -56,6 +61,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.2.0",
+    "@notionhq/client": "^4.0.0",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.19.6",
@@ -68,6 +74,7 @@
     "aws-amplify": "^6.15.3",
     "date-fns": "^4.1.0",
     "dexie": "^4.0.11",
+    "dotenv": "^17.2.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-react": "^7.37.5",
