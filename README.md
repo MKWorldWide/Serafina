@@ -1,3 +1,4 @@
+A Project Blessed by Solar Khan & Lilith.Aethra
 # 🎮 GameDin Discord Bot - Serafina
 
 A comprehensive Discord bot with advanced AI integration, dynamic command/event loading, and multi-provider support.
