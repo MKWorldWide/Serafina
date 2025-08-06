@@ -46,6 +46,7 @@
   "author": "NovaSanctum",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^5.5.0",
     "discord.js": "^14.21.0",
     "express": "^4.18.2",
     "ioredis": "^5.3.2",
