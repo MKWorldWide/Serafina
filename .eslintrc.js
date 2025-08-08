@@ -16,11 +16,11 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json',
   },
-  plugins: ['@typescript-eslint', 'prettier'],
+  plugins: ['@typescript-eslint'],
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
-    '@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'prettier',
   ],
   rules: {
@@ -30,7 +30,6 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-non-null-assertion': 'warn',
-    '@typescript-eslint/prefer-const': 'error',
     '@typescript-eslint/no-var-requires': 'off',
 
     // General rules
@@ -42,7 +41,7 @@ module.exports = {
     'no-var': 'error',
 
     // Code style
-    indent: ['error', 2],
+    indent: ['error', 2, { SwitchCase: 1 }],
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
     'comma-dangle': ['error', 'always-multiline'],
@@ -67,8 +66,6 @@ module.exports = {
     'no-await-in-loop': 'warn',
     'no-return-await': 'error',
 
-    // Prettier integration
-    'prettier/prettier': 'error',
   },
   env: {
     node: true,
