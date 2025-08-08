@@ -14,6 +14,7 @@ import { readdirSync } from 'fs';
 import { join } from 'path';
 import dotenv from 'dotenv';
 import { SerafinaPersonality } from './core/serafina-new';
+import { SerafinaRouter } from './services/serafina-router';
 
 // Load environment variables
 dotenv.config();
@@ -34,6 +35,9 @@ const events = new Collection<string, any>();
 
 // Initialize Serafina's personality
 const serafina = new SerafinaPersonality(client);
+
+// Initialize Serafina's router service
+const serafinaRouter = new SerafinaRouter(client);
 
 // Simple logger
 const logger = {
@@ -241,6 +245,68 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
+// Load commands from the commands directory
+const loadCommands = async () => {
+  try {
+    const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+    for (const file of commandFiles) {
+      const filePath = join(commandsPath, file);
+      const command = require(filePath);
+
+      if ('data' in command && 'execute' in command) {
+        commands.set(command.data.name, command);
+        logger.info(`Loaded command: ${command.data.name}`);
+      } else {
+        logger.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`);
+      }
+    }
+  } catch (error) {
+    logger.warn('No commands directory found or error loading commands');
+  }
+};
+
+// Load event handlers from the events directory
+const loadEvents = async () => {
+  try {
+    const eventFiles = readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
+    for (const file of eventFiles) {
+      const filePath = join(eventsPath, file);
+      const event = require(filePath);
+
+      if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args));
+      } else {
+        client.on(event.name, (...args) => event.execute(...args));
+      }
+
+      logger.info(`Loaded event: ${event.name}`);
+    }
+  } catch (error) {
+    logger.warn('No events directory found or error loading events');
+  }
+};
+
+// Start the bot
+const startBot = async () => {
+  try {
+    // Load commands and events
+    await loadCommands();
+    await loadEvents();
+
+    // Initialize router service
+    serafinaRouter.initialize();
+
+    // Login to Discord
+    await client.login(process.env.DISCORD_TOKEN);
+    logger.info('Bot is online!');
+  } catch (error) {
+    logger.error('Failed to start bot:', error);
+    process.exit(1);
+  }
+};
+
 // Login to Discord
 const token = process.env['DISCORD_TOKEN'];
 if (!token) {
@@ -248,9 +314,6 @@ if (!token) {
   process.exit(1);
 }
 
-client.login(token).catch(error => {
-  logger.error('Failed to login:', error);
-  process.exit(1);
-});
+startBot();
 
 export { client, logger };
