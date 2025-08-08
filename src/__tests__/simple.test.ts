@@ -38,8 +38,8 @@ describe('Basic Functionality', () => {
 
   test('should sanitize Discord input correctly', () => {
     const { sanitizeDiscordInput } = require('../utils/validation');
-    const result = sanitizeDiscordInput('Hello <@123456789>!');
-    expect(result).toBeDefined();
-    expect(typeof result).toBe('string');
+    const result = sanitizeDiscordInput('Hello <@123456789> and @everyone!');
+    // The mention and mass ping should be stripped to protect real servers
+    expect(result).toBe('Hello  and everyone!');
   });
 });

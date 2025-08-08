@@ -38,6 +38,11 @@ A comprehensive Discord bot with advanced AI integration, dynamic command/event 
 - **Error Handling**: Robust error handling and recovery
 - **Documentation**: Quantum-level documentation throughout
 
+### 🔗 Lilybear Router
+
+- **Central Dispatch**: Routes cross-bot whispers and operational commands.
+- **Slash Commands**: `/route`, `/deploy`, `/status`, and `/bless` for rapid control.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
