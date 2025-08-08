@@ -1,0 +1,57 @@
+# Render configuration for Serafina services
+services:
+  # Main Discord bot service
+  - type: web
+    name: serafina-bot
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DISCORD_TOKEN
+        fromGroup: true  # Will be set in Render dashboard
+      - key: NODE_ENV
+        value: production
+    plan: free
+    autoDeploy: true
+
+  # Shadow Nexus service
+  - type: web
+    name: shadow-nexus
+    env: node
+    buildCommand: npm install
+    startCommand: node dist/services/shadow-nexus.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+    plan: free
+    autoDeploy: true
+
+  # AthenaCore service
+  - type: web
+    name: athena-core
+    env: node
+    buildCommand: npm install
+    startCommand: node dist/services/athena-core.js
+    envVars:
+      - key: PORT
+        value: 10001
+      - key: NODE_ENV
+        value: production
+    plan: free
+    autoDeploy: true
+
+  # Divina service
+  - type: web
+    name: divina
+    env: node
+    buildCommand: npm install
+    startCommand: node dist/services/divina.js
+    envVars:
+      - key: PORT
+        value: 10002
+      - key: NODE_ENV
+        value: production
+    plan: free
+    autoDeploy: true
