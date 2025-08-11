@@ -1,6 +1,8 @@
 A Project Blessed by Solar Khan & Lilith.Aethra
 # 🎮 GameDin Discord Bot - Serafina
 
+> **Note:** This document has been expanded to include **Operations Mode** - a comprehensive set of tools for monitoring and managing your services directly from Discord.
+
 A comprehensive Discord bot with advanced AI integration, dynamic command/event loading, and multi-provider support.
 
 ## 🌟 Features
@@ -37,6 +39,66 @@ A comprehensive Discord bot with advanced AI integration, dynamic command/event 
 - **Comprehensive Logging**: Color-coded logging with multiple levels
 - **Error Handling**: Robust error handling and recovery
 - **Documentation**: Quantum-level documentation throughout
+
+### 🛠️ Operations Mode
+
+Serafina's Operations Mode transforms your Discord server into a powerful operations center with:
+
+- **Service Monitoring**: Real-time health checks and status updates
+- **Incident Management**: Track and resolve service issues directly from Discord
+- **Automated Alerts**: Get notified when services go down or degrade
+- **Status Pages**: Keep your team informed with live service status
+- **Performance Metrics**: Track response times and uptime
+
+#### Key Features
+
+- **`/status`**: Check the status of all monitored services
+- **`/services`**: List all registered services and their details
+- **`/whois <service>`**: Get detailed information about a specific service
+- **`/incident`**: Manage service incidents (create, update, resolve)
+- **Auto-healing**: Automatic incident creation and resolution
+- **Service Degradation Detection**: Identify performance issues before they become critical
+
+#### Quick Start for Operations Mode
+
+1. **Configure Services**:
+   ```env
+   # Required
+   SERVICES=[
+     {
+       "name": "api-service",
+       "url": "https://api.example.com/health",
+       "owner": "123456789012345678",  # Discord User ID
+       "channelId": "123456789012345678",  # Discord Channel ID for updates
+       "description": "Main API Service",
+       "tags": ["production", "critical"]
+     }
+   ]
+   
+   # Optional but recommended
+   INCIDENT_CHANNEL_ID="123456789012345678"
+   STATUS_THREAD_CHANNEL_ID="123456789012345678"
+   INCIDENT_ROLE_CRITICAL="123456789012345678"
+   INCIDENT_ROLE_MAJOR="123456789012345678"
+   INCIDENT_ROLE_MINOR="123456789012345678"
+   ```
+
+2. **Deploy Commands**:
+   ```bash
+   npm run deploy:commands
+   ```
+
+3. **Start the Bot**:
+   ```bash
+   npm run start:prod
+   ```
+
+4. **Monitor Services**:
+   - Use `/status` to check service health
+   - Create incidents with `/incident create`
+   - Get detailed service info with `/whois <service>`
+
+For detailed documentation, see the [Operations Guide](#operations-guide) section below.
 
 ### 🔗 Lilybear Router
 
@@ -338,6 +400,92 @@ npm run test:commands
 - Error handling
 - Performance considerations
 - Security best practices
+
+## 📚 Operations Guide
+
+### Service Configuration
+
+Services are configured using the `SERVICES` environment variable as a JSON array. Each service should have:
+
+```json
+{
+  "name": "service-name",
+  "url": "https://service.example.com/health",
+  "owner": "discord-user-id",
+  "channelId": "discord-channel-id",
+  "description": "Service description",
+  "statusPageUrl": "https://status.example.com",
+  "category": "API",
+  "tags": ["production", "critical"]
+}
+```
+
+### Health Endpoint Requirements
+
+For optimal monitoring, your services should implement a health endpoint that returns:
+
+```json
+{
+  "status": "ok",
+  "version": "1.0.0",
+  "uptime": 12345,
+  "timestamp": "2023-01-01T00:00:00.000Z"
+}
+```
+
+### Incident Management
+
+Incidents can be managed through the `/incident` command:
+
+```bash
+/incident create service:api-service title:"API Timeout" severity:major
+```
+
+### Status Threads
+
+Enable automatic status updates by setting:
+```env
+ENABLE_STATUS_THREADS=true
+STATUS_THREAD_CHANNEL_ID=your-channel-id
+STATUS_THREAD_UPDATE_INTERVAL=300000  # 5 minutes
+```
+
+### Alerting
+
+Configure role mentions for different severity levels:
+```env
+INCIDENT_ROLE_CRITICAL=role-id-1
+INCIDENT_ROLE_MAJOR=role-id-2
+INCIDENT_ROLE_MINOR=role-id-3
+```
+
+## 🚀 Deployment
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DISCORD_TOKEN` | | Your Discord bot token |
+| `DISCORD_CLIENT_ID` | | Your Discord application ID |
+| `SERVICES` | | JSON array of service configurations |
+| `INCIDENT_CHANNEL_ID` | | Channel for incident notifications |
+| `STATUS_THREAD_CHANNEL_ID` | | Channel for status updates |
+| `HEARTBEAT_INTERVAL` | | How often to check services (ms) |
+| `HEARTBEAT_TIMEOUT` | | Request timeout for health checks (ms) |
+| `CIRCUIT_BREAKER_THRESHOLD` | | Failures before opening circuit |
+| `CIRCUIT_BREAKER_TIMEOUT` | | Time before retrying after circuit opens (ms) |
+
+### Deployment with Docker
+
+```bash
+docker build -t serafina-bot .
+docker run -d \
+  --name serafina \
+  -e DISCORD_TOKEN=your-token \
+  -e DISCORD_CLIENT_ID=your-client-id \
+  -e SERVICES='[{"name":"example","url":"https://example.com/health"}]' \
+  serafina-bot
+```
 
 ## 📄 License
 

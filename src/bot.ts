@@ -288,15 +288,29 @@ const loadEvents = async () => {
   }
 };
 
+// Import status command and heartbeat presence
+import { startHeartbeatPresence } from './jobs/heartbeatPresence';
+import * as statusCommand from './commands/status';
+
 // Start the bot
 const startBot = async () => {
   try {
     // Load commands and events
     await loadCommands();
     await loadEvents();
+    
+    // Register the status command
+    commands.set(statusCommand.data.name, statusCommand);
+    logger.info(`Loaded command: ${statusCommand.data.name}`);
 
     // Initialize router service
     serafinaRouter.initialize();
+    
+    // Start the heartbeat presence updater
+    client.once('ready', () => {
+      logger.info('Bot is ready, starting heartbeat presence...');
+      startHeartbeatPresence(client);
+    });
 
     // Login to Discord
     await client.login(process.env.DISCORD_TOKEN);

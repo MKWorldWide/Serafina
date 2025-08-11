@@ -1,0 +1,26 @@
+{
+  "httpRequest": {
+    "method": "GET",
+    "path": "/health"
+  },
+  "httpResponse": {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": ["application/json"]
+    },
+    "body": {
+      "status": "ok",
+      "version": "1.0.0",
+      "uptime": 12345,
+      "timestamp": "2023-01-01T00:00:00.000Z"
+    },
+    "delay": {
+      "timeUnit": "MILLISECONDS",
+      "value": 100
+    }
+  },
+  "times": {
+    "remainingTimes": 1000,
+    "unlimited": true
+  }
+}
