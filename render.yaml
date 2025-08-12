@@ -1,4 +1,4 @@
-# Render configuration for Serafina Discord Bot
+# Render configuration for Serafina Discord Bot (Free Tier)
 # Documentation: https://render.com/docs/blueprint-spec
 
 # Global environment variables for all services
@@ -8,7 +8,7 @@ envVars:
   - key: LOG_LEVEL
     value: info
   - key: DATABASE_URL
-    value: file:./data/serafina.db
+    value: :memory:  # Using in-memory database for free tier
   - key: DB_DRIVER
     value: wasm  # Using WASM driver for better compatibility
 
@@ -18,8 +18,8 @@ services:
     name: serafina-bot
     env: node
     region: oregon  # Choose the region closest to your users
-    plan: free  # Start with free tier, upgrade as needed
-    autoDeploy: true  # Auto-deploy on push to main branch
+    plan: free  # Free tier
+    autoDeploy: true  # Auto-deploy on push to main
     buildCommand: |
       npm ci && \
       npm run build
@@ -34,12 +34,6 @@ services:
       - key: DISCORD_CLIENT_ID
         sync: false  # Will be set in Render dashboard
     healthCheckPath: /healthz
-    
-    # Persistent storage for SQLite database
-    disk:
-      name: serafina-data
-      mountPath: /opt/render/project/data
-      sizeGB: 1  # Adjust based on your needs
 
 # Database service (if using PostgreSQL instead of SQLite)
 # Uncomment and configure if needed:
