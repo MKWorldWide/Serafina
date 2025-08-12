@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "commonjs",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
@@ -10,26 +10,27 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
+    "declaration": false,
+    "declarationMap": false,
     "sourceMap": true,
-    "removeComments": false,
+    "removeComments": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": false,
-    "jsx": "react-jsx",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@/types/*": ["types/*"],
-      "@/utils/*": ["utils/*"],
-      "@/services/*": ["services/*"],
-      "@/commands/*": ["commands/*"],
-      "@/events/*": ["events/*"],
-      "@/config/*": ["config/*"]
+      "@/*": ["src/*"],
+      "@/core/*": ["src/core/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/services/*": ["src/services/*"],
+      "@/handlers/*": ["src/handlers/*"],
+      "@/events/*": ["src/events/*"],
+      "@/config/*": ["src/config/*"],
+      "@/web/*": ["src/web/*"],
+      "@/tasks/*": ["src/tasks/*"]
     }
   },
   "include": ["src/**/*"],
@@ -38,11 +39,6 @@
     "dist",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "src/__tests__/**/*",
-    "src/config/feature-flags.ts",
-    "src/commands/manage.ts"
-  ],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  }
+    "**/__tests__/**/*"
+  ]
 }

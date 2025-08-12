@@ -8,35 +8,16 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
-    "doctor": "tsx scripts/repo-doctor.ts",
-    "migrate:config": "tsx scripts/migrate-config.ts",
-    "migrate:db": "tsx scripts/migrate-db.ts",
-    "cleanup:legacy": "tsx scripts/cleanup-legacy.ts --apply",
-    "cleanup:legacy:dry": "tsx scripts/cleanup-legacy.ts --dry",
-    "smoke": "tsx test/scripts/smoke.ts",
-    
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
-    "build": "tsup src/index.ts --format cjs --dts --clean",
-    "register": "tsx src/registry/register.ts",
-    
-    "clean": "rimraf dist coverage .backup",
+    "build": "tsc && tsc-alias",
+    "clean": "rimraf dist",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
-    
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    
-    "db:migrate": "knex migrate:latest",
-    "db:rollback": "knex migrate:rollback",
-    "db:make-migration": "knex migrate:make",
-    
-    "docker:build": "docker build -t serafina-bot .",
-    "docker:run": "docker run -d --name serafina-bot -p 8787:8787 serafina-bot",
-    "docker:stop": "docker stop serafina-bot && docker rm serafina-bot"
+    "prepare": "npm run build",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "discord",
