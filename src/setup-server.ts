@@ -483,210 +483,11 @@ async function setupServer() {
   await client.login(DISCORD_TOKEN);
 }
 
-// Function to update server settings
-async function updateServerSettings(guild: Guild) {
-  try {
-    // Define the server configuration
-    const serverConfig = {
-      name: 'GameDin Community',
-      verificationLevel: 1, // Low verification level
-      defaultMessageNotifications: 1, // Only @mentions
-      explicitContentFilter: 1, // Scan messages from all members
-      afkTimeout: 300, // 5 minutes
-      preferredLocale: 'en-US',
-      description: 'Welcome to the official GameDin Discord server!',
-    };
-
-    // Update the server settings
-    await guild.edit(serverConfig);
-    console.log('✅ Updated server settings');
-  } catch (error) {
-    console.error('❌ Error updating server settings:', error);
-    throw error;
-  }
-}
-
-// Function to set up categories and channels
-async function setupCategoriesAndChannels(guild: Guild, roles: ServerRoles) {
-  try {
-    // Define categories and their channels
-    const categories = [
-      {
-        name: '📢 Announcements',
-        position: 0,
-        permissionOverwrites: createPermissionOverwrites(
-          guild,
-          roles,
-          {
-            [roles.admin.id]: { ViewChannel: true, SendMessages: true, ManageMessages: true },
-            [roles.moderator.id]: { ViewChannel: true, SendMessages: true, ManageMessages: true },
-            [roles.member.id]: { ViewChannel: true, SendMessages: false },
-          }
-        ),
-        channels: [
-          {
-            name: 'announcements',
-            type: ChannelType.GuildText,
-            topic: 'Official announcements from the GameDin team',
-            permissionOverwrites: []
-          }
-        ]
-      },
-      // Add more categories as needed
-    ];
-
-    // Create categories and channels
-    for (const categoryConfig of categories) {
-      // Create the category
-      const category = await guild.channels.create({
-        name: categoryConfig.name,
-        type: ChannelType.GuildCategory,
-        position: categoryConfig.position,
-        permissionOverwrites: categoryConfig.permissionOverwrites,
-      });
-
-      console.log(`✅ Created category: ${category.name}`);
-
-      // Create channels in this category
-      for (const channelConfig of categoryConfig.channels) {
-        await guild.channels.create({
-          ...channelConfig,
-          parent: category,
-        });
-        console.log(`  └─ Created channel: ${channelConfig.name}`);
-      }
-    }
-  } catch (error) {
-    console.error('❌ Error setting up categories and channels:', error);
-    throw error;
-  }
-}
-
 // Start the setup process
 setupServer().catch(error => {
   console.error('❌ Fatal error during setup:', error);
   process.exit(1);
 });
-  }
-});
-
-async function cleanupExistingSetup(guild: Guild) {
-  console.log('\n🧹 Cleaning up existing setup...');
-  
-  // Delete all channels except the ones we want to keep
-  const channels = guild.channels.cache;
-  for (const [id, channel] of channels) {
-    try {
-      // Skip system channels and channels we want to keep
-      if (channel?.type === ChannelType.GuildCategory || 
-          channel?.type === ChannelType.GuildVoice || 
-          channel?.type === ChannelType.GuildText ||
-          channel?.type === ChannelType.GuildAnnouncement) {
-        await channel.delete('Setting up new server structure');
-      }
-    } catch (error) {
-      console.warn(`⚠️ Could not delete channel ${channel?.name}:`, error);
-    }
-  }
-  
-  // Delete all non-essential roles
-  for (const [id, role] of guild.roles.cache) {
-    try {
-      if (!role.managed && role.name !== '@everyone') {
-        await role.delete('Cleaning up old roles');
-        console.log(`Deleted role: ${role.name}`);
-      }
-    } catch (error) {
-      console.error(`Failed to delete role ${role.name}:`, error);
-    }
-  }
-  
-  console.log('✅ Cleanup completed');
-}
-
-  
-  if (!role) {
-    console.log(`Creating role: ${name}`);
-    try {
-      role = await guild.roles.create({
-        name,
-        color,
-        permissions: permissions.reduce((a, b) => a | b, 0n),
-        reason: 'Setting up server roles'
-      });
-    } catch (error) {
-      console.error(`Failed to create role ${name}:`, error);
-      throw error;
-    }
-  } else {
-    // Update existing role with correct permissions
-    try {
-      await role.setPermissions(permissions.reduce((a, b) => a | b, 0n), 'Updating role permissions');
-      await role.setColor(color, 'Updating role color');
-      console.log(`Updated role: ${name}`);
-    } catch (error) {
-      console.error(`Failed to update role ${name}:`, error);
-      throw error;
-    }
-  }
-  
-  if (!role) {
-    throw new Error(`Failed to create or update role: ${name}`);
-  }
-  
-  return role;
-}
-
-async function setupRoles(guild: Guild) {
-  console.log('\n🔄 Setting up roles...');
-  
-  // Create or get roles
-  const adminRole = await ensureRole(guild, 'Admin', 0xFF0000, [
-    PermissionFlagsBits.Administrator
-  ]);
-  
-  const moderatorRole = await ensureRole(guild, 'Moderator', 0x00FF00, [
-    PermissionFlagsBits.ManageMessages,
-    PermissionFlagsBits.KickMembers,
-    PermissionFlagsBits.BanMembers,
-    PermissionFlagsBits.ModerateMembers,
-    PermissionFlagsBits.ManageChannels
-  ]);
-  
-  const memberRole = await ensureRole(guild, 'Member', 0x0000FF, [
-    PermissionFlagsBits.ViewChannel,
-    PermissionFlagsBits.SendMessages,
-    PermissionFlagsBits.ReadMessageHistory,
-    PermissionFlagsBits.Connect,
-    PermissionFlagsBits.Speak
-  ]);
-  
-  if (!adminRole || !moderatorRole || !memberRole) {
-    throw new Error('Failed to create required roles');
-  }
-  
-  const roles: ServerRoles = {
-    admin: adminRole,
-    moderator: moderatorRole,
-    member: memberRole
-  };
-
-  console.log('✅ Roles created/updated');
-  return roles;
-}
-
-// Type for permission overwrite options with proper typing
-type PermissionOverwrite = {
-  id: string;
-  allow?: bigint | number | null | undefined;
-  deny?: bigint | number | null | undefined;
-  type?: OverwriteType | null | undefined;
-};
-
-// Type for permission flags
-type PermissionFlags = {
-  [key: string]: boolean | null | undefined;
-};
 
 // Helper function to convert permission flags to bitfield
 function convertToBitfield(permissions: PermissionFlags): bigint {
@@ -831,11 +632,21 @@ async function setupCategoriesAndChannels(guild: Guild, roles: ServerRoles) {
       channels: [
         { name: 'General', type: ChannelType.GuildVoice, topic: 'General voice chat' },
         { name: 'Gaming', type: ChannelType.GuildVoice, topic: 'Gaming voice chat' },
-        { name: 'AFK', type: ChannelType.GuildVoice, topic: 'AFK Channel' }
-          permissions: {
-            ...everyonePermissions,
-            [roles.member.id]: { ViewChannel: true, Connect: true, Speak: true },
-          }
+        { 
+          name: 'AFK', 
+          type: ChannelType.GuildVoice, 
+          topic: 'AFK Channel',
+          permissionOverwrites: [
+            ...(everyonePermissions ? [everyonePermissions] : []),
+            {
+              id: roles.member.id,
+              allow: {
+                ViewChannel: true,
+                Connect: true,
+                Speak: true
+              }
+            }
+          ]
         }
       ]
     }

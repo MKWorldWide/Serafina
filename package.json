@@ -4,7 +4,7 @@
   "description": "A production-ready Discord bot with modular architecture, slash commands, and advanced features",
   "main": "dist/index.js",
   "engines": {
-    "node": ">=20.0.0",
+    "node": "20.0.0",
     "npm": ">=9.0.0"
   },
   "scripts": {
