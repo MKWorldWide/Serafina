@@ -1,53 +1,66 @@
-# Render configuration for Serafina services
+# Render configuration for Serafina Discord Bot
+# Documentation: https://render.com/docs/blueprint-spec
+
+# Global environment variables for all services
+envVars:
+  - key: NODE_ENV
+    value: production
+  - key: LOG_LEVEL
+    value: info
+  - key: DATABASE_URL
+    value: file:./data/serafina.db
+  - key: DB_DRIVER
+    value: wasm  # Using WASM driver for better compatibility
+
+# Main Discord bot service
 services:
-  # Main Discord bot service
   - type: web
     name: serafina-bot
     env: node
-    buildCommand: npm install
-    startCommand: npm start
-    envVars:
-      - key: DISCORD_TOKEN
-        fromGroup: true  # Will be set in Render dashboard
-      - key: NODE_ENV
-        value: production
-    plan: free
-    autoDeploy: true
-
-  # Shadow Nexus service
-  - type: web
-    name: shadow-nexus
-    env: node
-    buildCommand: npm install
-    startCommand: node dist/services/shadow-nexus.js
+    region: oregon  # Choose the region closest to your users
+    plan: free  # Start with free tier, upgrade as needed
+    autoDeploy: true  # Auto-deploy on push to main branch
+    buildCommand: |
+      npm ci && \
+      npm run build
+    startCommand: node dist/index.js
     envVars:
       - key: PORT
         value: 10000
-      - key: NODE_ENV
-        value: production
-    plan: free
-    autoDeploy: true
+      - key: HOST
+        value: 0.0.0.0
+      - key: DISCORD_TOKEN
+        sync: false  # Will be set in Render dashboard
+      - key: DISCORD_CLIENT_ID
+        sync: false  # Will be set in Render dashboard
+    healthCheckPath: /healthz
+    
+    # Persistent storage for SQLite database
+    disk:
+      name: serafina-data
+      mountPath: /opt/render/project/data
+      sizeGB: 1  # Adjust based on your needs
 
-  # AthenaCore service
-  - type: web
-    name: athena-core
-    env: node
-    buildCommand: npm install
-    startCommand: node dist/services/athena-core.js
+# Database service (if using PostgreSQL instead of SQLite)
+# Uncomment and configure if needed:
+#
+# databases:
+#   - name: serafina-db
+#     databaseName: serafina
+#     user: serafina
+#     plan: free
+#     ipAllowList:
+#       - ip: 0.0.0.0/0
+#         comment: Allow all IPs (restrict in production)
+
+# Cron jobs (example for periodic tasks)
+crons:
+  - name: cleanup-temp-files
+    schedule: "0 0 * * *"  # Daily at midnight
+    command: node dist/scripts/cleanup.js
     envVars:
-      - key: PORT
-        value: 10001
       - key: NODE_ENV
         value: production
-    plan: free
-    autoDeploy: true
-
-  # Divina service
-  - type: web
-    name: divina
-    env: node
-    buildCommand: npm install
-    startCommand: node dist/services/divina.js
     envVars:
       - key: PORT
         value: 10002

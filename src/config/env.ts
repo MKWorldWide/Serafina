@@ -1,199 +1,260 @@
 import { z } from 'zod';
 import { createLogger } from '../utils/logger';
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Load environment variables from .env file
+dotenv.config({
+  path: path.resolve(process.cwd(), '.env')
+});
 
 const logger = createLogger({ service: 'config:env' });
 
-// Define the service schema
-const ServiceSchema = z.object({
-  name: z.string().min(1, 'Service name is required'),
-  url: z.string().url('Service URL must be a valid URL'),
-  owner: z.string().optional(),
-  channelId: z.string().optional(),
-  description: z.string().optional(),
-  statusPageUrl: z.string().url('Status page URL must be a valid URL').optional(),
-  category: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  // Add more service-specific configuration as needed
+// Define log levels for validation
+const LOG_LEVELS = ['fatal', 'error', 'warn', 'info', 'debug', 'trace'] as const;
+
+// Schema for database configuration
+const DatabaseSchema = z.object({
+  // Backward compatibility: DATABASE_URL or DB_PATH
+  url: z.string()
+    .default('data/serafina.db')
+    .describe('Path to SQLite database file'),
+  
+  // Backward compatibility: DB_DRIVER or empty (auto-detect)
+  driver: z.enum(['native', 'wasm', 'auto'] as const)
+    .default('auto')
+    .describe('Database driver to use (native, wasm, or auto)'),
+  
+  // Backward compatibility: DB_MIGRATIONS_DIR or default
+  migrationsDir: z.string()
+    .default('migrations')
+    .describe('Directory containing database migrations'),
+  
+  // Backward compatibility: DB_POOL_MIN/MAX or defaults
+  pool: z.object({
+    min: z.number().int().min(1).default(2),
+    max: z.number().int().min(1).default(10),
+  }).default({})
 });
 
-type Service = z.infer<typeof ServiceSchema>;
+// Schema for web server configuration
+const WebServerSchema = z.object({
+  // Backward compatibility: PORT or PORT_HTTP
+  port: z.number().int().min(1).max(65535).default(8787),
+  
+  // Backward compatibility: HOST or empty (all interfaces)
+  host: z.string().default('0.0.0.0'),
+  
+  // Backward compatibility: TRUST_PROXY or default false
+  trustProxy: z.boolean().default(false),
+  
+  // Backward compatibility: RATE_LIMIT_* or defaults
+  rateLimit: z.object({
+    windowMs: z.number().int().min(1000).default(15 * 60 * 1000), // 15 minutes
+    max: z.number().int().min(1).default(100), // 100 requests per window
+  }).default({}),
+  
+  // Backward compatibility: CORS_ORIGIN or default
+  cors: z.union([
+    z.string().url(),
+    z.string().regex(/^\*$/),
+    z.array(z.string())
+  ]).default('*')
+});
 
-// Define the environment variables schema
+// Schema for Discord client configuration
+const DiscordSchema = z.object({
+  // Required: DISCORD_TOKEN or TOKEN
+  token: z.string()
+    .min(1, 'Discord bot token is required')
+    .describe('Discord bot token from the Developer Portal'),
+  
+  // Required: DISCORD_CLIENT_ID or CLIENT_ID or APPLICATION_ID
+  clientId: z.string()
+    .min(1, 'Discord client ID is required')
+    .describe('Discord application client ID'),
+  
+  // Optional: DEV_GUILD_ID or GUILD_ID
+  devGuildId: z.string().optional()
+    .describe('Guild ID for development (speeds up command registration)'),
+  
+  // Backward compatibility: COMMANDS_SCOPE or default 'guild'
+  commandsScope: z.enum(['guild', 'global'])
+    .default('guild')
+    .describe('Where to register commands (guild or global)'),
+  
+  // Backward compatibility: ENABLE_MESSAGE_CONTENT or default false
+  enableMessageContent: z.boolean()
+    .default(false)
+    .describe('Enable message content intent (requires bot approval)'),
+  
+  // Backward compatibility: OWNER_IDS or empty
+  ownerIds: z.array(z.string())
+    .default([])
+    .describe('Array of Discord user IDs who have bot owner permissions')
+});
+
+// Schema for application configuration
+const AppSchema = z.object({
+  // Backward compatibility: NODE_ENV or default 'development'
+  env: z.enum(['development', 'production', 'test'] as const)
+    .default('development'),
+  
+  // Backward compatibility: LOG_LEVEL or default 'info'
+  logLevel: z.enum([...LOG_LEVELS] as const)
+    .default('info'),
+  
+  // Backward compatibility: MAINTENANCE_MODE or default false
+  maintenance: z.boolean()
+    .default(false)
+    .describe('Enable maintenance mode (bot will only respond to owners)'),
+  
+  // Backward compatibility: BOT_TAGLINE or empty
+  tagline: z.string()
+    .optional()
+    .describe('Bot tagline shown in /about command'),
+  
+  // Backward compatibility: APP_DESCRIPTION or default
+  description: z.string()
+    .default('A feature-rich Discord bot with slash commands and more')
+    .describe('Bot description shown in /about command')
+});
+
+// Main environment schema with all configurations
 const EnvSchema = z.object({
-  // Discord
-  DISCORD_TOKEN: z.string().min(1, 'Discord token is required'),
-  DISCORD_CLIENT_ID: z.string().min(1, 'Discord client ID is required'),
-  DISCORD_GUILD_ID: z.string().optional(), // Optional for development
+  // Core configurations
+  app: AppSchema,
+  discord: DiscordSchema,
+  database: DatabaseSchema,
+  web: WebServerSchema,
   
-  // Services configuration
-  SERVICES: z.string().transform((val, ctx) => {
-    try {
-      const parsed = JSON.parse(val);
-      const result = z.array(ServiceSchema).safeParse(parsed);
-      
-      if (!result.success) {
-        result.error.issues.forEach(issue => {
-          ctx.addIssue({
-            ...issue,
-            path: ['SERVICES', ...(issue.path || [])],
-          });
-        });
-        return z.NEVER;
-      }
-      
-      return result.data;
-    } catch (error) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'SERVICES must be a valid JSON array of service configurations',
-      });
-      return z.NEVER;
-    }
-  }),
+  // Backward compatibility: REDIS_URL or empty
+  redisUrl: z.string().url().optional()
+    .describe('Redis URL for caching and rate limiting'),
   
-  // Heartbeat configuration
-  HEARTBEAT_INTERVAL: z.coerce.number().int().positive().default(30000), // 30 seconds
-  HEARTBEAT_TIMEOUT: z.coerce.number().int().positive().default(10000), // 10 seconds
-  HEARTBEAT_CONCURRENCY: z.coerce.number().int().positive().default(5),
+  // Backward compatibility: SENTRY_DSN or empty
+  sentryDsn: z.string().url().optional()
+    .describe('Sentry DSN for error tracking'),
   
-  // Circuit breaker configuration
-  CIRCUIT_BREAKER_THRESHOLD: z.coerce.number().int().positive().default(5),
-  CIRCUIT_BREAKER_TIMEOUT: z.coerce.number().int().positive().default(60000), // 1 minute
-  CIRCUIT_BREAKER_MAX_RETRIES: z.coerce.number().int().nonnegative().default(3),
-  
-  // Incident management
-  INCIDENT_CHANNEL_ID: z.string().optional(),
-  INCIDENT_ROLE_CRITICAL: z.string().optional(),
-  INCIDENT_ROLE_MAJOR: z.string().optional(),
-  INCIDENT_ROLE_MINOR: z.string().optional(),
-  
-  // Logging
-  LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  
-  // Optional features
-  ENABLE_STATUS_THREADS: z.coerce.boolean().default(false),
-  STATUS_THREAD_CHANNEL_ID: z.string().optional(),
-  STATUS_THREAD_UPDATE_INTERVAL: z.coerce.number().int().positive().default(300000), // 5 minutes
-  
-  // External integrations
-  SENTRY_DSN: z.string().url().optional(),
-  DATADOG_API_KEY: z.string().optional(),
-  
-  // Add more environment variables as needed
+  // Backward compatibility: DEBUG or empty
+  debug: z.union([
+    z.boolean(),
+    z.string().transform(s => s === 'true')
+  ]).default(false)
 });
 
-type Env = z.infer<typeof EnvSchema>;
+// Type exports
+export type DatabaseConfig = z.infer<typeof DatabaseSchema>;
+export type WebServerConfig = z.infer<typeof WebServerSchema>;
+export type DiscordConfig = z.infer<typeof DiscordSchema>;
+export type AppConfig = z.infer<typeof AppSchema>;
 
-// Parse and validate environment variables
-let env: Env;
+export type Env = z.infer<typeof EnvSchema>;
 
-try {
-  // Load environment variables from .env file if in development
-  if (process.env.NODE_ENV !== 'production') {
-    // Use dynamic import for dotenv to avoid loading it in production
-    import('dotenv').then(dotenv => {
-      dotenv.config();
-      logger.info('Loaded environment variables from .env file');
-    }).catch(() => {
-      logger.warn('Failed to load dotenv. Proceeding with system environment variables.');
-    });
-  }
+// Helper function to parse environment variables
+function parseEnv(): Env {
+  // Transform environment variables to match our schema
+  const envVars = {
+    debug: process.env.DEBUG === 'true',
+    app: {
+      env: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
+      logLevel: process.env.LOG_LEVEL || 'info',
+      maintenance: process.env.MAINTENANCE_MODE === 'true',
+      description: process.env.APP_DESCRIPTION || 'A feature-rich Discord bot with slash commands and more',
+      tagline: process.env.BOT_TAGLINE
+    },
+    discord: {
+      token: process.env.DISCORD_TOKEN || process.env.TOKEN || '',
+      clientId: process.env.DISCORD_CLIENT_ID || process.env.CLIENT_ID || process.env.APPLICATION_ID || '',
+      devGuildId: process.env.DEV_GUILD_ID || process.env.GUILD_ID,
+      commandsScope: (process.env.COMMANDS_SCOPE as 'guild' | 'global') || 'guild',
+      enableMessageContent: process.env.ENABLE_MESSAGE_CONTENT === 'true',
+      ownerIds: process.env.OWNER_IDS ? process.env.OWNER_IDS.split(',').map(s => s.trim()) : []
+    },
+    database: {
+      url: process.env.DATABASE_URL || process.env.DB_PATH || 'data/serafina.db',
+      driver: (process.env.DB_DRIVER as 'native' | 'wasm' | 'auto') || 'auto',
+      migrationsDir: process.env.DB_MIGRATIONS_DIR || 'migrations',
+      pool: {
+        min: process.env.DB_POOL_MIN ? parseInt(process.env.DB_POOL_MIN, 10) : 2,
+        max: process.env.DB_POOL_MAX ? parseInt(process.env.DB_POOL_MAX, 10) : 10
+      }
+    },
+    web: {
+      port: process.env.PORT_HTTP ? parseInt(process.env.PORT_HTTP, 10) : 8787,
+      host: process.env.HOST || '0.0.0.0',
+      trustProxy: process.env.TRUST_PROXY === 'true',
+      rateLimit: {
+        windowMs: process.env.RATE_LIMIT_WINDOW_MS 
+          ? parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) 
+          : 15 * 60 * 1000, // 15 minutes
+        max: process.env.RATE_LIMIT_MAX 
+          ? parseInt(process.env.RATE_LIMIT_MAX, 10) 
+          : 100 // 100 requests per window
+      },
+      cors: process.env.CORS_ORIGIN || '*'
+    },
+    redisUrl: process.env.REDIS_URL,
+    sentryDsn: process.env.SENTRY_DSN
+  };
+
+  // Parse and validate the environment variables
+  const result = EnvSchema.safeParse(envVars);
   
-  // Parse and validate environment variables
-  env = EnvSchema.parse(process.env);
-  
-  // Log startup information
-  logger.info('Environment variables validated successfully', {
-    nodeEnv: env.NODE_ENV,
-    serviceCount: env.SERVICES.length,
-    logLevel: env.LOG_LEVEL,
-  });
-  
-} catch (error) {
-  if (error instanceof z.ZodError) {
-    // Format and log validation errors
-    const errorMessages = error.issues.map(issue => {
-      const path = issue.path.join('.');
-      return `• ${path}: ${issue.message}`;
-    });
+  if (!result.success) {
+    const errorMessage = '❌ Invalid environment variables:';
+    const issues = result.error.issues.map(
+      issue => `  - ${issue.path.join('.')}: ${issue.message}`
+    ).join('\n');
     
-    logger.error('❌ Invalid environment variables:', {
-      errors: errorMessages,
-      issues: error.issues,
-    });
-    
-    console.error('\n❌ Invalid environment variables:');
-    console.error(errorMessages.join('\n'));
-    console.error('\nPlease check your .env file or environment variables and try again.\n');
-  } else {
-    logger.error('❌ Failed to validate environment variables', { error });
-    console.error('❌ Failed to validate environment variables:', error);
+    logger.error('Failed to parse environment variables', { error: result.error });
+    console.error(`${errorMessage}\n${issues}`);
+    process.exit(1);
   }
-  
-  // Exit with error code
-  process.exit(1);
+
+  return result.data;
 }
 
-// Export validated environment variables
-export default env;
+// Parse the environment variables
+const env = parseEnv();
 
-// Re-export types for convenience
-export type { Service };
-
-/**
- * Get a service by name
- * @param name The name of the service to find
- * @returns The service configuration or undefined if not found
- */
-export function getService(name: string): Service | undefined {
-  return env.SERVICES.find(service => service.name.toLowerCase() === name.toLowerCase());
-}
-
-/**
- * Get all services
- * @returns An array of all services
- */
-export function getServices(): Service[] {
-  return [...env.SERVICES];
-}
-
-/**
- * Get services by tag
- * @param tag The tag to filter by
- * @returns An array of services with the specified tag
- */
-export function getServicesByTag(tag: string): Service[] {
-  return env.SERVICES.filter(service => 
-    service.tags?.some(t => t.toLowerCase() === tag.toLowerCase())
-  );
-}
-
-/**
- * Get services by category
- * @param category The category to filter by
- * @returns An array of services in the specified category
- */
-export function getServicesByCategory(category: string): Service[] {
-  return env.SERVICES.filter(service => 
-    service.category?.toLowerCase() === category.toLowerCase()
-  );
-}
-
-/**
- * Get the incident role ID for a given severity
- * @param severity The severity level
- * @returns The role ID or undefined if not configured
- */
-export function getIncidentRoleId(severity: 'critical' | 'major' | 'minor'): string | undefined {
-  switch (severity) {
-    case 'critical':
-      return env.INCIDENT_ROLE_CRITICAL;
-    case 'major':
-      return env.INCIDENT_ROLE_MAJOR;
-    case 'minor':
-      return env.INCIDENT_ROLE_MINOR;
-    default:
-      return undefined;
+// Log configuration on startup
+const logContext = {
+  nodeEnv: env.app.env,
+  logLevel: env.app.logLevel,
+  maintenance: env.app.maintenance,
+  discord: {
+    commandsScope: env.discord.commandsScope,
+    devGuildId: env.discord.devGuildId
+  },
+  database: {
+    url: env.database.url,
+    driver: env.database.driver
+  },
+  web: {
+    port: env.web.port,
+    host: env.web.host
   }
-}
+};
+
+logger.info('Environment configuration loaded', logContext);
+
+// Export the validated environment variables
+export { env };
+
+// Export a default object with backward compatibility aliases
+const config = {
+  ...env,
+  // Backward compatibility aliases
+  NODE_ENV: env.app.env,
+  LOG_LEVEL: env.app.logLevel,
+  MAINTENANCE_MODE: env.app.maintenance,
+  DISCORD_TOKEN: env.discord.token,
+  DISCORD_CLIENT_ID: env.discord.clientId,
+  DEV_GUILD_ID: env.discord.devGuildId,
+  DATABASE_URL: env.database.url,
+  PORT: env.web.port,
+  HOST: env.web.host
+};
+
+export default config;
