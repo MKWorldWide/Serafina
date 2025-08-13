@@ -7,10 +7,14 @@ envVars:
     value: production
   - key: LOG_LEVEL
     value: info
-  - key: DATABASE_URL
-    value: :memory:  # Using in-memory database for free tier
   - key: DB_DRIVER
-    value: wasm  # Using WASM driver for better compatibility
+    value: postgres  # Use PostgreSQL in production
+  - key: COMMANDS_SCOPE
+    value: global  # Use global commands in production
+  - key: BOT_TAGLINE
+    value: "Serafina — your comms layer."
+  - key: APP_DESCRIPTION
+    value: "Serafina routes messages and services. Use /help."
 
 # Main Discord bot service
 services:
@@ -23,29 +27,37 @@ services:
     buildCommand: |
       npm ci && \
       npm run build
-    startCommand: node dist/index.js
+    startCommand: npm start
     envVars:
-      - key: PORT
+      - key: PORT_HTTP
         value: 10000
-      - key: HOST
-        value: 0.0.0.0
       - key: DISCORD_TOKEN
         sync: false  # Will be set in Render dashboard
       - key: DISCORD_CLIENT_ID
         sync: false  # Will be set in Render dashboard
+      - key: DISCORD_CLIENT_SECRET
+        sync: false  # Required for OAuth
+      - key: POSTGRES_URL
+        fromDatabase:
+          name: serafina-db
+          property: connectionString
     healthCheckPath: /healthz
+    healthCheckTimeoutInSeconds: 10
+    healthCheckIntervalInSeconds: 60
+    numInstances: 1
 
-# Database service (if using PostgreSQL instead of SQLite)
-# Uncomment and configure if needed:
-#
-# databases:
-#   - name: serafina-db
-#     databaseName: serafina
-#     user: serafina
-#     plan: free
-#     ipAllowList:
-#       - ip: 0.0.0.0/0
-#         comment: Allow all IPs (restrict in production)
+# Database service (PostgreSQL)
+databases:
+  - name: serafina-db
+    databaseName: serafina
+    user: serafina
+    plan: free  # Free tier (limited to 90 days, then $7/month)
+    ipAllowList:
+      - ip: 0.0.0.0/0
+        comment: Allow all IPs (for Render services)
+    # Automatically run migrations on deploy
+    initCommands:
+      - npm run migrate:db
 
 # Cron jobs (example for periodic tasks)
 crons:
