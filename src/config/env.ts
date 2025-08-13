@@ -40,13 +40,18 @@ const DatabaseSchema = z.object({
 // Schema for web server configuration
 const WebServerSchema = z.object({
   // Backward compatibility: PORT or PORT_HTTP
-  port: z.number().int().min(1).max(65535).default(8787),
+  port: z.number().int().min(1).max(65535).default(3000),
   
   // Backward compatibility: HOST or empty (all interfaces)
   host: z.string().default('0.0.0.0'),
   
   // Backward compatibility: TRUST_PROXY or default false
   trustProxy: z.boolean().default(false),
+  
+  // Base URL for OAuth callbacks and webhooks
+  baseUrl: z.string()
+    .default('http://localhost:3000')
+    .describe('Base URL for OAuth callbacks (e.g., https://your-app.herokuapp.com)'),
   
   // Backward compatibility: RATE_LIMIT_* or defaults
   rateLimit: z.object({
@@ -64,15 +69,35 @@ const WebServerSchema = z.object({
 
 // Schema for Discord client configuration
 const DiscordSchema = z.object({
-  // Required: DISCORD_TOKEN or TOKEN
+  // Backward compatibility: DISCORD_BOT_TOKEN or DISCORD_TOKEN or BOT_TOKEN
   token: z.string()
     .min(1, 'Discord bot token is required')
-    .describe('Discord bot token from the Developer Portal'),
-  
-  // Required: DISCORD_CLIENT_ID or CLIENT_ID or APPLICATION_ID
+    .describe('Discord bot token from the developer portal'),
+    
+  // Backward compatibility: DISCORD_CLIENT_ID or CLIENT_ID
   clientId: z.string()
     .min(1, 'Discord client ID is required')
     .describe('Discord application client ID'),
+    
+  // Backward compatibility: DISCORD_CLIENT_SECRET or CLIENT_SECRET
+  clientSecret: z.string()
+    .min(1, 'Discord client secret is required')
+    .describe('Discord application client secret (for OAuth)'),
+    
+  // OAuth redirect URI (auto-generated)
+  redirectUri: z.string()
+    .default('http://localhost:3000/oauth/callback')
+    .describe('OAuth redirect URI (auto-generated based on baseUrl)'),
+    
+  // OAuth scopes
+  scopes: z.array(z.string())
+    .default(['identify', 'guilds'])
+    .describe('OAuth scopes to request from Discord'),
+    
+  // Bot invite permissions
+  invitePermissions: z.string()
+    .default('274877975552')  // Common bot permissions
+    .describe('Discord permissions integer for bot invite URL'),
   
   // Optional: DEV_GUILD_ID or GUILD_ID
   devGuildId: z.string().optional()
