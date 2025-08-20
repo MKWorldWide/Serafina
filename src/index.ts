@@ -96,8 +96,8 @@ client.once(Events.ClientReady, async () => {
     // Initialize server
     await serverManager.initializeServer();
     logger.info('Server initialization completed');
-  } catch (error) {
-    logger.error('Failed to initialize server:', error);
+  } catch (error: unknown) {
+    logger.error('Failed to initialize server:', error instanceof Error ? error : new Error(String(error)));
   }
 });
 
@@ -118,8 +118,8 @@ client.on(Events.InteractionCreate, async interaction => {
     } else {
       logger.error(`Command ${interaction.commandName} does not have an execute function.`);
     }
-  } catch (error) {
-    logger.error(`Error executing command ${interaction.commandName}:`, error);
+  } catch (error: unknown) {
+    logger.error(`Error executing command ${interaction.commandName}:`, error instanceof Error ? error : new Error(String(error)));
 
     const errorMessage = 'There was an error while executing this command!';
 
@@ -149,8 +149,8 @@ client.on(Events.MessageCreate, async message => {
     if (xpManager && message.member) {
       await xpManager.handleMessage(message.member);
     }
-  } catch (error) {
-    logger.error('Error processing message:', error);
+  } catch (error: unknown) {
+    logger.error('Error processing message:', error instanceof Error ? error : new Error(String(error)));
   }
 });
 
@@ -160,21 +160,21 @@ client.on(Events.GuildMemberAdd, async member => {
     if (serverManager) {
       await serverManager.assignDefaultRole(member.id);
     }
-  } catch (error) {
-    logger.error('Error handling new member:', error);
+  } catch (error: unknown) {
+    logger.error('Error handling new member:', error instanceof Error ? error : new Error(String(error)));
   }
 });
 
 // Error handling
-client.on(Events.Error, error => {
+client.on(Events.Error, (error: Error) => {
   logger.error('Discord client error:', error);
 });
 
-process.on('unhandledRejection', error => {
-  logger.error('Unhandled promise rejection:', error);
+process.on('unhandledRejection', (error: unknown) => {
+  logger.error('Unhandled promise rejection:', error instanceof Error ? error : new Error(String(error)));
 });
 
-process.on('uncaughtException', error => {
+process.on('uncaughtException', (error: Error) => {
   logger.error('Uncaught exception:', error);
   process.exit(1);
 });
