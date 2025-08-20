@@ -27,7 +27,7 @@ services:
     buildCommand: |
       npm ci && \
       npm run build
-    startCommand: npm start
+    startCommand: "npm start"
     envVars:
       - key: PORT_HTTP
         value: 10000
