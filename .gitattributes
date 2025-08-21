@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+# Force TypeScript and JavaScript files to be built
+src/commands/**/*.ts export-ignore
+src/events/**/*.ts export-ignore
+
+# Ensure these directories are included in the build output
+!dist/commands/
+!dist/events/
