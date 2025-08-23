@@ -1,0 +1,41 @@
+name: PR Lint and Type Check
+
+# This workflow enforces code quality for every pull request
+# by running ESLint and TypeScript's type checker before merge.
+on:
+  pull_request:
+    # Run for all pull request targets
+    branches: ['*']
+
+jobs:
+  quality-gate:
+    # Using Ubuntu for a predictable Linux environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        # Align runtime with project's engines field for consistency
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        # npm ci is preferred for clean installs, but falls back gracefully
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Run ESLint
+        # Static analysis to keep code style and catch bugs early
+        run: npm run lint
+
+      - name: Run TypeScript type checks
+        # Ensures type safety across the codebase
+        run: npm run typecheck
