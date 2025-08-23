@@ -25,8 +25,8 @@ services:
     plan: free  # Free tier
     autoDeploy: true  # Auto-deploy on push to main
     buildCommand: |
-      npm ci && \
-      npm run build
+      pnpm install --frozen-lockfile && \
+      pnpm run build
     startCommand: "npm start"
     envVars:
       - key: PORT_HTTP
