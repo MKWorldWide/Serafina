@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "npm install typescript && node build.js",
+    "prebuild": "npm install typescript --save-dev",
+    "build": "node build.js",
     "start": "node dist/index.js",
     "register": "tsx src/registry/register.ts",
     "doctor": "tsx scripts/repo-doctor.ts",
@@ -16,8 +17,8 @@
     "migrate:sqlite-to-pg": "tsx scripts/migrate-sqlite-to-pg.ts",
     "clean": "rimraf dist",
     "lint": "eslint . --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit",
-    "postinstall": "npm install typescript && npm run build"
+    "typecheck": "npx tsc --noEmit",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "discord",

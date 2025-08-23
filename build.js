@@ -45,14 +45,14 @@ try {
   require.resolve('typescript');
 } catch (e) {
   console.log('Installing TypeScript...');
-  execSync('npm install typescript --no-save', { stdio: 'inherit' });
+  execSync('npm install typescript --save-dev', { stdio: 'inherit' });
 }
 
 // Compile TypeScript with noEmit to catch critical errors
 console.log('Checking TypeScript for critical errors...');
 try {
-  const tscPath = path.join('node_modules', '.bin', 'tsc');
-  execSync(`node ${tscPath} --noEmit`, { stdio: 'inherit' });
+  // Use npx to find tsc in node_modules
+  execSync('npx tsc --noEmit', { stdio: 'inherit' });
   console.log('TypeScript check completed successfully');
 } catch (error) {
   console.warn('TypeScript check completed with non-critical errors, continuing build...');
@@ -73,9 +73,8 @@ console.log('Copying source directories...');
 // Compile TypeScript to JavaScript
 console.log('Compiling TypeScript to JavaScript...');
 try {
-  // Use local TypeScript installation
-  const tscPath = path.join('node_modules', '.bin', 'tsc');
-  execSync(`node ${tscPath} --emitDeclarationOnly false`, { stdio: 'inherit' });
+  // Use npx to find tsc in node_modules
+  execSync('npx tsc --emitDeclarationOnly false', { stdio: 'inherit' });
   console.log('TypeScript compilation completed successfully');
 } catch (error) {
   console.error('TypeScript compilation failed:', error.message);
