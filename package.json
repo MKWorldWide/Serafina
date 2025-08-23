@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "node build.js",
+    "build": "npm install typescript && node build.js",
     "start": "node dist/index.js",
     "register": "tsx src/registry/register.ts",
     "doctor": "tsx scripts/repo-doctor.ts",
@@ -17,7 +17,7 @@
     "clean": "rimraf dist",
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
-    "postinstall": "npm run build"
+    "postinstall": "npm install typescript && npm run build"
   },
   "keywords": [
     "discord",
