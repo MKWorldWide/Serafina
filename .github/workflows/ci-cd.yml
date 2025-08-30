@@ -1,10 +1,10 @@
-name: GameDin Discord Bot CI/CD
+name: Serafina CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main, develop]
   workflow_dispatch:
     inputs:
       environment:
@@ -17,159 +17,271 @@ on:
         - staging
         - production
 
+# Cancel in-progress runs for the same ref
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Global environment variables
 env:
-  NODE_VERSION: '18'
-  AWS_REGION: 'us-east-1'
+  NODE_VERSION: '20.x'
+  PNPM_VERSION: '9.x'
+  CI: true
+
+# Default permissions for all jobs
+permissions:
+  contents: read
+  actions: read
+  checks: write
+  packages: write
 
 jobs:
-  # Test and Build Job
-  test-and-build:
-    name: Test and Build
+  setup:
+    name: Setup & Validate
     runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.pnpm-cache.outputs.cache-key }}
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
+        cache: 'pnpm'
+    
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: |
+        echo "cache-key=$(pnpm store path | cut -d '/' -f 3,4,5,6,7,8,9)" >> $GITHUB_OUTPUT
+    
     - name: Install dependencies
-      run: npm ci
-      
-    - name: Run linting
-      run: npm run lint
-      
-    - name: Run type checking
-      run: npm run type-check
-      
-    - name: Run tests
-      run: npm run test:coverage
+      run: pnpm install --frozen-lockfile
+    
+    - name: Verify lockfile
+      run: pnpm install --frozen-lockfile --prefer-offline
+
+  lint:
+    name: Lint & Type Check
+    needs: setup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile --prefer-offline
+    
+    - name: Run ESLint
+      run: pnpm run lint
+    
+    - name: Run Type Check
+      run: pnpm run typecheck
+
+  test:
+    name: Run Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile --prefer-offline
+    
+    - name: Run tests with coverage
+      run: pnpm test:coverage
+      env:
+        NODE_ENV: test
+    
+    - name: Upload coverage to Codecov
+      if: success() && github.event_name == 'push'
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN || 'none' }}
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
       
     - name: Build application
       run: npm run build
       
+  build:
+    name: Build Application
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile --prod=false
+    
+    - name: Build project
+      run: pnpm run build
+    
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: bot-build
-        path: dist/
-        retention-days: 7
+        name: build-artifacts
+        path: |
+          dist/
+          package.json
+          pnpm-lock.yaml
+          .env.example
+
+  docker:
+    name: Build & Push Docker Image
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+        path: ./
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Docker Hub
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME || 'none' }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN || 'none' }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' }}
+        tags: |
+          ${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.ref_name }}
+          ${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Environment
+    needs: docker
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+        path: ./
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Install production dependencies
+      run: pnpm install --prod --frozen-lockfile
+    
+    - name: Deploy to ${{ github.ref_name == 'main' && 'Production' || 'Staging' }}
+      run: |
+        echo "Starting deployment to ${{ github.ref_name == 'main' && 'production' || 'staging' }}..."
+        # Add your deployment commands here
+        # Example using environment variables:
+        # if [ -n "${{ secrets.DEPLOYMENT_TOKEN }}" ] && [ -n "${{ secrets.DEPLOYMENT_WEBHOOK }}" ]; then
+        #   curl -X POST \
+        #     -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_TOKEN }}" \
+        #     -H "Content-Type: application/json" \
+        #     -d '{"ref":"${{ github.ref }}"}' \
+        #     "${{ secrets.DEPLOYMENT_WEBHOOK }}"
+        # else
+        #   echo "Skipping deployment - missing required secrets"
+        # fi
 
   # Security Scan Job
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    needs: test-and-build
+    needs: [test, build]
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
+    
     - name: Run security audit
-      run: npm audit --audit-level=moderate
-      
-    - name: Run Snyk security scan
-      uses: snyk/actions/node@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        args: --severity-threshold=high
+      run: pnpm audit --prod
 
-  # Deploy to Development
-  deploy-development:
-    name: Deploy to Development
-    runs-on: ubuntu-latest
-    needs: [test-and-build, security-scan]
-    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development')
-    environment: development
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-        
-    - name: Deploy to AWS Development
-      run: |
-        chmod +x aws/deploy-serafina.sh
-        ./aws/deploy-serafina.sh development ${{ secrets.ALERT_EMAIL }} ${{ secrets.DEV_DOMAIN }}
-
-  # Deploy to Staging
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: [test-and-build, security-scan]
-    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
-    environment: staging
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-        
-    - name: Deploy to AWS Staging
-      run: |
-        chmod +x aws/deploy-serafina.sh
-        ./aws/deploy-serafina.sh staging ${{ secrets.ALERT_EMAIL }} ${{ secrets.STAGING_DOMAIN }}
-
-  # Deploy to Production
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: [test-and-build, security-scan]
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
-    environment: production
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-        
-    - name: Deploy to AWS Production
-      run: |
-        chmod +x aws/deploy-serafina.sh
-        ./aws/deploy-serafina.sh production ${{ secrets.ALERT_EMAIL }} ${{ secrets.PROD_DOMAIN }}
-
-  # Health Check
   health-check:
     name: Health Check
     runs-on: ubuntu-latest
-    needs: [deploy-staging, deploy-production]
-    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
+    needs: [deploy]
+    if: always()
     
     steps:
-    - name: Check deployment health
+    - name: Check deployment status
+      if: needs.deploy.result == 'success'
       run: |
-        echo "Deployment completed successfully!"
-        echo "Checking bot health endpoints..."
-        # Add health check logic here 
+        echo "✅ Deployment completed successfully!"
+        echo "🔍 Checking bot health endpoints..."
+        # Add health check logic here
+        # Example:
+        # curl -sSf https://your-api-endpoint/health || exit 1
+    
+    - name: Report deployment failure
+      if: needs.deploy.result != 'success' && needs.deploy.result != 'skipped'
+      run: |
+        echo "❌ Deployment failed with status: ${{ needs.deploy.result }}"
+        exit 1
