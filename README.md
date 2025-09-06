@@ -1,9 +1,58 @@
-A Project Blessed by Solar Khan & Lilith.Aethra
 # 🎮 GameDin Discord Bot - Serafina
 
 > **Note:** This document has been expanded to include **Operations Mode** - a comprehensive set of tools for monitoring and managing your services directly from Discord.
 
 A comprehensive Discord bot with advanced AI integration, dynamic command/event loading, and multi-provider support.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Discord](https://img.shields.io/discord/your-discord-invite-code?logo=discord)](https://discord.gg/your-invite-link)
+[![CI/CD](https://github.com/your-org/Serafina/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/your-org/Serafina/actions)
+[![codecov](https://codecov.io/gh/your-org/Serafina/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/Serafina)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 20.x or higher
+- pnpm 9.x
+- Discord Bot Token
+- Redis (for caching and rate limiting)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-org/Serafina.git
+   cd Serafina
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+3. Copy environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Configure your `.env` file with the required credentials.
+
+5. Start the bot in development mode:
+   ```bash
+   pnpm dev
+   ```
+
+### Production Deployment
+
+```bash
+# Build the project
+pnpm build
+
+# Start in production mode
+pnpm start
+```
 
 ## 🌟 Features
 
@@ -154,25 +203,35 @@ For detailed documentation, see the [Operations Guide](#operations-guide) sectio
    npm run build
    ```
 
-5. **Start the bot**
-   ```bash
-   npm start
-   ```
-
-## 📁 Project Structure
-
 ```
-src/
-├── core/                          # Core system components
-│   ├── CommandManager.ts         # Dynamic command loading
-│   ├── EventManager.ts           # Event handling system
-│   ├── Logger.ts                 # Logging system
-│   └── ai/                       # AI management system
-│       ├── AIProvider.ts         # Base AI provider interface
-│       ├── AIManager.ts          # Multi-provider coordination
-│       └── providers/            # AI provider implementations
-│           ├── OpenAIProvider.ts
-│           ├── MistralProvider.ts
+.
+# Core Application
+├── src/                          # Source files
+│   ├── commands/                 # Command handlers
+│   ├── events/                   # Event handlers
+│   ├── services/                 # Business logic
+│   ├── utils/                    # Utility functions
+│   └── types/                    # TypeScript type definitions
+
+# Configuration
+├── config/                      # Configuration files
+│   ├── default.ts               # Default configuration
+│   ├── production.ts            # Production overrides
+│   └── development.ts           # Development overrides
+
+# Build and Deployment
+├── .github/                     # GitHub workflows and templates
+├── .husky/                      # Git hooks
+├── public/                      # Static assets
+└── tests/                       # Test files
+
+# Configuration Files
+├── .editorconfig                # Editor configuration
+├── .eslintrc.js                 # ESLint configuration
+├── .prettierrc                 # Prettier configuration
+├── .npmrc                      # npm configuration
+├── package.json                # Project manifest
+└── tsconfig.json               # TypeScript configuration
 │           └── AthenaMistProvider.ts
 ├── commands/                     # Bot commands
 │   ├── ai.ts                     # AI interaction command

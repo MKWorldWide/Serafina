@@ -3,6 +3,12 @@ name: Serafina CI/CD Pipeline
 on:
   push:
     branches: [main, develop]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.mdx'
+      - '**/.gitignore'
+      - '**/.gitattributes'
+      - '**/.editorconfig'
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -13,9 +19,9 @@ on:
         default: 'staging'
         type: choice
         options:
-        - development
-        - staging
-        - production
+          - development
+          - staging
+          - production
 
 # Cancel in-progress runs for the same ref
 concurrency:
@@ -24,9 +30,10 @@ concurrency:
 
 # Global environment variables
 env:
-  NODE_VERSION: '20.x'
+  NODE_VERSION: '20'
   PNPM_VERSION: '9.x'
   CI: true
+  NODE_ENV: test
 
 # Default permissions for all jobs
 permissions:
@@ -89,7 +96,7 @@ jobs:
         cache: 'pnpm'
     
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile --prefer-offline
+      run: pnpm install --frozen-lockfile --prefer-offline --strict-peer-dependencies
     
     - name: Run ESLint
       run: pnpm run lint
@@ -117,7 +124,7 @@ jobs:
         cache: 'pnpm'
     
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile --prefer-offline
+      run: pnpm install --frozen-lockfile --prefer-offline --strict-peer-dependencies
     
     - name: Run tests with coverage
       run: pnpm test:coverage

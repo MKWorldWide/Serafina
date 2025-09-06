@@ -1,36 +1,35 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
-    "lib": ["ES2022"],
+    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": false,
+    "rootDir": ".",
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "declaration": false,
+    "declaration": true,
     "sourceMap": true,
     "removeComments": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
-    "types": ["node"],
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "types": ["node", "vite/client"],
+    "typeRoots": ["./node_modules/@types"],
+    "jsx": "react-jsx",
+    "isolatedModules": true
   },
   "include": [
     "src/**/*",
-    "**/*.d.ts"
+    "vitest.setup.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/__tests__/**/*"
+    "dist"
   ]
 }
