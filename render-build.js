@@ -22,26 +22,28 @@ function runCommand(command, options = {}) {
   }
 }
 
-// 1. Ensure TypeScript is installed
-console.log('🔍 Checking TypeScript installation...');
-const tsCheck = runCommand('npm list typescript --depth=0');
-
-if (!tsCheck) {
-  console.log('📦 Installing TypeScript...');
-  if (!runCommand('npm install --save-dev typescript@5.3.3')) {
-    console.error('❌ Failed to install TypeScript');
-    process.exit(1);
-  }
+// 1. Install TypeScript globally first
+console.log('📦 Installing TypeScript globally...');
+if (!runCommand('npm install -g typescript@5.3.3')) {
+  console.error('❌ Failed to install TypeScript globally');
+  process.exit(1);
 }
 
-// 2. Run TypeScript compiler
+// 2. Install TypeScript locally
+console.log('📦 Installing TypeScript locally...');
+if (!runCommand('npm install --save-dev typescript@5.3.3')) {
+  console.error('❌ Failed to install TypeScript locally');
+  process.exit(1);
+}
+
+// 3. Run TypeScript compiler using the local installation
 console.log('🔨 Compiling TypeScript...');
-if (!runCommand('npx tsc')) {
+if (!runCommand('npx tsc -p tsconfig.json')) {
   console.error('❌ TypeScript compilation failed');
   process.exit(1);
 }
 
-// 3. Copy static files
+// 4. Copy static files
 console.log('📂 Copying static files...');
 const staticDirs = ['public', 'views'];
 staticDirs.forEach(dir => {
@@ -56,5 +58,20 @@ staticDirs.forEach(dir => {
     console.log(`✅ Copied ${dir} to dist/`);
   }
 });
+
+// 5. Copy package.json to dist
+console.log('📄 Copying package.json...');
+fs.copyFileSync(
+  path.join(__dirname, 'package.json'),
+  path.join(__dirname, 'dist', 'package.json')
+);
+
+// 6. Install production dependencies in dist
+console.log('📦 Installing production dependencies...');
+process.chdir('dist');
+if (!runCommand('npm install --production')) {
+  console.error('❌ Failed to install production dependencies');
+  process.exit(1);
+}
 
 console.log('🎉 Build completed successfully!');
