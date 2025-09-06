@@ -1,7 +1,11 @@
 // Render-specific build script for Serafina
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log('🚀 Starting Render build process...');
 
@@ -24,44 +28,33 @@ const tsCheck = runCommand('npm list typescript --depth=0');
 
 if (!tsCheck) {
   console.log('📦 Installing TypeScript...');
-  if (!runCommand('npm install --save-dev typescript@5.6.3')) {
+  if (!runCommand('npm install --save-dev typescript@5.3.3')) {
     console.error('❌ Failed to install TypeScript');
     process.exit(1);
   }
 }
 
-// 2. Clean dist directory
-console.log('🧹 Cleaning dist directory...');
-if (fs.existsSync('dist')) {
-  fs.rmSync('dist', { recursive: true, force: true });
-}
-fs.mkdirSync('dist');
-
-// 3. Compile TypeScript using local tsc
+// 2. Run TypeScript compiler
 console.log('🔨 Compiling TypeScript...');
-const tscPath = path.join('node_modules', '.bin', 'tsc');
-if (!runCommand(`${tscPath} -p tsconfig.json`)) {
+if (!runCommand('npx tsc')) {
   console.error('❌ TypeScript compilation failed');
   process.exit(1);
 }
 
-// 4. Copy package.json and .env
-console.log('📄 Copying configuration files...');
-['package.json', '.env'].forEach(file => {
-  if (fs.existsSync(file)) {
-    fs.copyFileSync(file, path.join('dist', file));
-    console.log(`  - Copied ${file}`);
+// 3. Copy static files
+console.log('📂 Copying static files...');
+const staticDirs = ['public', 'views'];
+staticDirs.forEach(dir => {
+  const source = path.join(__dirname, dir);
+  const dest = path.join(__dirname, 'dist', dir);
+  
+  if (fs.existsSync(source)) {
+    if (!fs.existsSync(path.dirname(dest))) {
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+    }
+    fs.cpSync(source, dest, { recursive: true });
+    console.log(`✅ Copied ${dir} to dist/`);
   }
 });
 
-// 5. Install production dependencies
-console.log('📦 Installing production dependencies...');
-process.chdir('dist');
-if (!runCommand('npm install --production')) {
-  console.error('❌ Failed to install production dependencies');
-  process.exit(1);
-}
-process.chdir('..');
-
-console.log('\n✨ Build completed successfully!');
-console.log('   Run `node dist/index.js` to start the bot');
+console.log('🎉 Build completed successfully!');
